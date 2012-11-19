@@ -1,0 +1,15 @@
+[
+  "../src/intro.js",
+  "../src/Root.js",
+  "../src/utils/Event.js",
+  "../src/utils/third_party/rsvp.js",
+  "../src/utils/Promise.js",
+  "../src/windows/BrowserWindowsManager.js",
+  "../src/windows/BrowserWindow.js",
+  "../src/tabs/BrowserTabsManager.js",
+  "../src/tabs/RootBrowserTabsManager.js",
+  "../src/tabs/BrowserTab.js",
+  "../src/Windows.js",
+  "../src/Tabs.js",
+  "../src/outro.js"
+]

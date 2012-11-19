@@ -1,0 +1,21 @@
+{
+    "name": "operaextensions.js",
+    "description": "Opera Extension APIs for Chromium",
+    "version": "1dev",
+    "homepage" : "http://github.com/richtr/operaextensions.js",
+    "author": "Opera Software ASA",
+
+    "devDependencies": {
+      "uglify-js": "*",
+      "argparse" : "*"
+    },
+
+    "repository" : {
+        "type" : "git",
+         "url" : "git://github.com/richtr/operaextensions.js.git"
+    },
+    "licenses": [{
+        "type": "The MIT License",
+        "url": "https://raw.github.com/richtr/operaextensions.js/master/LICENSE"
+    }]
+}
