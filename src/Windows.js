@@ -1,4 +1,4 @@
 
-OEX.windows = (function() {
+OEX.windows = OEX.windows || (function() {
   return new OEX.BrowserWindowsManager();
 })();
