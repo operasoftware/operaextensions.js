@@ -1,6 +1,5 @@
 [
   "../src/intro.js",
-  "../src/Root.js",
   "../src/utils/Event.js",
   "../src/utils/third_party/rsvp.js",
   "../src/utils/Promise.js",

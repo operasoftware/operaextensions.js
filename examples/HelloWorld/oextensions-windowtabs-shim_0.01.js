@@ -1,22 +1,18 @@
 (function( global ) {
 
-/**
- * @author Rich Tibbett / http://richt.me
- */
+  var opera = global.opera || {};
 
-var opera = global.opera || {};
+  var OEX = opera.extension = opera.extension || { REVISION: '1' };
 
-var OEX = opera.extension = opera.extension || { REVISION: '1' };
+  self.console = self.console || {
 
-self.console = self.console || {
+    info: function() {},
+    log: function() {},
+    debug: function() {},
+    warn: function() {},
+    error: function() {}
 
-  info: function() {},
-  log: function() {},
-  debug: function() {},
-  warn: function() {},
-  error: function() {}
-
-};
+  };
 
 OEX.Event = function(eventType, eventProperties) {
 
@@ -595,18 +591,18 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
 
             (function(tab) {
               chrome.tabs.move(
-              tab.properties.id, {
-                index: -1,
-                windowId: _window.id
-              }, function(_tab) {
+                tab.properties.id, 
+                {
+                  index: -1,
+                  windowId: _window.id
+                }, function(_tab) {
+                  for (var i in _tab) {
+                    tab.properties[i] = _tab[i];
+                  }
 
-                for (var i in _tab) {
-                  tab.properties[i] = _tab[i];
+                  tab.resolve();
                 }
-
-                tab.resolve();
-
-              });
+              );
             })(tabsToInject[i]);
 
           } else if (tabsToInject[i] instanceof OEX.BrowserTabGroup) {
@@ -618,18 +614,19 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
               var shadowBrowserTab = new OEX.BrowserTab(browserTabProperties, shadowBrowserWindow);
 
               chrome.tabs.create(
-              shadowBrowserTab.properties, {
-                index: -1,
-                windowId: _window.id
-              }, function(_tab) {
+                shadowBrowserTab.properties, 
+                {
+                  index: -1,
+                  windowId: _window.id
+                }, 
+                function(_tab) {
+                  for (var i in _tab) {
+                    shadowBrowserTab.properties[i] = _tab[i];
+                  }
 
-                for (var i in _tab) {
-                  shadowBrowserTab.properties[i] = _tab[i];
+                  shadowBrowserTab.resolve();
                 }
-
-                shadowBrowserTab.resolve();
-
-              });
+              );
 
               // Register BrowserTab object with the current BrowserWindow object
               shadowBrowserWindow.tabs.addTabs([shadowBrowserTab]);
