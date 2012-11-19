@@ -1,0 +1,12 @@
+{
+  "name": "Opera Extension API Test - Windows & Tabs",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Opera Windows & Tabs API Test Extension",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs"
+  ]
+}
