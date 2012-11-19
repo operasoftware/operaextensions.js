@@ -1,8 +1,10 @@
 (function( global ) {
 
-  var opera = global.opera || {};
+  var opera = global.opera || { REVISION: '1' };
 
-  var OEX = opera.extension = opera.extension || { REVISION: '1' };
+  var OEX = opera.extension = opera.extension || {};
+  
+  var OEC = opera.contexts = opera.contexts || {};
 
   self.console = self.console || {
 
@@ -1530,12 +1532,305 @@ OEX.BrowserTab.prototype.refresh = function() {
   // not implemented
 };
 
-OEX.windows = (function() {
+OEX.windows = OEX.windows || (function() {
   return new OEX.BrowserWindowsManager();
 })();
 
-OEX.tabs = (function() {
+OEX.tabs = OEX.tabs || (function() {
   return new OEX.RootBrowserTabsManager();
+})();
+
+OEC.ToolbarContext = function() {
+  
+  OEX.Promise.call( this );
+  
+  // we shouldn't need this on this object since it is never checked 
+  // and nothing is enqueued
+  // (we need OEX.Promise for its event handling capabilities only)
+  this.resolve(); 
+  
+};
+
+OEC.ToolbarContext.prototype = Object.create( OEX.Promise.prototype );
+
+OEC.ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
+  return new ToolbarUIItem( toolbarUIItemProperties );
+};
+
+OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
+
+  toolbarUIItem.resolve();
+  
+  toolbarUIItem.badge.resolve();
+  toolbarUIItem.popup.resolve();
+  
+  // Enable the toolbar button
+  chrome.browserAction.enable();
+
+};
+
+OEC.ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
+
+  // Disable the toolbar button
+  chrome.browserAction.disable();
+  
+  toolbarUIItem.fireEvent( new OEX.Event('remove', {}) );
+  
+  // Fire event on self
+  OEC.toolbar.fireEvent( new OEX.Event('remove', {}) );
+
+};
+
+var ToolbarBadge = function( properties ) {
+  
+  OEX.Promise.call( this );
+  
+  this.properties = {};
+  
+  // Set provided properties through object prototype setter functions
+  this.properties.textContent = properties.textContent;
+  this.properties.backgroundColor = properties.backgroundColor;
+  this.properties.color = properties.color;
+  this.properties.display = properties.display;
+  
+  this.enqueue('apply');
+  
+};
+
+ToolbarBadge.prototype = Object.create( OEX.Promise.prototype );
+
+ToolbarBadge.prototype.apply = function() {
+
+  chrome.browserAction.setBadgeBackgroundColor({ "color": this.backgroundColor });
+  
+  if( this.display === "block" ) {
+    chrome.browserAction.setBadgeText({ "text": this.textContent });
+  } else {
+    chrome.browserAction.setBadgeText({ "text": "" });
+  }
+  
+};
+
+// API
+
+ToolbarBadge.prototype.__defineGetter__("textContent", function() {
+  return this.properties.textContent;
+});
+
+ToolbarBadge.prototype.__defineSetter__("textContent", function( val ) {
+  this.properties.textContent = "" + val;
+  if( this.resolved ) {
+    if( this.properties.display === "block" ) {
+      chrome.browserAction.setBadgeText({ "text": ("" + val) });
+    }
+  }
+});
+
+ToolbarBadge.prototype.__defineGetter__("backgroundColor", function() {
+  return this.properties.backgroundColor;
+});
+
+ToolbarBadge.prototype.__defineSetter__("backgroundColor", function( val ) {
+  this.properties.backgroundColor = "" + val;
+
+  if( this.resolved ) {
+    chrome.browserAction.setBadgeBackgroundColor({ "color": ("" + val) });
+  }
+});
+
+ToolbarBadge.prototype.__defineGetter__("color", function() {
+  return this.properties.color;
+});
+
+ToolbarBadge.prototype.__defineSetter__("color", function( val ) {
+  this.properties.color = "" + val;
+  // not implemented in chromium
+});
+
+ToolbarBadge.prototype.__defineGetter__("display", function() {
+  return this.properties.display;
+});
+
+ToolbarBadge.prototype.__defineSetter__("display", function( val ) {
+  if(("" + val).toLowerCase() === "block") {
+    this.properties.display = "block";
+    if( this.resolved ) {
+      chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
+    }
+  } else {
+    this.properties.display = "none";
+    if( this.resolved ) {
+      chrome.browserAction.setBadgeText({ "text": "" });
+    }
+  }
+});
+
+var ToolbarPopup = function( properties ) {
+  
+  OEX.Promise.call( this );
+  
+  this.properties = {};
+  
+  // Set provided properties through object prototype setter functions
+  this.properties.href = properties.href || "";
+  this.properties.width = properties.width;
+  this.properties.height = properties.height;
+  
+  this.enqueue('apply');
+
+};
+
+ToolbarPopup.prototype = Object.create( OEX.Promise.prototype );
+
+ToolbarPopup.prototype.apply = function() {
+  
+  chrome.browserAction.setPopup({ "popup": this.href });
+  
+};
+
+// API
+
+ToolbarPopup.prototype.__defineGetter__("href", function() {
+  return this.properties.href;
+});
+
+ToolbarPopup.prototype.__defineSetter__("href", function( val ) {
+  this.properties.href = "" + val;
+  if( this.resolved ) {
+    chrome.browserAction.setPopup({ "popup": ("" + val) });
+  }
+});
+
+ToolbarPopup.prototype.__defineGetter__("width", function() {
+  return this.properties.width;
+});
+
+ToolbarPopup.prototype.__defineSetter__("width", function( val ) {
+  this.properties.width = val;
+  // not implemented in chromium
+  //
+  // will need to pass this message to the popup process itself
+  // to resize the popup window
+});
+
+ToolbarPopup.prototype.__defineGetter__("height", function() {
+  return this.properties.height;
+});
+
+ToolbarPopup.prototype.__defineSetter__("height", function( val ) {
+  this.properties.height = val;
+  // not implemented in chromium
+  //
+  // will need to pass this message to the popup process itself
+  // to resize the popup window
+});
+
+var ToolbarUIItem = function( properties ) {
+  
+  OEX.Promise.call( this );
+  
+  this.properties = {};
+  
+  this.properties.disabled = properties.disabled || false;
+  this.properties.title = properties.title || "";
+  this.properties.icon = properties.icon || "";
+  this.properties.popup = new ToolbarPopup( properties.popup || {} );
+  this.properties.badge = new ToolbarBadge( properties.badge || {} );
+  
+  this.enqueue('apply');
+  
+  var self = this;
+  
+  chrome.browserAction.onClicked.addListener(function( _tab ) {
+    
+    //if( self.resolved ) {
+    
+      self.fireEvent( new OEX.Event('click', {}) );
+    
+      // Fire event also on ToolbarContext API
+      OEC.toolbar.fireEvent( new OEX.Event('click', {}) );
+      
+    //}
+    
+  });
+  
+};
+
+ToolbarUIItem.prototype = Object.create( OEX.Promise.prototype );
+
+ToolbarUIItem.prototype.apply = function() {
+  
+  // Apply disabled property
+  if( this.disabled === true ) {
+    chrome.browserAction.disable();
+  } else {
+    chrome.browserAction.enable();
+  }
+  
+  // Apply title property
+  chrome.browserAction.setTitle({ "title": (this.title) });
+  
+  // Apply icon property
+  chrome.browserAction.setIcon({ "path": this.icon });
+  
+};
+
+// API
+
+ToolbarUIItem.prototype.__defineGetter__("disabled", function() {
+  return this.properties.disabled;
+});
+
+ToolbarUIItem.prototype.__defineSetter__("disabled", function( val ) {
+  if( this.properties.disabled !== val ) {
+    if( val === true || val === "true" || val === 1 || val === "1" ) {
+      this.properties.disabled = true;
+      if( this.resolved ) {
+        chrome.browserAction.disable();
+      }
+    } else {
+      this.properties.disabled = false;
+      if( this.resolved ) {
+        chrome.browserAction.enable();
+      }
+    }
+  }
+});
+
+ToolbarUIItem.prototype.__defineGetter__("title", function() {
+  return this.properties.title;
+});
+
+ToolbarUIItem.prototype.__defineSetter__("title", function( val ) {
+  this.properties.title = "" + val;
+  
+  if( this.resolved ) {
+    chrome.browserAction.setTitle({ "title": (this.title) });
+  }
+});
+
+ToolbarUIItem.prototype.__defineGetter__("icon", function() {
+  return this.properties.icon;
+});
+
+ToolbarUIItem.prototype.__defineSetter__("icon", function( val ) {
+  this.properties.icon = "" + val;
+  
+  if( this.resolved ) {
+    chrome.browserAction.setIcon({ "path": this.icon });
+  }
+});
+
+ToolbarUIItem.prototype.__defineGetter__("popup", function() {
+  return this.properties.popup;
+});
+
+ToolbarUIItem.prototype.__defineGetter__("badge", function() {
+  return this.properties.badge;
+});
+
+OEC.toolbar = OEC.toolbar || (function() {
+  return new OEC.ToolbarContext();
 })();
 
   // Make API available on the window DOM object
