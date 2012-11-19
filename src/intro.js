@@ -1,8 +1,10 @@
 (function( global ) {
 
-  var opera = global.opera || {};
+  var opera = global.opera || { REVISION: '1' };
 
-  var OEX = opera.extension = opera.extension || { REVISION: '1' };
+  var OEX = opera.extension = opera.extension || {};
+  
+  var OEC = opera.contexts = opera.contexts || {};
 
   self.console = self.console || {
 

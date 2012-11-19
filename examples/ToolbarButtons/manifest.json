@@ -1,0 +1,15 @@
+{
+  "name": "Opera Extension API Test - Button & Badge",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Opera Toolbar Buttons API Test Extension",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs"
+  ],
+  // TODO check if extension calls o.c.toolbar in background process
+  // then add the following line
+  "browser_action": {} // placeholder for button/badge display
+}
