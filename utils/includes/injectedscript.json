@@ -1,12 +1,12 @@
 [
-  "../src/intro.js",
+  "../src/Header.js",
 
   "../src/utils/Event.js",
   "../src/utils/third_party/rsvp.js",
   "../src/utils/Promise.js",
-  "../src/utils/MessagePort.js",
 
+  "../src/utils/MessagePort.js",
   "../src/injectedscript/Root.js",
 
-  "../src/outro.js"
+  "../src/Footer.js"
 ]
