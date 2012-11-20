@@ -1,21 +1,7 @@
-(function( global ) {
+!(function( global ) {
 
   var opera = global.opera || { REVISION: '1' };
-
-  var OEX = opera.extension = opera.extension || {};
   
-  var OEC = opera.contexts = opera.contexts || {};
-
-  self.console = self.console || {
-
-    info: function() {},
-    log: function() {},
-    debug: function() {},
-    warn: function() {},
-    error: function() {}
-
-  };
-
 var OEvent = function(eventType, eventProperties) {
 
   var evt = document.createEvent("Event");
@@ -283,8 +269,9 @@ OPromise.prototype.fireEvent = function( oexEventObj ) {
 
   var eventName = oexEventObj.type;
 
+  // Register an onX functions registered for this event
   if(typeof this[ 'on' + eventName.toLowerCase() ] === 'function') {
-    this[ 'on' + eventName.toLowerCase() ].call( this, oexEventObj );
+    this.on( eventName, this[ 'on' + eventName.toLowerCase() ] );
   }
 
   this.trigger( eventName, oexEventObj );
@@ -331,6 +318,138 @@ OPromise.prototype.dequeue = function() {
 
   //console.log("Dequeue on obj[" + this._operaId + "] queue length = " + this._queue.length);
 };
+
+var OMessagePort = function( isBackground ) {
+
+  OPromise.call( this );
+  
+  this._isBackground = isBackground || false;
+  
+  this._localPort = null;
+  
+  // Every process, except the background process needs to connect up ports
+  if( !this._isBackground ) {
+    
+    this._localPort = chrome.extension.connect({ "name": ("" + Math.floor( Math.random() * 1e16)) });
+    
+    this._localPort.onDisconnect.addListener(function() {
+    
+      this._localPort = null;
+      
+    }.bind(this));
+    
+    this._localPort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+
+      this.fireEvent( new OEvent(
+        'message', 
+        { 
+          "data": _message, 
+          "source": {
+            postMessage: function( data ) {
+              this._localPort.postMessage( data );
+            }
+          }
+        }
+      ));
+
+    }.bind(this) );
+
+    // Fire 'connect' event once we have all the initial listeners setup on the page
+    // so we don't miss any .onconnect call from the extension page
+    global.addEventListener('load', function() {
+      this.fireEvent( new OEvent('connect', { "source": this._localPort }) );
+    }.bind(this), false);
+    
+  }
+  
+};
+
+OMessagePort.prototype = Object.create( OPromise.prototype );
+
+OMessagePort.prototype.postMessage = function( data ) {
+  
+  if( !this._isBackground ) {
+    if(this._localPort) {
+      
+      this._localPort.postMessage( data );
+      
+    }
+  } else {
+    
+    this.broadcastMessage( data );
+        
+  }
+  
+};
+
+var OBackgroundMessagePort = function() {
+
+  OMessagePort.call( this, true );
+  
+  this._allPorts = [];
+  
+  chrome.extension.onConnect.addListener(function( _remotePort ) {
+  
+    var portIndex = this._allPorts.length;
+    
+    // When this port disconnects, remove _port from this._allPorts
+    _remotePort.onDisconnect.addListener(function() {
+      
+      this._allPorts.splice( portIndex - 1, 1 );
+      
+      this.fireEvent( new OEvent('disconnect', {}) );
+      
+    }.bind(this));
+    
+    this._allPorts[ portIndex ] = _remotePort;
+    
+    _remotePort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+
+      this.fireEvent( new OEvent(
+        'message', 
+        { 
+          "data": _message, 
+          "source": {
+            postMessage: function( data ) {
+              _remotePort.postMessage( data );
+            }
+          }
+        }
+      ));
+
+    }.bind(this) );
+  
+    // TODO delay this call until we actually have an onconnect listener 
+    // e.g. so it triggers when in a document.onload function
+    this.fireEvent( new OEvent('connect', { "source": _remotePort }) );
+  
+  }.bind(this));
+  
+};
+
+OBackgroundMessagePort.prototype = Object.create( OMessagePort.prototype );
+
+OBackgroundMessagePort.prototype.broadcastMessage = function( data ) {
+  
+  for(var i = 0, l = this._allPorts.length; i < l; i++) {
+    this._allPorts[ i ].postMessage( data );
+  }
+  
+};
+
+var OExtension = function() {
+  
+  OBackgroundMessagePort.call( this );
+  
+};
+
+OExtension.prototype = Object.create( OBackgroundMessagePort.prototype );
+
+// Generate API stubs
+
+var OEX = opera.extension = opera.extension || (function() { return new OExtension(); })();
+
+var OEC = opera.contexts = opera.contexts || {};
 
 OEX.BrowserWindowsManager = function() {
 

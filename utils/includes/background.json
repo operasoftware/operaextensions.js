@@ -1,0 +1,26 @@
+[
+  "../src/intro.js",
+
+  "../src/utils/Event.js",
+  "../src/utils/third_party/rsvp.js",
+  "../src/utils/Promise.js",
+  "../src/utils/MessagePort.js",
+  "../src/background/messaging/BackgroundMessagePort.js",
+
+  "../src/background/Root.js",
+
+  "../src/background/windows/BrowserWindowsManager.js",
+  "../src/background/windows/BrowserWindow.js",
+  "../src/background/tabs/BrowserTabsManager.js",
+  "../src/background/tabs/RootBrowserTabsManager.js",
+  "../src/background/tabs/BrowserTab.js",
+  "../src/background/Windows.js",
+  "../src/background/Tabs.js",
+  "../src/background/contexts/toolbar/ToolbarContext.js",
+  "../src/background/contexts/toolbar/ToolbarBadge.js",
+  "../src/background/contexts/toolbar/ToolbarPopup.js",
+  "../src/background/contexts/toolbar/ToolbarUIItem.js",
+  "../src/background/contexts/Toolbar.js",
+
+  "../src/outro.js"
+]

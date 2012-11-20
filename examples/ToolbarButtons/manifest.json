@@ -6,9 +6,6 @@
   "background": {
       "page": "background.html"
   },
-  "permissions": [
-    "tabs"
-  ],
   // TODO check if extension calls o.c.toolbar in background process
   // then add the following line
   "browser_action": {

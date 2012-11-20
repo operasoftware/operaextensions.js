@@ -1,21 +1,7 @@
-(function( global ) {
+!(function( global ) {
 
   var opera = global.opera || { REVISION: '1' };
-
-  var OEX = opera.extension = opera.extension || {};
   
-  var OEC = opera.contexts = opera.contexts || {};
-
-  self.console = self.console || {
-
-    info: function() {},
-    log: function() {},
-    debug: function() {},
-    warn: function() {},
-    error: function() {}
-
-  };
-
 var OEvent = function(eventType, eventProperties) {
 
   var evt = document.createEvent("Event");
@@ -283,8 +269,9 @@ OPromise.prototype.fireEvent = function( oexEventObj ) {
 
   var eventName = oexEventObj.type;
 
+  // Register an onX functions registered for this event
   if(typeof this[ 'on' + eventName.toLowerCase() ] === 'function') {
-    this[ 'on' + eventName.toLowerCase() ].call( this, oexEventObj );
+    this.on( eventName, this[ 'on' + eventName.toLowerCase() ] );
   }
 
   this.trigger( eventName, oexEventObj );
@@ -331,6 +318,138 @@ OPromise.prototype.dequeue = function() {
 
   //console.log("Dequeue on obj[" + this._operaId + "] queue length = " + this._queue.length);
 };
+
+var OMessagePort = function( isBackground ) {
+
+  OPromise.call( this );
+  
+  this._isBackground = isBackground || false;
+  
+  this._localPort = null;
+  
+  // Every process, except the background process needs to connect up ports
+  if( !this._isBackground ) {
+    
+    this._localPort = chrome.extension.connect({ "name": ("" + Math.floor( Math.random() * 1e16)) });
+    
+    this._localPort.onDisconnect.addListener(function() {
+    
+      this._localPort = null;
+      
+    }.bind(this));
+    
+    this._localPort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+
+      this.fireEvent( new OEvent(
+        'message', 
+        { 
+          "data": _message, 
+          "source": {
+            postMessage: function( data ) {
+              this._localPort.postMessage( data );
+            }
+          }
+        }
+      ));
+
+    }.bind(this) );
+
+    // Fire 'connect' event once we have all the initial listeners setup on the page
+    // so we don't miss any .onconnect call from the extension page
+    global.addEventListener('load', function() {
+      this.fireEvent( new OEvent('connect', { "source": this._localPort }) );
+    }.bind(this), false);
+    
+  }
+  
+};
+
+OMessagePort.prototype = Object.create( OPromise.prototype );
+
+OMessagePort.prototype.postMessage = function( data ) {
+  
+  if( !this._isBackground ) {
+    if(this._localPort) {
+      
+      this._localPort.postMessage( data );
+      
+    }
+  } else {
+    
+    this.broadcastMessage( data );
+        
+  }
+  
+};
+
+var OBackgroundMessagePort = function() {
+
+  OMessagePort.call( this, true );
+  
+  this._allPorts = [];
+  
+  chrome.extension.onConnect.addListener(function( _remotePort ) {
+  
+    var portIndex = this._allPorts.length;
+    
+    // When this port disconnects, remove _port from this._allPorts
+    _remotePort.onDisconnect.addListener(function() {
+      
+      this._allPorts.splice( portIndex - 1, 1 );
+      
+      this.fireEvent( new OEvent('disconnect', {}) );
+      
+    }.bind(this));
+    
+    this._allPorts[ portIndex ] = _remotePort;
+    
+    _remotePort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+
+      this.fireEvent( new OEvent(
+        'message', 
+        { 
+          "data": _message, 
+          "source": {
+            postMessage: function( data ) {
+              _remotePort.postMessage( data );
+            }
+          }
+        }
+      ));
+
+    }.bind(this) );
+  
+    // TODO delay this call until we actually have an onconnect listener 
+    // e.g. so it triggers when in a document.onload function
+    this.fireEvent( new OEvent('connect', { "source": _remotePort }) );
+  
+  }.bind(this));
+  
+};
+
+OBackgroundMessagePort.prototype = Object.create( OMessagePort.prototype );
+
+OBackgroundMessagePort.prototype.broadcastMessage = function( data ) {
+  
+  for(var i = 0, l = this._allPorts.length; i < l; i++) {
+    this._allPorts[ i ].postMessage( data );
+  }
+  
+};
+
+var OExtension = function() {
+  
+  OBackgroundMessagePort.call( this );
+  
+};
+
+OExtension.prototype = Object.create( OBackgroundMessagePort.prototype );
+
+// Generate API stubs
+
+var OEX = opera.extension = opera.extension || (function() { return new OExtension(); })();
+
+var OEC = opera.contexts = opera.contexts || {};
 
 OEX.BrowserWindowsManager = function() {
 
@@ -1523,6 +1642,320 @@ OEX.windows = OEX.windows || (function() {
 
 OEX.tabs = OEX.tabs || (function() {
   return new OEX.RootBrowserTabsManager();
+})();
+
+OEC.ToolbarContext = function() {
+  
+  OPromise.call( this );
+  
+  // we shouldn't need this on this object since it is never checked 
+  // and nothing is enqueued
+  // (we need OPromise for its event handling capabilities only)
+  this.resolve();
+  
+  // Unfortunately, click events only fire if a popup is not supplied 
+  // to a registered browser action in Chromium :(
+  // http://stackoverflow.com/questions/1938356/chrome-browser-action-click-not-working
+  //
+  // TODO invoke this function when a popup page loads
+  function clickEventHandler(_tab) {
+    
+    if( this[ 0 ] ) {
+      this[ 0 ].fireEvent( new OEvent('click', {}) );
+    }
+    
+    // Fire event also on ToolbarContext API stub
+    this.fireEvent( new OEvent('click', {}) );
+    
+  }
+  
+  chrome.browserAction.onClicked.addListener(clickEventHandler.bind(this));
+  
+};
+
+OEC.ToolbarContext.prototype = Object.create( OPromise.prototype );
+
+OEC.ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
+  return new ToolbarUIItem( toolbarUIItemProperties );
+};
+
+OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
+  
+  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+    return;
+  }
+
+  this[ 0 ] = toolbarUIItem;
+  this.length = 1;
+
+  toolbarUIItem.resolve();
+  
+  toolbarUIItem.badge.resolve();
+  toolbarUIItem.popup.resolve();
+  
+  // Enable the toolbar button
+  chrome.browserAction.enable();
+
+};
+
+OEC.ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
+
+  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+    return;
+  }
+
+  if( this[ 0 ] && this[ 0 ] === toolbarUIItem ) {
+    
+    delete this[ 0 ];
+    this.length = 0;
+
+    // Disable the toolbar button
+    chrome.browserAction.disable();
+  
+    toolbarUIItem.fireEvent( new OEvent('remove', {}) );
+  
+    // Fire event on self
+    this.fireEvent( new OEvent('remove', {}) );
+  
+  }
+
+};
+
+var ToolbarBadge = function( properties ) {
+  
+  OPromise.call( this );
+  
+  this.properties = {};
+  
+  // Set provided properties through object prototype setter functions
+  this.properties.textContent = properties.textContent;
+  this.properties.backgroundColor = properties.backgroundColor;
+  this.properties.color = properties.color;
+  this.properties.display = properties.display;
+  
+  this.enqueue('apply');
+  
+};
+
+ToolbarBadge.prototype = Object.create( OPromise.prototype );
+
+ToolbarBadge.prototype.apply = function() {
+
+  chrome.browserAction.setBadgeBackgroundColor({ "color": this.backgroundColor });
+  
+  if( this.display === "block" ) {
+    chrome.browserAction.setBadgeText({ "text": this.textContent });
+  } else {
+    chrome.browserAction.setBadgeText({ "text": "" });
+  }
+  
+};
+
+// API
+
+ToolbarBadge.prototype.__defineGetter__("textContent", function() {
+  return this.properties.textContent;
+});
+
+ToolbarBadge.prototype.__defineSetter__("textContent", function( val ) {
+  this.properties.textContent = "" + val;
+  if( this.resolved ) {
+    if( this.properties.display === "block" ) {
+      chrome.browserAction.setBadgeText({ "text": ("" + val) });
+    }
+  }
+});
+
+ToolbarBadge.prototype.__defineGetter__("backgroundColor", function() {
+  return this.properties.backgroundColor;
+});
+
+ToolbarBadge.prototype.__defineSetter__("backgroundColor", function( val ) {
+  this.properties.backgroundColor = "" + val;
+
+  if( this.resolved ) {
+    chrome.browserAction.setBadgeBackgroundColor({ "color": ("" + val) });
+  }
+});
+
+ToolbarBadge.prototype.__defineGetter__("color", function() {
+  return this.properties.color;
+});
+
+ToolbarBadge.prototype.__defineSetter__("color", function( val ) {
+  this.properties.color = "" + val;
+  // not implemented in chromium
+});
+
+ToolbarBadge.prototype.__defineGetter__("display", function() {
+  return this.properties.display;
+});
+
+ToolbarBadge.prototype.__defineSetter__("display", function( val ) {
+  if(("" + val).toLowerCase() === "block") {
+    this.properties.display = "block";
+    if( this.resolved ) {
+      chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
+    }
+  } else {
+    this.properties.display = "none";
+    if( this.resolved ) {
+      chrome.browserAction.setBadgeText({ "text": "" });
+    }
+  }
+});
+
+var ToolbarPopup = function( properties ) {
+  
+  OPromise.call( this );
+  
+  this.properties = {};
+  
+  // Set provided properties through object prototype setter functions
+  this.properties.href = properties.href || "";
+  this.properties.width = properties.width;
+  this.properties.height = properties.height;
+  
+  this.enqueue('apply');
+
+};
+
+ToolbarPopup.prototype = Object.create( OPromise.prototype );
+
+ToolbarPopup.prototype.apply = function() {
+  
+  chrome.browserAction.setPopup({ "popup": this.href });
+  
+};
+
+// API
+
+ToolbarPopup.prototype.__defineGetter__("href", function() {
+  return this.properties.href;
+});
+
+ToolbarPopup.prototype.__defineSetter__("href", function( val ) {
+  this.properties.href = "" + val;
+  if( this.resolved ) {
+    chrome.browserAction.setPopup({ "popup": ("" + val) });
+  }
+});
+
+ToolbarPopup.prototype.__defineGetter__("width", function() {
+  return this.properties.width;
+});
+
+ToolbarPopup.prototype.__defineSetter__("width", function( val ) {
+  this.properties.width = val;
+  // not implemented in chromium
+  //
+  // TODO will need to pass this message to the popup process itself
+  // to resize the popup window
+});
+
+ToolbarPopup.prototype.__defineGetter__("height", function() {
+  return this.properties.height;
+});
+
+ToolbarPopup.prototype.__defineSetter__("height", function( val ) {
+  this.properties.height = val;
+  // not implemented in chromium
+  //
+  // TODO will need to pass this message to the popup process itself
+  // to resize the popup window
+});
+
+var ToolbarUIItem = function( properties ) {
+  
+  OPromise.call( this );
+  
+  this.properties = {};
+  
+  this.properties.disabled = properties.disabled || false;
+  this.properties.title = properties.title || "";
+  this.properties.icon = properties.icon || "";
+  this.properties.popup = new ToolbarPopup( properties.popup || {} );
+  this.properties.badge = new ToolbarBadge( properties.badge || {} );
+  
+  this.enqueue('apply');
+  
+};
+
+ToolbarUIItem.prototype = Object.create( OPromise.prototype );
+
+ToolbarUIItem.prototype.apply = function() {
+  
+  // Apply disabled property
+  if( this.disabled === true ) {
+    chrome.browserAction.disable();
+  } else {
+    chrome.browserAction.enable();
+  }
+  
+  // Apply title property
+  chrome.browserAction.setTitle({ "title": (this.title) });
+  
+  // Apply icon property
+  chrome.browserAction.setIcon({ "path": this.icon });
+  
+};
+
+// API
+
+ToolbarUIItem.prototype.__defineGetter__("disabled", function() {
+  return this.properties.disabled;
+});
+
+ToolbarUIItem.prototype.__defineSetter__("disabled", function( val ) {
+  if( this.properties.disabled !== val ) {
+    if( val === true || val === "true" || val === 1 || val === "1" ) {
+      this.properties.disabled = true;
+      if( this.resolved ) {
+        chrome.browserAction.disable();
+      }
+    } else {
+      this.properties.disabled = false;
+      if( this.resolved ) {
+        chrome.browserAction.enable();
+      }
+    }
+  }
+});
+
+ToolbarUIItem.prototype.__defineGetter__("title", function() {
+  return this.properties.title;
+});
+
+ToolbarUIItem.prototype.__defineSetter__("title", function( val ) {
+  this.properties.title = "" + val;
+  
+  if( this.resolved ) {
+    chrome.browserAction.setTitle({ "title": (this.title) });
+  }
+});
+
+ToolbarUIItem.prototype.__defineGetter__("icon", function() {
+  return this.properties.icon;
+});
+
+ToolbarUIItem.prototype.__defineSetter__("icon", function( val ) {
+  this.properties.icon = "" + val;
+  
+  if( this.resolved ) {
+    chrome.browserAction.setIcon({ "path": this.icon });
+  }
+});
+
+ToolbarUIItem.prototype.__defineGetter__("popup", function() {
+  return this.properties.popup;
+});
+
+ToolbarUIItem.prototype.__defineGetter__("badge", function() {
+  return this.properties.badge;
+});
+
+OEC.toolbar = OEC.toolbar || (function() {
+  return new OEC.ToolbarContext();
 })();
 
   // Make API available on the window DOM object
