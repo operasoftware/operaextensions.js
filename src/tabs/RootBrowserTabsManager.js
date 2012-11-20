@@ -3,8 +3,6 @@ OEX.RootBrowserTabsManager = function() {
 
   OEX.BrowserTabsManager.call(this);
 
-  var self = this;
-
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
 
@@ -12,8 +10,8 @@ OEX.RootBrowserTabsManager = function() {
 
       // If this tab is already registered in the root tab collection then ignore
       var tabFound = false;
-      for (var i = 0, l = self.length; i < l; i++) {
-        if (self[i].properties.id == _tab.id) {
+      for (var i = 0, l = this.length; i < l; i++) {
+        if (this[i].properties.id == _tab.id) {
           tabFound = true;
           break;
         }
@@ -52,13 +50,13 @@ OEX.RootBrowserTabsManager = function() {
         }));
 
         // Add object to root store
-        self.addTabs([newTab]);
+        this.addTabs([newTab]);
 
         // Resolve new tab, if it hasn't been resolved already
         newTab.resolve();
 
         // Fire a create event at RootTabsManager
-        self.fireEvent(new OEvent('create', {
+        this.fireEvent(new OEvent('create', {
           "tab": newTab,
           "prevWindow": newTab._windowParent,
           "prevTabGroup": null,
@@ -67,16 +65,16 @@ OEX.RootBrowserTabsManager = function() {
 
       }
 
-    }, 200);
+    }.bind(this), 200);
 
-  });
+  }.bind(this));
 
   chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 
     // Remove tab from current collection
     var deleteIndex = -1;
-    for (var i = 0, l = self.length; i < l; i++) {
-      if (self[i].properties.id == tabId) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i].properties.id == tabId) {
         deleteIndex = i;
         break;
       }
@@ -84,7 +82,7 @@ OEX.RootBrowserTabsManager = function() {
 
     if (deleteIndex > -1) {
 
-      var oldTab = self[deleteIndex];
+      var oldTab = this[deleteIndex];
       
       var oldTabWindowParent = oldTab ? oldTab._windowParent : null;
       var oldTabPosition = oldTab ? oldTab.position : NaN;
@@ -97,7 +95,7 @@ OEX.RootBrowserTabsManager = function() {
       }
       
       // Remove tab from root tab manager
-      self.removeTab( oldTab );
+      this.removeTab( oldTab );
 
       // Fire a new 'close' event on the closed BrowserTab object
       oldTab.fireEvent(new OEvent('close', {
@@ -119,7 +117,7 @@ OEX.RootBrowserTabsManager = function() {
       }
 
       // Fire a new 'close' event on this root tab manager object
-      self.fireEvent(new OEvent('close', {
+      this.fireEvent(new OEvent('close', {
         "tab": oldTab,
         "prevWindow": oldTabWindowParent,
         "prevTabGroup": null,
@@ -128,13 +126,13 @@ OEX.RootBrowserTabsManager = function() {
 
     }
 
-  });
+  }.bind(this));
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
 
     var updateIndex = -1;
-    for (var i = 0, l = self.length; i < l; i++) {
-      if (self[i].properties.id == tabId) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i].properties.id == tabId) {
         updateIndex = i;
         break;
       }
@@ -144,7 +142,7 @@ OEX.RootBrowserTabsManager = function() {
       return; // nothing to update
     }
 
-    var updateTab = self[updateIndex];
+    var updateTab = this[updateIndex];
 
     // Update tab properties in current collection
     for (var i in changeInfo) {
@@ -171,14 +169,14 @@ OEX.RootBrowserTabsManager = function() {
 
     }
 
-  });
+  }.bind(this));
 
   chrome.tabs.onMoved.addListener(function(tabId, moveInfo) {
 
     // Find tab object
     var moveIndex = -1;
-    for (var i = 0, l = self.length; i < l; i++) {
-      if (self[i].properties.id == tabId) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i].properties.id == tabId) {
         moveIndex = i;
         break;
       }
@@ -188,7 +186,7 @@ OEX.RootBrowserTabsManager = function() {
       return; // nothing to update
     }
 
-    var moveTab = self[moveIndex];
+    var moveTab = this[moveIndex];
     var moveTabWindowParent = moveTab ? moveTab._windowParent : null;
 
     if(moveTab) {
@@ -239,7 +237,7 @@ OEX.RootBrowserTabsManager = function() {
         "prevPosition": moveInfo.fromIndex
       }));
 
-      self.fireEvent(new OEvent('move', {
+      this.fireEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
@@ -248,7 +246,7 @@ OEX.RootBrowserTabsManager = function() {
     
     }
 
-  });
+  }.bind(this));
 
   chrome.tabs.onHighlighted.addListener(function(highlightInfo) {
 

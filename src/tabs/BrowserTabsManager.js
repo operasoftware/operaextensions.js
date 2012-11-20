@@ -158,8 +158,6 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
 
   }
 
-  var self = this;
-
   chrome.tabs.create(
     browserTabProperties,
     function( _tab ) {
@@ -189,10 +187,10 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
       }
 
       // Add this object to the current tabs collection
-      self.addTabs([ shadowBrowserTab ], shadowBrowserTab.properties.index);
+      this.addTabs([ shadowBrowserTab ], shadowBrowserTab.properties.index);
 
       // Add this object to the root tab manager (if this is not the root tab manager)
-      if(self !== OEX.tabs) {
+      if(this !== OEX.tabs) {
         OEX.tabs.addTabs([ shadowBrowserTab ]);
       }
 
@@ -200,16 +198,16 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
       shadowBrowserTab.resolve( _tab );
 
       // Dispatch oncreate event to all attached event listeners
-      self.fireEvent( new OEvent('create', {
+      this.fireEvent( new OEvent('create', {
           "tab": shadowBrowserTab,
           "prevWindow": shadowBrowserTab._windowParent,
           "prevTabGroup": null,
           "prevPosition": -1
       }) );
 
-      self.dequeue();
+      this.dequeue();
 
-  });
+  }.bind(this));
 
   return shadowBrowserTab;
 
@@ -247,12 +245,10 @@ OEX.BrowserTabsManager.prototype.close = function( browserTab ) {
     return;
   }
 
-  var self = this;
-
   chrome.tabs.remove(browserTab.properties.id, function() {
     browserTab.dequeue();
 
-    self.dequeue();
-  });
+    this.dequeue();
+  }.bind(this));
 
 };

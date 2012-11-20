@@ -94,13 +94,11 @@ OEX.BrowserTab.prototype.focus = function() {
     return;
   }
 
-  var self = this;
-
   chrome.tabs.update(this.properties.id, {
     active: true
   }, function() {
-    self.dequeue();
-  });
+    this.dequeue();
+  }.bind(this));
 
 };
 
@@ -127,12 +125,11 @@ OEX.BrowserTab.prototype.update = function(browserTabProperties) {
 
   // TODO handle private tab insertion differently in Chromium
   //browserTabProperties.incognito = browserTabProperties.private || false;
-  var self = this;
 
   // Make any requested changes take effect in the user agent
   chrome.tabs.update(this.properties.id, browserTabProperties, function() {
-    self.dequeue();
-  });
+    this.dequeue();
+  }.bind(this));
 
 };
 

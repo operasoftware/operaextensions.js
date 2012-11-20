@@ -43,212 +43,213 @@ var OEvent = function(eventType, eventProperties) {
 
 (function(exports) { "use strict";
 
-var browserGlobal = (typeof window !== 'undefined') ? window : {};
+  var browserGlobal = (typeof window !== 'undefined') ? window : {};
 
-var MutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-var async;
+  var MutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
+  var async;
 
-if (typeof process !== 'undefined') {
-  async = function(callback, binding) {
-    process.nextTick(function() {
-      callback.call(binding);
+  if (typeof process !== 'undefined') {
+    async = function(callback, binding) {
+      process.nextTick(function() {
+        callback.call(binding);
+      });
+    };
+  } else if (MutationObserver) {
+    var queue = [];
+
+    var observer = new MutationObserver(function() {
+      var toProcess = queue.slice();
+      queue = [];
+
+      toProcess.forEach(function(tuple) {
+        var callback = tuple[0], binding = tuple[1];
+        callback.call(binding);
+      });
     });
-  };
-} else if (MutationObserver) {
-  var queue = [];
 
-  var observer = new MutationObserver(function() {
-    var toProcess = queue.slice();
-    queue = [];
+    var element = document.createElement('div');
+    observer.observe(element, { attributes: true });
 
-    toProcess.forEach(function(tuple) {
-      var callback = tuple[0], binding = tuple[1];
-      callback.call(binding);
-    });
-  });
-
-  var element = document.createElement('div');
-  observer.observe(element, { attributes: true });
-
-  async = function(callback, binding) {
-    queue.push([callback, binding]);
-    element.setAttribute('drainQueue', 'drainQueue');
-  };
-} else {
-  async = function(callback, binding) {
-    setTimeout(function() {
-      callback.call(binding);
-    }, 1);
-  };
-}
-
-exports.async = async;
-
-var Event = exports.Event = function(type, options) {
-  this.type = type;
-
-  for (var option in options) {
-    if (!options.hasOwnProperty(option)) { continue; }
-
-    this[option] = options[option];
-  }
-};
-
-var indexOf = function(callbacks, callback) {
-  for (var i=0, l=callbacks.length; i<l; i++) {
-    if (callbacks[i][0] === callback) { return i; }
+    async = function(callback, binding) {
+      queue.push([callback, binding]);
+      element.setAttribute('drainQueue', 'drainQueue');
+    };
+  } else {
+    async = function(callback, binding) {
+      setTimeout(function() {
+        callback.call(binding);
+      }, 1);
+    };
   }
 
-  return -1;
-};
+  exports.async = async;
 
-var callbacksFor = function(object) {
-  var callbacks = object._promiseCallbacks;
+  var Event = exports.Event = function(type, options) {
+    this.type = type;
 
-  if (!callbacks) {
-    callbacks = object._promiseCallbacks = {};
-  }
+    for (var option in options) {
+      if (!options.hasOwnProperty(option)) { continue; }
 
-  return callbacks;
-};
+      this[option] = options[option];
+    }
+  };
 
-var EventTarget = exports.EventTarget = {
-  mixin: function(object) {
-    object.on = this.on;
-    object.off = this.off;
-    object.trigger = this.trigger;
-    return object;
-  },
+  var indexOf = function(callbacks, callback) {
+    for (var i=0, l=callbacks.length; i<l; i++) {
+      if (callbacks[i][0] === callback) { return i; }
+    }
 
-  on: function(eventName, callback, binding) {
-    var allCallbacks = callbacksFor(this), callbacks;
-    binding = binding || this;
+    return -1;
+  };
 
-    callbacks = allCallbacks[eventName];
+  var callbacksFor = function(object) {
+    var callbacks = object._promiseCallbacks;
 
     if (!callbacks) {
-      callbacks = allCallbacks[eventName] = [];
+      callbacks = object._promiseCallbacks = {};
     }
 
-    if (indexOf(callbacks, callback) === -1) {
-      callbacks.push([callback, binding]);
-    }
-  },
+    return callbacks;
+  };
 
-  off: function(eventName, callback) {
-    var allCallbacks = callbacksFor(this), callbacks;
+  var EventTarget = exports.EventTarget = {
+    mixin: function(object) {
+      object.on = this.on;
+      object.off = this.off;
+      object.trigger = this.trigger;
+      return object;
+    },
 
-    if (!callback) {
-      allCallbacks[eventName] = [];
-      return;
-    }
+    on: function(eventName, callback, binding) {
+      var allCallbacks = callbacksFor(this), callbacks;
+      binding = binding || this;
 
-    callbacks = allCallbacks[eventName];
+      callbacks = allCallbacks[eventName];
 
-    var index = indexOf(callbacks, callback);
+      if (!callbacks) {
+        callbacks = allCallbacks[eventName] = [];
+      }
 
-    if (index !== -1) { callbacks.splice(index, 1); }
-  },
+      if (indexOf(callbacks, callback) === -1) {
+        callbacks.push([callback, binding]);
+      }
+    },
 
-  trigger: function(eventName, options) {
-    var allCallbacks = callbacksFor(this),
-        callbacks, callbackTuple, callback, binding, event;
+    off: function(eventName, callback) {
+      var allCallbacks = callbacksFor(this), callbacks;
 
-    if (callbacks = allCallbacks[eventName]) {
-      for (var i=0, l=callbacks.length; i<l; i++) {
-        callbackTuple = callbacks[i];
-        callback = callbackTuple[0];
-        binding = callbackTuple[1];
+      if (!callback) {
+        allCallbacks[eventName] = [];
+        return;
+      }
 
-        if (typeof options !== 'object') {
-          options = { detail: options };
+      callbacks = allCallbacks[eventName];
+
+      var index = indexOf(callbacks, callback);
+
+      if (index !== -1) { callbacks.splice(index, 1); }
+    },
+
+    trigger: function(eventName, options) {
+      var allCallbacks = callbacksFor(this),
+          callbacks, callbackTuple, callback, binding, event;
+
+      if (callbacks = allCallbacks[eventName]) {
+        for (var i=0, l=callbacks.length; i<l; i++) {
+          callbackTuple = callbacks[i];
+          callback = callbackTuple[0];
+          binding = callbackTuple[1];
+
+          if (typeof options !== 'object') {
+            options = { detail: options };
+          }
+
+          event = new Event(eventName, options);
+          callback.call(binding, event);
         }
-
-        event = new Event(eventName, options);
-        callback.call(binding, event);
       }
     }
-  }
-};
+  };
 
-var Promise = exports.Promise = function() {
-  this.on('promise:resolved', function(event) {
-    this.trigger('success', { detail: event.detail });
-  }, this);
-
-  this.on('promise:failed', function(event) {
-    this.trigger('error', { detail: event.detail });
-  }, this);
-};
-
-var noop = function() {};
-
-exports.invokeCallback = function(type, promise, callback, event) {
-  var value, error;
-
-  if (callback) {
-    try {
-      value = callback(event.detail);
-    } catch(e) {
-      error = e;
-    }
-  } else {
-    value = event.detail;
-  }
-
-  if (value instanceof Promise) {
-    value.then(function(value) {
-      promise.resolve(value);
-    }, function(error) {
-      promise.reject(error);
-    });
-  } else if (callback && value) {
-    promise.resolve(value);
-  } else if (error) {
-    promise.reject(error);
-  } else {
-    promise[type](value);
-  }
-};
-
-Promise.prototype = {
-  then: function(done, fail) {
-    var thenPromise = new Promise();
-
+  var Promise = exports.Promise = function() {
     this.on('promise:resolved', function(event) {
-      exports.invokeCallback('resolve', thenPromise, done, event);
-    });
+      this.trigger('success', { detail: event.detail });
+    }, this);
 
     this.on('promise:failed', function(event) {
-      exports.invokeCallback('reject', thenPromise, fail, event);
-    });
-
-    return thenPromise;
-  },
-
-  resolve: function(value) {
-    exports.async(function() {
-      this.trigger('promise:resolved', { detail: value });
-      //this.resolvedValue = value;
+      this.trigger('error', { detail: event.detail });
     }, this);
+  };
 
-    this.resolve = function() {}; // noop
-    this.reject = function() {}; // noop
-  },
+  var noop = function() {};
 
-  reject: function(value) {
-    exports.async(function() {
-      this.trigger('promise:failed', { detail: value });
-      //this.rejectedValue = value;
-    }, this);
+  exports.invokeCallback = function(type, promise, callback, event) {
+    var value, error;
 
-    this.resolve = function() {}; // noop
-    this.reject = function() {}; // noop
-  }
-};
+    if (callback) {
+      try {
+        value = callback(event.detail);
+      } catch(e) {
+        error = e;
+      }
+    } else {
+      value = event.detail;
+    }
 
-EventTarget.mixin(Promise.prototype);
- })(this.RSVP = {});
+    if (value instanceof Promise) {
+      value.then(function(value) {
+        promise.resolve(value);
+      }, function(error) {
+        promise.reject(error);
+      });
+    } else if (callback && value) {
+      promise.resolve(value);
+    } else if (error) {
+      promise.reject(error);
+    } else {
+      promise[type](value);
+    }
+  };
+
+  Promise.prototype = {
+    then: function(done, fail) {
+      var thenPromise = new Promise();
+
+      this.on('promise:resolved', function(event) {
+        exports.invokeCallback('resolve', thenPromise, done, event);
+      });
+
+      this.on('promise:failed', function(event) {
+        exports.invokeCallback('reject', thenPromise, fail, event);
+      });
+
+      return thenPromise;
+    },
+
+    resolve: function(value) {
+      exports.async(function() {
+        this.trigger('promise:resolved', { detail: value });
+        //this.resolvedValue = value;
+      }, this);
+
+      this.resolve = function() {}; // noop
+      this.reject = function() {}; // noop
+    },
+
+    reject: function(value) {
+      exports.async(function() {
+        this.trigger('promise:failed', { detail: value });
+        //this.rejectedValue = value;
+      }, this);
+
+      this.resolve = function() {}; // noop
+      this.reject = function() {}; // noop
+    }
+  };
+
+  EventTarget.mixin(Promise.prototype);
+  
+})(this.RSVP = {});
 
 /** end rsvp.js */
 
@@ -258,19 +259,17 @@ var OPromise = function() {
 
   // General enqueue/dequeue infrastructure
 
-  var self = this;
-
   this._queue = [];
   this.resolved = false;
 
   this.on('promise:resolved', function() {
 
     // Mark this object as resolved
-    self.resolved = true;
+    this.resolved = true;
 
     // Run next enqueued action on this object, if any
-    self.dequeue();
-  });
+    this.dequeue();
+  }.bind(this));
 
 };
 
@@ -337,8 +336,6 @@ OEX.BrowserWindowsManager = function() {
 
   OPromise.call(this);
 
-  var self = this;
-
   // Set up 1 mock BrowserWindow at startup
   this[0] = new OEX.BrowserWindow();
   this.length = 1;
@@ -355,29 +352,29 @@ OEX.BrowserWindowsManager = function() {
     // Treat the first window specially
     if (_windows.length > 0) {
       for (var i in _windows[0]) {
-        self[0].properties[i] = _windows[0][i];
+        this[0].properties[i] = _windows[0][i];
       }
 
       // Replace tab properties belonging to this window with real properties
       var _tabs = [];
       for (var j = 0, k = _windows[0].tabs.length; j < k; j++) {
-        _tabs[j] = new OEX.BrowserTab(_windows[0].tabs[j], self[0]);
+        _tabs[j] = new OEX.BrowserTab(_windows[0].tabs[j], this[0]);
       }
-      self[0].tabs.replaceTabs(_tabs);
+      this[0].tabs.replaceTabs(_tabs);
 
       _allTabs = _allTabs.concat(_tabs);
     }
 
     for (var i = 1, l = _windows.length; i < l; i++) {
-      self[i] = new OEX.BrowserWindow(_windows[i]);
-      self.length = i + 1;
+      this[i] = new OEX.BrowserWindow(_windows[i]);
+      this.length = i + 1;
 
       // Replace tab properties belonging to this window with real properties
       var _tabs = [];
       for (var j = 0, k = _windows[i].tabs.length; j < k; j++) {
-        _tabs[j] = new OEX.BrowserTab(_windows[i].tabs[j], self[i]);
+        _tabs[j] = new OEX.BrowserTab(_windows[i].tabs[j], this[i]);
       }
-      self[i].tabs.replaceTabs(_tabs);
+      this[i].tabs.replaceTabs(_tabs);
 
       _allTabs = _allTabs.concat(_tabs);
 
@@ -390,9 +387,9 @@ OEX.BrowserWindowsManager = function() {
     chrome.windows.getLastFocused(
       { populate: false }, 
       function(_window) {
-        for (var i = 0, l = self.length; i < l; i++) {
-          if (self[i].properties.id === _window.id) {
-            self._lastFocusedWindow = self[i];
+        for (var i = 0, l = this.length; i < l; i++) {
+          if (this[i].properties.id === _window.id) {
+            this._lastFocusedWindow = this[i];
             break;
           }
         }
@@ -400,7 +397,7 @@ OEX.BrowserWindowsManager = function() {
     );
 
     // Resolve root window manager
-    self.resolve();
+    this.resolve();
     // Resolve root tabs manager
     OEX.tabs.resolve();
 
@@ -410,15 +407,15 @@ OEX.BrowserWindowsManager = function() {
     // 1. Window
     // 2. Window's Tab Manager
     // 3. Window's Tab Manager's Tabs
-    for (var i = 0, l = self.length; i < l; i++) {
-      self[i].resolve();
-      self[i].tabs.resolve();
-      for (var j = 0, k = self[i].tabs.length; j < k; j++) {
-        self[i].tabs[j].resolve();
+    for (var i = 0, l = this.length; i < l; i++) {
+      this[i].resolve();
+      this[i].tabs.resolve();
+      for (var j = 0, k = this[i].tabs.length; j < k; j++) {
+        this[i].tabs[j].resolve();
       }
     }
 
-  });
+  }.bind(this));
 
   // Monitor ongoing window events
   chrome.windows.onCreated.addListener(function(_window) {
@@ -429,8 +426,8 @@ OEX.BrowserWindowsManager = function() {
       var windowFound = false;
 
       // If this window is already registered in the collection then ignore
-      for (var i = 0, l = self.length; i < l; i++) {
-        if (self[i].properties.id == _window.id) {
+      for (var i = 0, l = this.length; i < l; i++) {
+        if (this[i].properties.id == _window.id) {
           windowFound = true;
           break;
         }
@@ -452,8 +449,8 @@ OEX.BrowserWindowsManager = function() {
         // Add OEX.BrowserTab objects to new OEX.BrowserWindow object
         newBrowserWindow.tabs.replaceTabs(newBrowserTabs);
 
-        self[self.length] = newBrowserWindow;
-        self.length += 1;
+        this[this.length] = newBrowserWindow;
+        this.length += 1;
 
         // Resolve objects.
         //
@@ -468,21 +465,22 @@ OEX.BrowserWindowsManager = function() {
         }
 
         // Fire a new 'create' event on this manager object
-        self.fireEvent(new OEvent('create', {
+        this.fireEvent(new OEvent('create', {
           browserWindow: newBrowserWindow
         }));
 
       }
 
-    }, 200);
-  });
+    }.bind(this), 200);
+
+  }.bind(this));
 
   chrome.windows.onRemoved.addListener(function(windowId) {
 
     // Remove window from current collection
     var deleteIndex = -1;
-    for (var i = 0, l = self.length; i < l; i++) {
-      if (self[i].properties.id == windowId) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i].properties.id == windowId) {
         deleteIndex = i;
         break;
       }
@@ -491,40 +489,40 @@ OEX.BrowserWindowsManager = function() {
     if (deleteIndex > -1) {
 
       // Fire a new 'close' event on the closed BrowserWindow object
-      self[deleteIndex].fireEvent(new OEvent('close', {
-        'browserWindow': self[deleteIndex]
+      this[deleteIndex].fireEvent(new OEvent('close', {
+        'browserWindow': this[deleteIndex]
       }));
 
       // Fire a new 'close' event on this manager object
-      self.fireEvent(new OEvent('close', {
-        'browserWindow': self[deleteIndex]
+      this.fireEvent(new OEvent('close', {
+        'browserWindow': this[deleteIndex]
       }));
 
       // Manually splice the deleteIndex_th_ item from the current collection
-      for (var i = deleteIndex, l = self.length; i < l; i++) {
-        if (self[i + 1]) {
-          self[i] = self[i + 1];
+      for (var i = deleteIndex, l = this.length; i < l; i++) {
+        if (this[i + 1]) {
+          this[i] = this[i + 1];
         }
       }
-      delete self[self.length - 1];
-      self.length -= 1;
+      delete this[this.length - 1];
+      this.length -= 1;
 
     }
 
-  });
+  }.bind(this));
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
 
-    for (var i = 0, l = self.length; i < l; i++) {
+    for (var i = 0, l = this.length; i < l; i++) {
 
-      if (self[i].properties.id == windowId) {
-        self._lastFocusedWindow = self[i];
+      if (this[i].properties.id == windowId) {
+        this._lastFocusedWindow = this[i];
         break;
       }
 
     }
 
-  });
+  }.bind(this));
 
 };
 
@@ -543,8 +541,6 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
   }
 
   browserWindowProperties.incognito = browserWindowProperties.private || false;
-
-  var self = this;
 
   chrome.windows.create(
     browserWindowProperties, 
@@ -573,8 +569,8 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
       shadowBrowserWindow.tabs.replaceTabs(browserTabs);
 
       // Add this object to the current collection
-      self[self.length] = shadowBrowserWindow;
-      self.length += 1;
+      this[this.length] = shadowBrowserWindow;
+      this.length += 1;
 
       // Resolution order:
       // 1. Window
@@ -642,13 +638,13 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
       }
 
       // Fire a new 'create' event on this manager object
-      self.fireEvent(new OEvent('create', {
+      this.fireEvent(new OEvent('create', {
         browserWindow: shadowBrowserWindow
       }));
 
-      self.dequeue();
+      this.dequeue();
 
-    }
+    }.bind(this)
   );
 
   return shadowBrowserWindow;
@@ -772,16 +768,14 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
 
   if (browserTab instanceof OEX.BrowserTab) {
 
-    var self = this;
-
     // Fulfill this action against the current object
     chrome.tabs.move(
       browserTab.properties.id, 
       browserTabProperties, 
       function(_tab) {
         // Run next enqueued action on this object, if any
-        self.dequeue();
-      }
+        this.dequeue();
+      }.bind(this)
     );
 
   }
@@ -1009,8 +1003,6 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
 
   }
 
-  var self = this;
-
   chrome.tabs.create(
     browserTabProperties,
     function( _tab ) {
@@ -1040,10 +1032,10 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
       }
 
       // Add this object to the current tabs collection
-      self.addTabs([ shadowBrowserTab ], shadowBrowserTab.properties.index);
+      this.addTabs([ shadowBrowserTab ], shadowBrowserTab.properties.index);
 
       // Add this object to the root tab manager (if this is not the root tab manager)
-      if(self !== OEX.tabs) {
+      if(this !== OEX.tabs) {
         OEX.tabs.addTabs([ shadowBrowserTab ]);
       }
 
@@ -1051,16 +1043,16 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
       shadowBrowserTab.resolve( _tab );
 
       // Dispatch oncreate event to all attached event listeners
-      self.fireEvent( new OEvent('create', {
+      this.fireEvent( new OEvent('create', {
           "tab": shadowBrowserTab,
           "prevWindow": shadowBrowserTab._windowParent,
           "prevTabGroup": null,
           "prevPosition": -1
       }) );
 
-      self.dequeue();
+      this.dequeue();
 
-  });
+  }.bind(this));
 
   return shadowBrowserTab;
 
@@ -1098,21 +1090,17 @@ OEX.BrowserTabsManager.prototype.close = function( browserTab ) {
     return;
   }
 
-  var self = this;
-
   chrome.tabs.remove(browserTab.properties.id, function() {
     browserTab.dequeue();
 
-    self.dequeue();
-  });
+    this.dequeue();
+  }.bind(this));
 
 };
 
 OEX.RootBrowserTabsManager = function() {
 
   OEX.BrowserTabsManager.call(this);
-
-  var self = this;
 
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
@@ -1121,8 +1109,8 @@ OEX.RootBrowserTabsManager = function() {
 
       // If this tab is already registered in the root tab collection then ignore
       var tabFound = false;
-      for (var i = 0, l = self.length; i < l; i++) {
-        if (self[i].properties.id == _tab.id) {
+      for (var i = 0, l = this.length; i < l; i++) {
+        if (this[i].properties.id == _tab.id) {
           tabFound = true;
           break;
         }
@@ -1161,13 +1149,13 @@ OEX.RootBrowserTabsManager = function() {
         }));
 
         // Add object to root store
-        self.addTabs([newTab]);
+        this.addTabs([newTab]);
 
         // Resolve new tab, if it hasn't been resolved already
         newTab.resolve();
 
         // Fire a create event at RootTabsManager
-        self.fireEvent(new OEvent('create', {
+        this.fireEvent(new OEvent('create', {
           "tab": newTab,
           "prevWindow": newTab._windowParent,
           "prevTabGroup": null,
@@ -1176,16 +1164,16 @@ OEX.RootBrowserTabsManager = function() {
 
       }
 
-    }, 200);
+    }.bind(this), 200);
 
-  });
+  }.bind(this));
 
   chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 
     // Remove tab from current collection
     var deleteIndex = -1;
-    for (var i = 0, l = self.length; i < l; i++) {
-      if (self[i].properties.id == tabId) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i].properties.id == tabId) {
         deleteIndex = i;
         break;
       }
@@ -1193,7 +1181,7 @@ OEX.RootBrowserTabsManager = function() {
 
     if (deleteIndex > -1) {
 
-      var oldTab = self[deleteIndex];
+      var oldTab = this[deleteIndex];
       
       var oldTabWindowParent = oldTab ? oldTab._windowParent : null;
       var oldTabPosition = oldTab ? oldTab.position : NaN;
@@ -1206,7 +1194,7 @@ OEX.RootBrowserTabsManager = function() {
       }
       
       // Remove tab from root tab manager
-      self.removeTab( oldTab );
+      this.removeTab( oldTab );
 
       // Fire a new 'close' event on the closed BrowserTab object
       oldTab.fireEvent(new OEvent('close', {
@@ -1228,7 +1216,7 @@ OEX.RootBrowserTabsManager = function() {
       }
 
       // Fire a new 'close' event on this root tab manager object
-      self.fireEvent(new OEvent('close', {
+      this.fireEvent(new OEvent('close', {
         "tab": oldTab,
         "prevWindow": oldTabWindowParent,
         "prevTabGroup": null,
@@ -1237,13 +1225,13 @@ OEX.RootBrowserTabsManager = function() {
 
     }
 
-  });
+  }.bind(this));
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
 
     var updateIndex = -1;
-    for (var i = 0, l = self.length; i < l; i++) {
-      if (self[i].properties.id == tabId) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i].properties.id == tabId) {
         updateIndex = i;
         break;
       }
@@ -1253,7 +1241,7 @@ OEX.RootBrowserTabsManager = function() {
       return; // nothing to update
     }
 
-    var updateTab = self[updateIndex];
+    var updateTab = this[updateIndex];
 
     // Update tab properties in current collection
     for (var i in changeInfo) {
@@ -1280,14 +1268,14 @@ OEX.RootBrowserTabsManager = function() {
 
     }
 
-  });
+  }.bind(this));
 
   chrome.tabs.onMoved.addListener(function(tabId, moveInfo) {
 
     // Find tab object
     var moveIndex = -1;
-    for (var i = 0, l = self.length; i < l; i++) {
-      if (self[i].properties.id == tabId) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i].properties.id == tabId) {
         moveIndex = i;
         break;
       }
@@ -1297,7 +1285,7 @@ OEX.RootBrowserTabsManager = function() {
       return; // nothing to update
     }
 
-    var moveTab = self[moveIndex];
+    var moveTab = this[moveIndex];
     var moveTabWindowParent = moveTab ? moveTab._windowParent : null;
 
     if(moveTab) {
@@ -1348,7 +1336,7 @@ OEX.RootBrowserTabsManager = function() {
         "prevPosition": moveInfo.fromIndex
       }));
 
-      self.fireEvent(new OEvent('move', {
+      this.fireEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
@@ -1357,7 +1345,7 @@ OEX.RootBrowserTabsManager = function() {
     
     }
 
-  });
+  }.bind(this));
 
   chrome.tabs.onHighlighted.addListener(function(highlightInfo) {
 
@@ -1486,13 +1474,11 @@ OEX.BrowserTab.prototype.focus = function() {
     return;
   }
 
-  var self = this;
-
   chrome.tabs.update(this.properties.id, {
     active: true
   }, function() {
-    self.dequeue();
-  });
+    this.dequeue();
+  }.bind(this));
 
 };
 
@@ -1519,12 +1505,11 @@ OEX.BrowserTab.prototype.update = function(browserTabProperties) {
 
   // TODO handle private tab insertion differently in Chromium
   //browserTabProperties.incognito = browserTabProperties.private || false;
-  var self = this;
 
   // Make any requested changes take effect in the user agent
   chrome.tabs.update(this.properties.id, browserTabProperties, function() {
-    self.dequeue();
-  });
+    this.dequeue();
+  }.bind(this));
 
 };
 
@@ -1745,7 +1730,7 @@ ToolbarPopup.prototype.__defineSetter__("width", function( val ) {
   this.properties.width = val;
   // not implemented in chromium
   //
-  // will need to pass this message to the popup process itself
+  // TODO will need to pass this message to the popup process itself
   // to resize the popup window
 });
 
@@ -1757,7 +1742,7 @@ ToolbarPopup.prototype.__defineSetter__("height", function( val ) {
   this.properties.height = val;
   // not implemented in chromium
   //
-  // will need to pass this message to the popup process itself
+  // TODO will need to pass this message to the popup process itself
   // to resize the popup window
 });
 

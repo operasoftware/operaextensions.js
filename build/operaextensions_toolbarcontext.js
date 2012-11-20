@@ -43,212 +43,213 @@ var OEvent = function(eventType, eventProperties) {
 
 (function(exports) { "use strict";
 
-var browserGlobal = (typeof window !== 'undefined') ? window : {};
+  var browserGlobal = (typeof window !== 'undefined') ? window : {};
 
-var MutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-var async;
+  var MutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
+  var async;
 
-if (typeof process !== 'undefined') {
-  async = function(callback, binding) {
-    process.nextTick(function() {
-      callback.call(binding);
+  if (typeof process !== 'undefined') {
+    async = function(callback, binding) {
+      process.nextTick(function() {
+        callback.call(binding);
+      });
+    };
+  } else if (MutationObserver) {
+    var queue = [];
+
+    var observer = new MutationObserver(function() {
+      var toProcess = queue.slice();
+      queue = [];
+
+      toProcess.forEach(function(tuple) {
+        var callback = tuple[0], binding = tuple[1];
+        callback.call(binding);
+      });
     });
-  };
-} else if (MutationObserver) {
-  var queue = [];
 
-  var observer = new MutationObserver(function() {
-    var toProcess = queue.slice();
-    queue = [];
+    var element = document.createElement('div');
+    observer.observe(element, { attributes: true });
 
-    toProcess.forEach(function(tuple) {
-      var callback = tuple[0], binding = tuple[1];
-      callback.call(binding);
-    });
-  });
-
-  var element = document.createElement('div');
-  observer.observe(element, { attributes: true });
-
-  async = function(callback, binding) {
-    queue.push([callback, binding]);
-    element.setAttribute('drainQueue', 'drainQueue');
-  };
-} else {
-  async = function(callback, binding) {
-    setTimeout(function() {
-      callback.call(binding);
-    }, 1);
-  };
-}
-
-exports.async = async;
-
-var Event = exports.Event = function(type, options) {
-  this.type = type;
-
-  for (var option in options) {
-    if (!options.hasOwnProperty(option)) { continue; }
-
-    this[option] = options[option];
-  }
-};
-
-var indexOf = function(callbacks, callback) {
-  for (var i=0, l=callbacks.length; i<l; i++) {
-    if (callbacks[i][0] === callback) { return i; }
+    async = function(callback, binding) {
+      queue.push([callback, binding]);
+      element.setAttribute('drainQueue', 'drainQueue');
+    };
+  } else {
+    async = function(callback, binding) {
+      setTimeout(function() {
+        callback.call(binding);
+      }, 1);
+    };
   }
 
-  return -1;
-};
+  exports.async = async;
 
-var callbacksFor = function(object) {
-  var callbacks = object._promiseCallbacks;
+  var Event = exports.Event = function(type, options) {
+    this.type = type;
 
-  if (!callbacks) {
-    callbacks = object._promiseCallbacks = {};
-  }
+    for (var option in options) {
+      if (!options.hasOwnProperty(option)) { continue; }
 
-  return callbacks;
-};
+      this[option] = options[option];
+    }
+  };
 
-var EventTarget = exports.EventTarget = {
-  mixin: function(object) {
-    object.on = this.on;
-    object.off = this.off;
-    object.trigger = this.trigger;
-    return object;
-  },
+  var indexOf = function(callbacks, callback) {
+    for (var i=0, l=callbacks.length; i<l; i++) {
+      if (callbacks[i][0] === callback) { return i; }
+    }
 
-  on: function(eventName, callback, binding) {
-    var allCallbacks = callbacksFor(this), callbacks;
-    binding = binding || this;
+    return -1;
+  };
 
-    callbacks = allCallbacks[eventName];
+  var callbacksFor = function(object) {
+    var callbacks = object._promiseCallbacks;
 
     if (!callbacks) {
-      callbacks = allCallbacks[eventName] = [];
+      callbacks = object._promiseCallbacks = {};
     }
 
-    if (indexOf(callbacks, callback) === -1) {
-      callbacks.push([callback, binding]);
-    }
-  },
+    return callbacks;
+  };
 
-  off: function(eventName, callback) {
-    var allCallbacks = callbacksFor(this), callbacks;
+  var EventTarget = exports.EventTarget = {
+    mixin: function(object) {
+      object.on = this.on;
+      object.off = this.off;
+      object.trigger = this.trigger;
+      return object;
+    },
 
-    if (!callback) {
-      allCallbacks[eventName] = [];
-      return;
-    }
+    on: function(eventName, callback, binding) {
+      var allCallbacks = callbacksFor(this), callbacks;
+      binding = binding || this;
 
-    callbacks = allCallbacks[eventName];
+      callbacks = allCallbacks[eventName];
 
-    var index = indexOf(callbacks, callback);
+      if (!callbacks) {
+        callbacks = allCallbacks[eventName] = [];
+      }
 
-    if (index !== -1) { callbacks.splice(index, 1); }
-  },
+      if (indexOf(callbacks, callback) === -1) {
+        callbacks.push([callback, binding]);
+      }
+    },
 
-  trigger: function(eventName, options) {
-    var allCallbacks = callbacksFor(this),
-        callbacks, callbackTuple, callback, binding, event;
+    off: function(eventName, callback) {
+      var allCallbacks = callbacksFor(this), callbacks;
 
-    if (callbacks = allCallbacks[eventName]) {
-      for (var i=0, l=callbacks.length; i<l; i++) {
-        callbackTuple = callbacks[i];
-        callback = callbackTuple[0];
-        binding = callbackTuple[1];
+      if (!callback) {
+        allCallbacks[eventName] = [];
+        return;
+      }
 
-        if (typeof options !== 'object') {
-          options = { detail: options };
+      callbacks = allCallbacks[eventName];
+
+      var index = indexOf(callbacks, callback);
+
+      if (index !== -1) { callbacks.splice(index, 1); }
+    },
+
+    trigger: function(eventName, options) {
+      var allCallbacks = callbacksFor(this),
+          callbacks, callbackTuple, callback, binding, event;
+
+      if (callbacks = allCallbacks[eventName]) {
+        for (var i=0, l=callbacks.length; i<l; i++) {
+          callbackTuple = callbacks[i];
+          callback = callbackTuple[0];
+          binding = callbackTuple[1];
+
+          if (typeof options !== 'object') {
+            options = { detail: options };
+          }
+
+          event = new Event(eventName, options);
+          callback.call(binding, event);
         }
-
-        event = new Event(eventName, options);
-        callback.call(binding, event);
       }
     }
-  }
-};
+  };
 
-var Promise = exports.Promise = function() {
-  this.on('promise:resolved', function(event) {
-    this.trigger('success', { detail: event.detail });
-  }, this);
-
-  this.on('promise:failed', function(event) {
-    this.trigger('error', { detail: event.detail });
-  }, this);
-};
-
-var noop = function() {};
-
-exports.invokeCallback = function(type, promise, callback, event) {
-  var value, error;
-
-  if (callback) {
-    try {
-      value = callback(event.detail);
-    } catch(e) {
-      error = e;
-    }
-  } else {
-    value = event.detail;
-  }
-
-  if (value instanceof Promise) {
-    value.then(function(value) {
-      promise.resolve(value);
-    }, function(error) {
-      promise.reject(error);
-    });
-  } else if (callback && value) {
-    promise.resolve(value);
-  } else if (error) {
-    promise.reject(error);
-  } else {
-    promise[type](value);
-  }
-};
-
-Promise.prototype = {
-  then: function(done, fail) {
-    var thenPromise = new Promise();
-
+  var Promise = exports.Promise = function() {
     this.on('promise:resolved', function(event) {
-      exports.invokeCallback('resolve', thenPromise, done, event);
-    });
+      this.trigger('success', { detail: event.detail });
+    }, this);
 
     this.on('promise:failed', function(event) {
-      exports.invokeCallback('reject', thenPromise, fail, event);
-    });
-
-    return thenPromise;
-  },
-
-  resolve: function(value) {
-    exports.async(function() {
-      this.trigger('promise:resolved', { detail: value });
-      //this.resolvedValue = value;
+      this.trigger('error', { detail: event.detail });
     }, this);
+  };
 
-    this.resolve = function() {}; // noop
-    this.reject = function() {}; // noop
-  },
+  var noop = function() {};
 
-  reject: function(value) {
-    exports.async(function() {
-      this.trigger('promise:failed', { detail: value });
-      //this.rejectedValue = value;
-    }, this);
+  exports.invokeCallback = function(type, promise, callback, event) {
+    var value, error;
 
-    this.resolve = function() {}; // noop
-    this.reject = function() {}; // noop
-  }
-};
+    if (callback) {
+      try {
+        value = callback(event.detail);
+      } catch(e) {
+        error = e;
+      }
+    } else {
+      value = event.detail;
+    }
 
-EventTarget.mixin(Promise.prototype);
- })(this.RSVP = {});
+    if (value instanceof Promise) {
+      value.then(function(value) {
+        promise.resolve(value);
+      }, function(error) {
+        promise.reject(error);
+      });
+    } else if (callback && value) {
+      promise.resolve(value);
+    } else if (error) {
+      promise.reject(error);
+    } else {
+      promise[type](value);
+    }
+  };
+
+  Promise.prototype = {
+    then: function(done, fail) {
+      var thenPromise = new Promise();
+
+      this.on('promise:resolved', function(event) {
+        exports.invokeCallback('resolve', thenPromise, done, event);
+      });
+
+      this.on('promise:failed', function(event) {
+        exports.invokeCallback('reject', thenPromise, fail, event);
+      });
+
+      return thenPromise;
+    },
+
+    resolve: function(value) {
+      exports.async(function() {
+        this.trigger('promise:resolved', { detail: value });
+        //this.resolvedValue = value;
+      }, this);
+
+      this.resolve = function() {}; // noop
+      this.reject = function() {}; // noop
+    },
+
+    reject: function(value) {
+      exports.async(function() {
+        this.trigger('promise:failed', { detail: value });
+        //this.rejectedValue = value;
+      }, this);
+
+      this.resolve = function() {}; // noop
+      this.reject = function() {}; // noop
+    }
+  };
+
+  EventTarget.mixin(Promise.prototype);
+  
+})(this.RSVP = {});
 
 /** end rsvp.js */
 
@@ -258,19 +259,17 @@ var OPromise = function() {
 
   // General enqueue/dequeue infrastructure
 
-  var self = this;
-
   this._queue = [];
   this.resolved = false;
 
   this.on('promise:resolved', function() {
 
     // Mark this object as resolved
-    self.resolved = true;
+    this.resolved = true;
 
     // Run next enqueued action on this object, if any
-    self.dequeue();
-  });
+    this.dequeue();
+  }.bind(this));
 
 };
 
@@ -538,7 +537,7 @@ ToolbarPopup.prototype.__defineSetter__("width", function( val ) {
   this.properties.width = val;
   // not implemented in chromium
   //
-  // will need to pass this message to the popup process itself
+  // TODO will need to pass this message to the popup process itself
   // to resize the popup window
 });
 
@@ -550,7 +549,7 @@ ToolbarPopup.prototype.__defineSetter__("height", function( val ) {
   this.properties.height = val;
   // not implemented in chromium
   //
-  // will need to pass this message to the popup process itself
+  // TODO will need to pass this message to the popup process itself
   // to resize the popup window
 });
 
