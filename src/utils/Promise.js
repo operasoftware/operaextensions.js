@@ -29,8 +29,9 @@ OPromise.prototype.fireEvent = function( oexEventObj ) {
 
   var eventName = oexEventObj.type;
 
+  // Register an onX functions registered for this event
   if(typeof this[ 'on' + eventName.toLowerCase() ] === 'function') {
-    this[ 'on' + eventName.toLowerCase() ].call( this, oexEventObj );
+    this.on( eventName, this[ 'on' + eventName.toLowerCase() ] );
   }
 
   this.trigger( eventName, oexEventObj );
