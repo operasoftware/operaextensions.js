@@ -11,14 +11,6 @@
         </exec>
     </target>
 
-    <target name="common" description="Build operaextensions.js commons">
-      <exec executable="${python_dir}python">
-          <arg value="${build_py}"/>
-          <arg value="--common"/>
-          <arg value="--includes"/>
-        </exec>
-    </target>
-
   <target name="debug" description="Build debug operaextensions.js">
       <exec executable="${python_dir}python">
           <arg value="${build_py}"/>
