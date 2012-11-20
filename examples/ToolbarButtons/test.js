@@ -42,6 +42,13 @@
  badge.color = "#ffffff";
  badge.display = "block";
 
+function runButtonCounter( iconSrc ) {
+  
+ if( iconSrc ) {
+   button.icon = iconSrc;
+   badge.backgroundColor = "#FF0000";
+ }
+
  // Update badge properties directly through the button object
  var count = button.badge.textContent = 0;
  
@@ -59,10 +66,20 @@
          // Re-add the button and we should be able to click to see 'Popup #2'
          opera.contexts.toolbar.addItem(button);
          
+         if( iconSrc ) {
+           badge.display = "none";
+         } else {
+           runButtonCounter( "/opera.png" );
+         }
+         
        }, 1000);
      }
    }, 50);
  })();
+ 
+}
+
+runButtonCounter();
 
  // Get the background color?
  console.log( button.badge.backgroundColor ); // this was set to '#5566ff' above
