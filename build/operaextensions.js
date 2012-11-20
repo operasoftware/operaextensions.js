@@ -1556,9 +1556,6 @@ OEC.ToolbarContext = function() {
   // TODO invoke this function when a popup page loads
   function clickEventHandler(_tab) {
     
-    console.log('click event');
-    
-    //if( self.resolved ) {
     if( this[ 0 ] ) {
       this[ 0 ].fireEvent( new OEvent('click', {}) );
     }
@@ -1566,7 +1563,7 @@ OEC.ToolbarContext = function() {
     // Fire event also on ToolbarContext API stub
     this.fireEvent( new OEvent('click', {}) );
     
-  } 
+  }
   
   chrome.browserAction.onClicked.addListener(clickEventHandler.bind(this));
   
