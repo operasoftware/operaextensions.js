@@ -11,5 +11,7 @@
   ],
   // TODO check if extension calls o.c.toolbar in background process
   // then add the following line
-  "browser_action": {} // placeholder for button/badge display
+  "browser_action": {
+    "default_title": ""
+  } // placeholder for button/badge display
 }

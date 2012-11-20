@@ -216,6 +216,6 @@ Promise.prototype = {
 };
 
 EventTarget.mixin(Promise.prototype);
- })(OEX.RSVP = {});
+ })(this.RSVP = {});
 
 /** end rsvp.js */

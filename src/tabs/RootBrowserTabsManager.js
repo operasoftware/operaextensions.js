@@ -44,7 +44,7 @@ OEX.RootBrowserTabsManager = function() {
 
         newTab._windowParent.tabs.addTabs([newTab], newTab.properties.index);
 
-        newTab._windowParent.tabs.fireEvent(new OEX.Event('create', {
+        newTab._windowParent.tabs.fireEvent(new OEvent('create', {
           "tab": newTab,
           "prevWindow": newTab._windowParent,
           "prevTabGroup": null,
@@ -58,7 +58,7 @@ OEX.RootBrowserTabsManager = function() {
         newTab.resolve();
 
         // Fire a create event at RootTabsManager
-        self.fireEvent(new OEX.Event('create', {
+        self.fireEvent(new OEvent('create', {
           "tab": newTab,
           "prevWindow": newTab._windowParent,
           "prevTabGroup": null,
@@ -100,7 +100,7 @@ OEX.RootBrowserTabsManager = function() {
       self.removeTab( oldTab );
 
       // Fire a new 'close' event on the closed BrowserTab object
-      oldTab.fireEvent(new OEX.Event('close', {
+      oldTab.fireEvent(new OEvent('close', {
         "tab": oldTab,
         "prevWindow": oldTabWindowParent,
         "prevTabGroup": null,
@@ -110,7 +110,7 @@ OEX.RootBrowserTabsManager = function() {
       // Fire a new 'close' event on the closed BrowserTab's previous 
       // BrowserWindow parent object
       if(oldTabWindowParent) {
-        oldTabWindowParent.tabs.fireEvent(new OEX.Event('close', {
+        oldTabWindowParent.tabs.fireEvent(new OEvent('close', {
           "tab": oldTab,
           "prevWindow": oldTabWindowParent,
           "prevTabGroup": null,
@@ -119,7 +119,7 @@ OEX.RootBrowserTabsManager = function() {
       }
 
       // Fire a new 'close' event on this root tab manager object
-      self.fireEvent(new OEX.Event('close', {
+      self.fireEvent(new OEvent('close', {
         "tab": oldTab,
         "prevWindow": oldTabWindowParent,
         "prevTabGroup": null,
@@ -232,14 +232,14 @@ OEX.RootBrowserTabsManager = function() {
         }
       }
 
-      moveTab.fireEvent(new OEX.Event('move', {
+      moveTab.fireEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
         "prevPosition": moveInfo.fromIndex
       }));
 
-      self.fireEvent(new OEX.Event('move', {
+      self.fireEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,

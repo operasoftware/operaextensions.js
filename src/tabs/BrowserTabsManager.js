@@ -1,7 +1,7 @@
 
 OEX.BrowserTabsManager = function( parentObj ) {
 
-  OEX.Promise.call( this );
+  OPromise.call( this );
 
   // Set up 0 mock BrowserTab objects at startup
   this.length = 0;
@@ -98,7 +98,7 @@ OEX.BrowserTabsManager = function( parentObj ) {
 
 };
 
-OEX.BrowserTabsManager.prototype = Object.create( OEX.Promise.prototype );
+OEX.BrowserTabsManager.prototype = Object.create( OPromise.prototype );
 
 OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before, obj ) {
 
@@ -200,7 +200,7 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
       shadowBrowserTab.resolve( _tab );
 
       // Dispatch oncreate event to all attached event listeners
-      self.fireEvent( new OEX.Event('create', {
+      self.fireEvent( new OEvent('create', {
           "tab": shadowBrowserTab,
           "prevWindow": shadowBrowserTab._windowParent,
           "prevTabGroup": null,

@@ -1,7 +1,7 @@
 
 var ToolbarBadge = function( properties ) {
   
-  OEX.Promise.call( this );
+  OPromise.call( this );
   
   this.properties = {};
   
@@ -15,7 +15,7 @@ var ToolbarBadge = function( properties ) {
   
 };
 
-ToolbarBadge.prototype = Object.create( OEX.Promise.prototype );
+ToolbarBadge.prototype = Object.create( OPromise.prototype );
 
 ToolbarBadge.prototype.apply = function() {
 

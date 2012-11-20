@@ -1,7 +1,7 @@
 
 OEX.BrowserWindow = function(browserWindowProperties) {
 
-  OEX.Promise.call(this);
+  OPromise.call(this);
 
   this.properties = browserWindowProperties || {};
 
@@ -17,7 +17,7 @@ OEX.BrowserWindow = function(browserWindowProperties) {
   //this.tabGroups = new OEX.BrowserTabGroupsManager( this );
 };
 
-OEX.BrowserWindow.prototype = Object.create(OEX.Promise.prototype);
+OEX.BrowserWindow.prototype = Object.create(OPromise.prototype);
 
 // API
 OEX.BrowserWindow.prototype.__defineGetter__("id", function() {

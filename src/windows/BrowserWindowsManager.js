@@ -1,7 +1,7 @@
 
 OEX.BrowserWindowsManager = function() {
 
-  OEX.Promise.call(this);
+  OPromise.call(this);
 
   var self = this;
 
@@ -134,7 +134,7 @@ OEX.BrowserWindowsManager = function() {
         }
 
         // Fire a new 'create' event on this manager object
-        self.fireEvent(new OEX.Event('create', {
+        self.fireEvent(new OEvent('create', {
           browserWindow: newBrowserWindow
         }));
 
@@ -157,12 +157,12 @@ OEX.BrowserWindowsManager = function() {
     if (deleteIndex > -1) {
 
       // Fire a new 'close' event on the closed BrowserWindow object
-      self[deleteIndex].fireEvent(new OEX.Event('close', {
+      self[deleteIndex].fireEvent(new OEvent('close', {
         'browserWindow': self[deleteIndex]
       }));
 
       // Fire a new 'close' event on this manager object
-      self.fireEvent(new OEX.Event('close', {
+      self.fireEvent(new OEvent('close', {
         'browserWindow': self[deleteIndex]
       }));
 
@@ -194,7 +194,7 @@ OEX.BrowserWindowsManager = function() {
 
 };
 
-OEX.BrowserWindowsManager.prototype = Object.create(OEX.Promise.prototype);
+OEX.BrowserWindowsManager.prototype = Object.create(OPromise.prototype);
 
 OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowProperties, obj) {
 
@@ -308,7 +308,7 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
       }
 
       // Fire a new 'create' event on this manager object
-      self.fireEvent(new OEX.Event('create', {
+      self.fireEvent(new OEvent('create', {
         browserWindow: shadowBrowserWindow
       }));
 
