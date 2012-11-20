@@ -16,7 +16,7 @@
 
   };
 
-OEX.Event = function(eventType, eventProperties) {
+var OEvent = function(eventType, eventProperties) {
 
   var evt = document.createEvent("Event");
 
@@ -248,13 +248,13 @@ Promise.prototype = {
 };
 
 EventTarget.mixin(Promise.prototype);
- })(OEX.RSVP = {});
+ })(this.RSVP = {});
 
 /** end rsvp.js */
 
-OEX.Promise = function() {
+var OPromise = function() {
 
-  OEX.RSVP.Promise.call( this );
+  RSVP.Promise.call( this );
 
   // General enqueue/dequeue infrastructure
 
@@ -274,13 +274,13 @@ OEX.Promise = function() {
 
 };
 
-OEX.Promise.prototype = Object.create( OEX.RSVP.Promise.prototype );
+OPromise.prototype = Object.create( RSVP.Promise.prototype );
 
-OEX.Promise.prototype.addEventListener = OEX.Promise.prototype.on;
+OPromise.prototype.addEventListener = OPromise.prototype.on;
 
-OEX.Promise.prototype.removeEventListener = OEX.Promise.prototype.off;
+OPromise.prototype.removeEventListener = OPromise.prototype.off;
 
-OEX.Promise.prototype.fireEvent = function( oexEventObj ) {
+OPromise.prototype.fireEvent = function( oexEventObj ) {
 
   var eventName = oexEventObj.type;
 
@@ -292,7 +292,7 @@ OEX.Promise.prototype.fireEvent = function( oexEventObj ) {
 
 }
 
-OEX.Promise.prototype.enqueue = function() {
+OPromise.prototype.enqueue = function() {
 
   // Must at least provide a method name to queue
   if(arguments.length < 1) {
@@ -314,7 +314,7 @@ OEX.Promise.prototype.enqueue = function() {
   //console.log("Enqueue on obj[" + this._operaId + "] queue length = " + this._queue.length);
 };
 
-OEX.Promise.prototype.dequeue = function() {
+OPromise.prototype.dequeue = function() {
   // Select first queued action item
   var queueItem = this._queue[0];
 
@@ -335,22 +335,50 @@ OEX.Promise.prototype.dequeue = function() {
 
 OEC.ToolbarContext = function() {
   
-  OEX.Promise.call( this );
+  OPromise.call( this );
   
   // we shouldn't need this on this object since it is never checked 
   // and nothing is enqueued
-  // (we need OEX.Promise for its event handling capabilities only)
-  this.resolve(); 
+  // (we need OPromise for its event handling capabilities only)
+  this.resolve();
+  
+  // Unfortunately, click events only fire if a popup is not supplied 
+  // to a registered browser action in Chromium :(
+  // http://stackoverflow.com/questions/1938356/chrome-browser-action-click-not-working
+  //
+  // TODO invoke this function when a popup page loads
+  function clickEventHandler(_tab) {
+    
+    console.log('click event');
+    
+    //if( self.resolved ) {
+    if( this[ 0 ] ) {
+      this[ 0 ].fireEvent( new OEvent('click', {}) );
+    }
+    
+    // Fire event also on ToolbarContext API stub
+    this.fireEvent( new OEvent('click', {}) );
+    
+  } 
+  
+  chrome.browserAction.onClicked.addListener(clickEventHandler.bind(this));
   
 };
 
-OEC.ToolbarContext.prototype = Object.create( OEX.Promise.prototype );
+OEC.ToolbarContext.prototype = Object.create( OPromise.prototype );
 
 OEC.ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
   return new ToolbarUIItem( toolbarUIItemProperties );
 };
 
 OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
+  
+  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+    return;
+  }
+
+  this[ 0 ] = toolbarUIItem;
+  this.length = 1;
 
   toolbarUIItem.resolve();
   
@@ -364,19 +392,30 @@ OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
 
 OEC.ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
 
-  // Disable the toolbar button
-  chrome.browserAction.disable();
+  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+    return;
+  }
+
+  if( this[ 0 ] && this[ 0 ] === toolbarUIItem ) {
+    
+    delete this[ 0 ];
+    this.length = 0;
+
+    // Disable the toolbar button
+    chrome.browserAction.disable();
   
-  toolbarUIItem.fireEvent( new OEX.Event('remove', {}) );
+    toolbarUIItem.fireEvent( new OEvent('remove', {}) );
   
-  // Fire event on self
-  OEC.toolbar.fireEvent( new OEX.Event('remove', {}) );
+    // Fire event on self
+    this.fireEvent( new OEvent('remove', {}) );
+  
+  }
 
 };
 
 var ToolbarBadge = function( properties ) {
   
-  OEX.Promise.call( this );
+  OPromise.call( this );
   
   this.properties = {};
   
@@ -390,7 +429,7 @@ var ToolbarBadge = function( properties ) {
   
 };
 
-ToolbarBadge.prototype = Object.create( OEX.Promise.prototype );
+ToolbarBadge.prototype = Object.create( OPromise.prototype );
 
 ToolbarBadge.prototype.apply = function() {
 
@@ -460,7 +499,7 @@ ToolbarBadge.prototype.__defineSetter__("display", function( val ) {
 
 var ToolbarPopup = function( properties ) {
   
-  OEX.Promise.call( this );
+  OPromise.call( this );
   
   this.properties = {};
   
@@ -473,7 +512,7 @@ var ToolbarPopup = function( properties ) {
 
 };
 
-ToolbarPopup.prototype = Object.create( OEX.Promise.prototype );
+ToolbarPopup.prototype = Object.create( OPromise.prototype );
 
 ToolbarPopup.prototype.apply = function() {
   
@@ -520,7 +559,7 @@ ToolbarPopup.prototype.__defineSetter__("height", function( val ) {
 
 var ToolbarUIItem = function( properties ) {
   
-  OEX.Promise.call( this );
+  OPromise.call( this );
   
   this.properties = {};
   
@@ -532,24 +571,9 @@ var ToolbarUIItem = function( properties ) {
   
   this.enqueue('apply');
   
-  var self = this;
-  
-  chrome.browserAction.onClicked.addListener(function( _tab ) {
-    
-    //if( self.resolved ) {
-    
-      self.fireEvent( new OEX.Event('click', {}) );
-    
-      // Fire event also on ToolbarContext API
-      OEC.toolbar.fireEvent( new OEX.Event('click', {}) );
-      
-    //}
-    
-  });
-  
 };
 
-ToolbarUIItem.prototype = Object.create( OEX.Promise.prototype );
+ToolbarUIItem.prototype = Object.create( OPromise.prototype );
 
 ToolbarUIItem.prototype.apply = function() {
   

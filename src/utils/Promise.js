@@ -1,7 +1,7 @@
 
-OEX.Promise = function() {
+var OPromise = function() {
 
-  OEX.RSVP.Promise.call( this );
+  RSVP.Promise.call( this );
 
   // General enqueue/dequeue infrastructure
 
@@ -21,13 +21,13 @@ OEX.Promise = function() {
 
 };
 
-OEX.Promise.prototype = Object.create( OEX.RSVP.Promise.prototype );
+OPromise.prototype = Object.create( RSVP.Promise.prototype );
 
-OEX.Promise.prototype.addEventListener = OEX.Promise.prototype.on;
+OPromise.prototype.addEventListener = OPromise.prototype.on;
 
-OEX.Promise.prototype.removeEventListener = OEX.Promise.prototype.off;
+OPromise.prototype.removeEventListener = OPromise.prototype.off;
 
-OEX.Promise.prototype.fireEvent = function( oexEventObj ) {
+OPromise.prototype.fireEvent = function( oexEventObj ) {
 
   var eventName = oexEventObj.type;
 
@@ -39,7 +39,7 @@ OEX.Promise.prototype.fireEvent = function( oexEventObj ) {
 
 }
 
-OEX.Promise.prototype.enqueue = function() {
+OPromise.prototype.enqueue = function() {
 
   // Must at least provide a method name to queue
   if(arguments.length < 1) {
@@ -61,7 +61,7 @@ OEX.Promise.prototype.enqueue = function() {
   //console.log("Enqueue on obj[" + this._operaId + "] queue length = " + this._queue.length);
 };
 
-OEX.Promise.prototype.dequeue = function() {
+OPromise.prototype.dequeue = function() {
   // Select first queued action item
   var queueItem = this._queue[0];
 

@@ -1,5 +1,5 @@
 
-OEX.Event = function(eventType, eventProperties) {
+var OEvent = function(eventType, eventProperties) {
 
   var evt = document.createEvent("Event");
 

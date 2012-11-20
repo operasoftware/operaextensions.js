@@ -27,10 +27,10 @@
  var button = opera.contexts.toolbar.createItem({
    title:'My Extension',
    icon:'/icon.png',
-   badge: {},
+   badge: {}/*,
    popup: {
      href: 'popup.html'
-   }
+   }*/
  });
 
  // Add it to the browser UI
