@@ -43,7 +43,7 @@ ToolbarPopup.prototype.__defineSetter__("width", function( val ) {
   this.properties.width = val;
   // not implemented in chromium
   //
-  // will need to pass this message to the popup process itself
+  // TODO will need to pass this message to the popup process itself
   // to resize the popup window
 });
 
@@ -55,6 +55,6 @@ ToolbarPopup.prototype.__defineSetter__("height", function( val ) {
   this.properties.height = val;
   // not implemented in chromium
   //
-  // will need to pass this message to the popup process itself
+  // TODO will need to pass this message to the popup process itself
   // to resize the popup window
 });

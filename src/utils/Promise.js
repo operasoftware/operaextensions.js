@@ -5,19 +5,17 @@ var OPromise = function() {
 
   // General enqueue/dequeue infrastructure
 
-  var self = this;
-
   this._queue = [];
   this.resolved = false;
 
   this.on('promise:resolved', function() {
 
     // Mark this object as resolved
-    self.resolved = true;
+    this.resolved = true;
 
     // Run next enqueued action on this object, if any
-    self.dequeue();
-  });
+    this.dequeue();
+  }.bind(this));
 
 };
 

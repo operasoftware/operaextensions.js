@@ -88,16 +88,14 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
 
   if (browserTab instanceof OEX.BrowserTab) {
 
-    var self = this;
-
     // Fulfill this action against the current object
     chrome.tabs.move(
       browserTab.properties.id, 
       browserTabProperties, 
       function(_tab) {
         // Run next enqueued action on this object, if any
-        self.dequeue();
-      }
+        this.dequeue();
+      }.bind(this)
     );
 
   }
