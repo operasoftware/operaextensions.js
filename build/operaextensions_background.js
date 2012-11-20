@@ -1627,13 +1627,32 @@ OEX.BrowserTab.prototype.update = function(browserTabProperties) {
 
   // Make any requested changes take effect in the user agent
   chrome.tabs.update(this.properties.id, browserTabProperties, function() {
+    
     this.dequeue();
+
   }.bind(this));
 
 };
 
 OEX.BrowserTab.prototype.refresh = function() {
   // not implemented
+};
+
+// Web Messaging support for BrowserTab objects
+OEX.BrowserTab.prototype.postMessage = function( postData ) {
+  
+  // If current object is not resolved, then enqueue this action
+  if (!this.resolved ||
+        (this._windowParent && !this._windowParent.resolved) ||
+            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
+    this.enqueue('postMessage', postData);
+    return;
+  }
+  
+  chrome.tabs.sendMessage( this.properties.id, postData );
+  
+  this.dequeue();
+  
 };
 
 OEX.windows = OEX.windows || (function() {
