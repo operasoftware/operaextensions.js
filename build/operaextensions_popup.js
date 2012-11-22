@@ -2,11 +2,11 @@
 
   var opera = global.opera || { 
     REVISION: '1', 
-    postError: function() { 
-      console.log.apply( null, arguments ); 
+    postError: function( str ) { 
+      console.log( str ); 
     } 
   };
-  /**
+/**
  * rsvp.js
  *
  * Author: Tilde, Inc.
@@ -339,6 +339,8 @@ var OMessagePort = function( isBackground ) {
     
     this._localPort.onDisconnect.addListener(function() {
     
+      this.fireEvent( new OEvent( 'disconnect', { "source": this._localPort } ) );
+      
       this._localPort = null;
       
     }.bind(this));
@@ -353,11 +355,12 @@ var OMessagePort = function( isBackground ) {
       this.fireEvent( new OEvent(
         messageType, 
         { 
-          "data": _message, 
+          "data": _message,
           "source": {
             postMessage: function( data ) {
               this._localPort.postMessage( data );
-            }
+            },
+            "tabId": _sender && _sender.tab ? _sender.tab.id : null
           }
         }
       ));
@@ -419,7 +422,7 @@ var OStorageProxy = function () {
   
   Object.defineProperty(OStorageProxy.prototype, "getItem", { 
     value: function( key ) {
-      return this[key] === undefined ? null : this[key];
+      return this[key];
     }
   });
   

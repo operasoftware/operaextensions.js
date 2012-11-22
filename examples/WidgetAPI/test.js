@@ -111,7 +111,9 @@ if( widget.preferences.getItem( "testObj3" ) === "testVal3") {
 
 widget.preferences.removeItem( "testObj3" );
 
-if( widget.preferences.getItem( "testObj3" ) === null) {
+console.log(typeof widget.preferences.getItem( "blahblah" ));
+
+if( widget.preferences.getItem( "testObj3" ) === undefined) {
   console.log("PASS: testObj3 removed correctly");
 } else {
   console.error("FAIL: testObj3 not removed correctly");

@@ -2,11 +2,11 @@
 
   var opera = global.opera || { 
     REVISION: '1', 
-    postError: function() { 
-      console.log.apply( null, arguments ); 
+    postError: function( str ) { 
+      console.log( str ); 
     } 
   };
-  /**
+/**
  * rsvp.js
  *
  * Author: Tilde, Inc.
@@ -339,6 +339,8 @@ var OMessagePort = function( isBackground ) {
     
     this._localPort.onDisconnect.addListener(function() {
     
+      this.fireEvent( new OEvent( 'disconnect', { "source": this._localPort } ) );
+      
       this._localPort = null;
       
     }.bind(this));
@@ -353,11 +355,12 @@ var OMessagePort = function( isBackground ) {
       this.fireEvent( new OEvent(
         messageType, 
         { 
-          "data": _message, 
+          "data": _message,
           "source": {
             postMessage: function( data ) {
               this._localPort.postMessage( data );
-            }
+            },
+            "tabId": _sender && _sender.tab ? _sender.tab.id : null
           }
         }
       ));
@@ -407,7 +410,7 @@ var OBackgroundMessagePort = function() {
       
       this._allPorts.splice( portIndex - 1, 1 );
       
-      this.fireEvent( new OEvent('disconnect', {}) );
+      this.fireEvent( new OEvent('disconnect', { "source": _remotePort }) );
       
     }.bind(this));
     
@@ -427,7 +430,8 @@ var OBackgroundMessagePort = function() {
           "source": {
             postMessage: function( data ) {
               _remotePort.postMessage( data );
-            }
+            },
+            "tabId": _remotePort.sender && _remotePort.sender.tab ? _remotePort.sender.tab.id : null
           }
         }
       ));
@@ -475,7 +479,12 @@ var OStorage = function () {
   
   Object.defineProperty(OStorage.prototype, "getItem", { 
     value: function( key ) {
-      return this._storage.getItem(key);
+      var value = this._storage.getItem(key);
+      // We return 'undefined' rather than 'null' if the key
+      // does not exist in the Opera implementation according to
+      // http://dev.opera.com/articles/view/extensions-api-widget-preferences/
+      // so hack that return value here instead of returning null.
+      return value === null ? undefined : value;
     }.bind(this)
   });
   
@@ -697,6 +706,13 @@ OEX.BrowserWindowsManager = function() {
       var _tabs = [];
       for (var j = 0, k = _windows[0].tabs.length; j < k; j++) {
         _tabs[j] = new OEX.BrowserTab(_windows[0].tabs[j], this[0]);
+        
+        // Set as the currently focused tab?
+        if(_tabs[j].properties.active == true && this[0].properties.focused == true) {
+          this[0].tabs._lastFocusedTab = _tabs[j];
+          OEX.tabs._lastFocusedTab = _tabs[j];
+        }
+        
       }
       this[0].tabs.replaceTabs(_tabs);
 
@@ -711,6 +727,13 @@ OEX.BrowserWindowsManager = function() {
       var _tabs = [];
       for (var j = 0, k = _windows[i].tabs.length; j < k; j++) {
         _tabs[j] = new OEX.BrowserTab(_windows[i].tabs[j], this[i]);
+        
+        // Set as the currently focused tab?
+        if(_tabs[j].properties.active == true && this[i].properties.focused == true) {
+          this[i].tabs._lastFocusedTab = _tabs[j];
+          OEX.tabs._lastFocusedTab = _tabs[j];
+        }
+        
       }
       this[i].tabs.replaceTabs(_tabs);
 
@@ -731,7 +754,7 @@ OEX.BrowserWindowsManager = function() {
             break;
           }
         }
-      }
+      }.bind(this)
     );
 
     // Resolve root window manager
@@ -1411,7 +1434,7 @@ OEX.BrowserTabsManager.prototype.getAll = function() {
 
 OEX.BrowserTabsManager.prototype.getSelected = function() {
 
-  return this._lastFocusedTab;
+  return this._lastFocusedTab || this[ 0 ];
 
 };
 // Alias of .getSelected()
@@ -1699,6 +1722,10 @@ OEX.RootBrowserTabsManager = function() {
                 OEX.windows[i].tabs[j].properties.id == highlightInfo.tabIds[x]) {
 
             OEX.windows[i].tabs[j].properties.active = true;
+            
+            OEX.windows[i]._lastFocusedTab = OEX.windows[i].tabs[j];
+            
+            this._lastFocusedTab = OEX.windows[i].tabs[j];
 
           } else {
 
@@ -1712,7 +1739,57 @@ OEX.RootBrowserTabsManager = function() {
 
     }
 
-  });
+  }.bind(this));
+  
+  // Listen for getScreenshot requests from Injected Scripts
+  OEX.addEventListener('controlmessage', function( msg ) {
+
+    if( !msg.data || !msg.data.action || msg.data.action !== '___O_getScreenshot_REQUEST' || !msg.source.tabId ) {
+      return;
+    }
+    
+    // Resolve tabId to BrowserTab object
+    var sourceBrowserTab = null
+    for(var i = 0, l = this.length; i < l; i++) {
+      if( this[ i ].properties.id == msg.source.tabId ) {
+        sourceBrowserTab = this[ i ];
+        break;
+      }
+    }
+    
+    if( sourceBrowserTab !== null && 
+          sourceBrowserTab._windowParent && 
+              sourceBrowserTab._windowParent.properties.closed != true ) { 
+      
+      try {
+      
+        // Get screenshot of requested window belonging to current tab
+        chrome.tabs.captureVisibleTab(
+          sourceBrowserTab._windowParent.properties.id, 
+          {},
+          function( nativeCallback ) {
+
+            // Return the result to the callee
+            msg.source.postMessage({
+              "action": "___O_getScreenshot_RESPONSE",
+              "dataUrl": nativeCallback || null
+            });
+      
+          }.bind(this)
+        );
+    
+      } catch(e) {}
+    
+    } else {
+      
+      msg.source.postMessage({
+        "action": "___O_getScreenshot_RESPONSE",
+        "dataUrl": undefined
+      });
+      
+    }
+    
+  }.bind(this));
 
 };
 
@@ -1872,6 +1949,65 @@ OEX.BrowserTab.prototype.postMessage = function( postData ) {
   chrome.tabs.sendMessage( this.properties.id, postData );
   
   this.dequeue();
+  
+};
+
+// Screenshot API support for BrowserTab objects
+OEX.BrowserTab.prototype.getScreenshot = function( callback ) {
+  
+  // If current object is not resolved, then enqueue this action
+  if (!this.resolved ||
+        (this._windowParent && !this._windowParent.resolved) ||
+            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
+    this.enqueue('getScreenshot', callback);
+    return;
+  }
+  
+  if( !this._windowParent || this._windowParent.properties.closed === true) {
+    callback.call( this, undefined );
+    return;
+  }
+  
+  try {
+  
+    // Get screenshot of requesting tab
+    chrome.tabs.captureVisibleTab(
+      this._windowParent.properties.id, 
+      {}, 
+      function( nativeCallback ) {
+      
+        if( nativeCallback ) {
+      
+          // Convert the returned dataURL in to an ImageData object and
+          // return via the main callback function argument
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var img = new Image();
+          img.onload = function(){
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img,0,0);
+
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            // Return the ImageData object to the callee
+            callback.call( this, imageData );
+        
+            this.dequeue();
+            
+          }.bind(this);
+          img.src = nativeCallback;
+      
+        } else {
+        
+          callback.call( this, undefined );
+        
+        }
+    
+      }.bind(this)
+    );
+  
+  } catch(e) {} 
   
 };
 

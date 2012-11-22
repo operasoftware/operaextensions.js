@@ -155,3 +155,62 @@ OEX.BrowserTab.prototype.postMessage = function( postData ) {
   this.dequeue();
   
 };
+
+// Screenshot API support for BrowserTab objects
+OEX.BrowserTab.prototype.getScreenshot = function( callback ) {
+  
+  // If current object is not resolved, then enqueue this action
+  if (!this.resolved ||
+        (this._windowParent && !this._windowParent.resolved) ||
+            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
+    this.enqueue('getScreenshot', callback);
+    return;
+  }
+  
+  if( !this._windowParent || this._windowParent.properties.closed === true) {
+    callback.call( this, undefined );
+    return;
+  }
+  
+  try {
+  
+    // Get screenshot of requesting tab
+    chrome.tabs.captureVisibleTab(
+      this._windowParent.properties.id, 
+      {}, 
+      function( nativeCallback ) {
+      
+        if( nativeCallback ) {
+      
+          // Convert the returned dataURL in to an ImageData object and
+          // return via the main callback function argument
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var img = new Image();
+          img.onload = function(){
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img,0,0);
+
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            // Return the ImageData object to the callee
+            callback.call( this, imageData );
+        
+            this.dequeue();
+            
+          }.bind(this);
+          img.src = nativeCallback;
+      
+        } else {
+        
+          callback.call( this, undefined );
+        
+        }
+    
+      }.bind(this)
+    );
+  
+  } catch(e) {} 
+  
+};

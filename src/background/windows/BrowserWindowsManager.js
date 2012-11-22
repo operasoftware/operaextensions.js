@@ -26,6 +26,13 @@ OEX.BrowserWindowsManager = function() {
       var _tabs = [];
       for (var j = 0, k = _windows[0].tabs.length; j < k; j++) {
         _tabs[j] = new OEX.BrowserTab(_windows[0].tabs[j], this[0]);
+        
+        // Set as the currently focused tab?
+        if(_tabs[j].properties.active == true && this[0].properties.focused == true) {
+          this[0].tabs._lastFocusedTab = _tabs[j];
+          OEX.tabs._lastFocusedTab = _tabs[j];
+        }
+        
       }
       this[0].tabs.replaceTabs(_tabs);
 
@@ -40,6 +47,13 @@ OEX.BrowserWindowsManager = function() {
       var _tabs = [];
       for (var j = 0, k = _windows[i].tabs.length; j < k; j++) {
         _tabs[j] = new OEX.BrowserTab(_windows[i].tabs[j], this[i]);
+        
+        // Set as the currently focused tab?
+        if(_tabs[j].properties.active == true && this[i].properties.focused == true) {
+          this[i].tabs._lastFocusedTab = _tabs[j];
+          OEX.tabs._lastFocusedTab = _tabs[j];
+        }
+        
       }
       this[i].tabs.replaceTabs(_tabs);
 
@@ -60,7 +74,7 @@ OEX.BrowserWindowsManager = function() {
             break;
           }
         }
-      }
+      }.bind(this)
     );
 
     // Resolve root window manager

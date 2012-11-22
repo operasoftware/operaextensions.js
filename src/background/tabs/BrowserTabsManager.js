@@ -227,7 +227,7 @@ OEX.BrowserTabsManager.prototype.getAll = function() {
 
 OEX.BrowserTabsManager.prototype.getSelected = function() {
 
-  return this._lastFocusedTab;
+  return this._lastFocusedTab || this[ 0 ];
 
 };
 // Alias of .getSelected()
