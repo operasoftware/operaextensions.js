@@ -261,6 +261,10 @@ OEX.RootBrowserTabsManager = function() {
                 OEX.windows[i].tabs[j].properties.id == highlightInfo.tabIds[x]) {
 
             OEX.windows[i].tabs[j].properties.active = true;
+            
+            OEX.windows[i]._lastFocusedTab = OEX.windows[i].tabs[j];
+            
+            this._lastFocusedTab = OEX.windows[i].tabs[j];
 
           } else {
 
@@ -274,7 +278,57 @@ OEX.RootBrowserTabsManager = function() {
 
     }
 
-  });
+  }.bind(this));
+  
+  // Listen for getScreenshot requests from Injected Scripts
+  OEX.addEventListener('controlmessage', function( msg ) {
+
+    if( !msg.data || !msg.data.action || msg.data.action !== '___O_getScreenshot_REQUEST' || !msg.source.tabId ) {
+      return;
+    }
+    
+    // Resolve tabId to BrowserTab object
+    var sourceBrowserTab = null
+    for(var i = 0, l = this.length; i < l; i++) {
+      if( this[ i ].properties.id == msg.source.tabId ) {
+        sourceBrowserTab = this[ i ];
+        break;
+      }
+    }
+    
+    if( sourceBrowserTab !== null && 
+          sourceBrowserTab._windowParent && 
+              sourceBrowserTab._windowParent.properties.closed != true ) { 
+      
+      try {
+      
+        // Get screenshot of requested window belonging to current tab
+        chrome.tabs.captureVisibleTab(
+          sourceBrowserTab._windowParent.properties.id, 
+          {},
+          function( nativeCallback ) {
+
+            // Return the result to the callee
+            msg.source.postMessage({
+              "action": "___O_getScreenshot_RESPONSE",
+              "dataUrl": nativeCallback || null
+            });
+      
+          }.bind(this)
+        );
+    
+      } catch(e) {}
+    
+    } else {
+      
+      msg.source.postMessage({
+        "action": "___O_getScreenshot_RESPONSE",
+        "dataUrl": undefined
+      });
+      
+    }
+    
+  }.bind(this));
 
 };
 

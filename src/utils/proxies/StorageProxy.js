@@ -8,7 +8,7 @@ var OStorageProxy = function () {
   
   Object.defineProperty(OStorageProxy.prototype, "getItem", { 
     value: function( key ) {
-      return this[key] === undefined ? null : this[key];
+      return this[key];
     }
   });
   

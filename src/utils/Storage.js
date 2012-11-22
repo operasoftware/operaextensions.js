@@ -10,7 +10,12 @@ var OStorage = function () {
   
   Object.defineProperty(OStorage.prototype, "getItem", { 
     value: function( key ) {
-      return this._storage.getItem(key);
+      var value = this._storage.getItem(key);
+      // We return 'undefined' rather than 'null' if the key
+      // does not exist in the Opera implementation according to
+      // http://dev.opera.com/articles/view/extensions-api-widget-preferences/
+      // so hack that return value here instead of returning null.
+      return value === null ? undefined : value;
     }.bind(this)
   });
   

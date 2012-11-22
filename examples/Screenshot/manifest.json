@@ -1,0 +1,18 @@
+{
+  "name": "Opera Extension API Test - Screenshot",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Opera Screenshot API Test Extension",
+  "background": {
+      "page": "background.html"
+  },
+  "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["/operaextensions_injectedscript.js", "/content-script.js"]
+      }
+  ],
+  "permissions": [
+    "tabs", "<all_urls>"
+  ]
+}

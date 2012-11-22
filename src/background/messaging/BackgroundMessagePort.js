@@ -14,7 +14,7 @@ var OBackgroundMessagePort = function() {
       
       this._allPorts.splice( portIndex - 1, 1 );
       
-      this.fireEvent( new OEvent('disconnect', {}) );
+      this.fireEvent( new OEvent('disconnect', { "source": _remotePort }) );
       
     }.bind(this));
     
@@ -34,7 +34,8 @@ var OBackgroundMessagePort = function() {
           "source": {
             postMessage: function( data ) {
               _remotePort.postMessage( data );
-            }
+            },
+            "tabId": _remotePort.sender && _remotePort.sender.tab ? _remotePort.sender.tab.id : null
           }
         }
       ));

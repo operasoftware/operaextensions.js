@@ -31,7 +31,7 @@ window.setTimeout(function() {
     
       case 'check_remove_testObj2_RESPONSE':
     
-        if( data.value === null) {
+        if( data.value === undefined) {
           console.log("PASS: testObj2 removed correctly in background process");
         } else {
           console.error("FAIL: testObj2 not removed correctly in background process");
@@ -41,7 +41,7 @@ window.setTimeout(function() {
       
       case 'check_clear_RESPONSE':
     
-        if( data.value === null) {
+        if( data.value === undefined) {
           console.log("PASS: All items removed correctly in background process");
         } else {
           console.error("FAIL: All items not removed correctly in background process");
@@ -113,7 +113,7 @@ window.setTimeout(function() {
 
   widget.preferences.removeItem( "testObj2" );
 
-  if( widget.preferences.getItem( "testObj2" ) === null) {
+  if( widget.preferences.getItem( "testObj2" ) === undefined) {
     console.log("PASS: testObj2 removed correctly");
   } else {
     console.error("FAIL: testObj2 not removed correctly");
@@ -128,7 +128,7 @@ window.setTimeout(function() {
 
   widget.preferences.clear();
 
-  if( widget.preferences.getItem( "testObj1" ) === null) {
+  if( widget.preferences.getItem( "testObj1" ) === undefined) {
     console.log("PASS: All objects removed correctly");
   } else {
     console.error("FAIL: All objects not removed correctly");

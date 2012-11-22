@@ -25,3 +25,7 @@ cp ../build/operaextensions_injectedscript.js ../examples/Messaging/operaextensi
 # Widget API Test Extension
 cp ../build/operaextensions_background.js ../examples/WidgetAPI/operaextensions_background.js
 cp ../build/operaextensions_injectedscript.js ../examples/WidgetAPI/operaextensions_injectedscript.js
+
+# Screenshot API Test Extension
+cp ../build/operaextensions_background.js ../examples/Screenshot/operaextensions_background.js
+cp ../build/operaextensions_injectedscript.js ../examples/Screenshot/operaextensions_injectedscript.js
