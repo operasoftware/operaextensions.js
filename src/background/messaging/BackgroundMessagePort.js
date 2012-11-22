@@ -41,8 +41,6 @@ var OBackgroundMessagePort = function() {
 
     }.bind(this) );
   
-    // TODO delay this call until we actually have an onconnect listener 
-    // e.g. so it triggers when in a document.onload function
     this.fireEvent( new OEvent('connect', { "source": _remotePort }) );
   
   }.bind(this));

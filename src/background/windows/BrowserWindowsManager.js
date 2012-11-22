@@ -272,7 +272,8 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
 
           } else if (tabsToInject[i] instanceof OEX.BrowserTabGroup) {
 
-            // TODO
+            // TODO Implement BrowserTabGroup object handling here
+            
           } else { // Treat as a BrowserTabProperties object by default
             (function(browserTabProperties) {
 

@@ -12,7 +12,7 @@ OEC.ToolbarContext = function() {
   // to a registered browser action in Chromium :(
   // http://stackoverflow.com/questions/1938356/chrome-browser-action-click-not-working
   //
-  // TODO invoke this function when a popup page loads
+  // TODO also invoke clickEventHandler function when a popup page loads
   function clickEventHandler(_tab) {
     
     if( this[ 0 ] ) {
