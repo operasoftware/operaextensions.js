@@ -21,9 +21,14 @@ var OBackgroundMessagePort = function() {
     this._allPorts[ portIndex ] = _remotePort;
     
     _remotePort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+      
+      var messageType = 'message';
+      if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
+        messageType = 'controlmessage';
+      }
 
       this.fireEvent( new OEvent(
-        'message', 
+        messageType, 
         { 
           "data": _message, 
           "source": {

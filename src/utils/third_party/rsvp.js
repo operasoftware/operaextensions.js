@@ -217,6 +217,6 @@
 
   EventTarget.mixin(Promise.prototype);
   
-})(this.RSVP = {});
+})(opera._RSVP = {});
 
 /** end rsvp.js */

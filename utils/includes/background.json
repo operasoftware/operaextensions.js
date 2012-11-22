@@ -1,13 +1,17 @@
 [
   "../src/Header.js",
 
-  "../src/utils/Event.js",
   "../src/utils/third_party/rsvp.js",
   "../src/utils/Promise.js",
+  "../src/utils/Event.js",
 
   "../src/utils/MessagePort.js",
   "../src/background/messaging/BackgroundMessagePort.js",
   "../src/background/Root.js",
+
+  "../src/utils/Storage.js",
+  "../src/utils/WidgetObj.js",
+  "../src/Widget.js",
 
   "../src/background/windows/BrowserWindowsManager.js",
   "../src/background/windows/BrowserWindow.js",

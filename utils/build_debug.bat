@@ -8,3 +8,6 @@ cp ../build/operaextensions_background.js ../examples/WinTabs/operaextensions_ba
 
 cp ../build/operaextensions_background.js ../examples/Messaging/operaextensions_background.js
 cp ../build/operaextensions_injectedscript.js ../examples/Messaging/operaextensions_injectedscript.js
+
+cp ../build/operaextensions_background.js ../examples/WidgetAPI/operaextensions_background.js
+cp ../build/operaextensions_injectedscript.js ../examples/WidgetAPI/operaextensions_injectedscript.js
