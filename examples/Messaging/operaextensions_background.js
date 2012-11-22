@@ -434,8 +434,6 @@ var OBackgroundMessagePort = function() {
 
     }.bind(this) );
   
-    // TODO delay this call until we actually have an onconnect listener 
-    // e.g. so it triggers when in a document.onload function
     this.fireEvent( new OEvent('connect', { "source": _remotePort }) );
   
   }.bind(this));
@@ -640,7 +638,7 @@ OWidgetObj.prototype.__defineGetter__('shortName', function() {
 });
 
 OWidgetObj.prototype.__defineGetter__('id', function() {
-  // TODO return better id
+  // TODO return an id (currently no id attribute is set up)
   return this.properties.id || "";
 });
 
@@ -945,7 +943,8 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
 
           } else if (tabsToInject[i] instanceof OEX.BrowserTabGroup) {
 
-            // TODO
+            // TODO Implement BrowserTabGroup object handling here
+            
           } else { // Treat as a BrowserTabProperties object by default
             (function(browserTabProperties) {
 
@@ -1033,7 +1032,7 @@ OEX.BrowserWindow = function(browserWindowProperties) {
   this._operaId = Math.floor(Math.random() * 1e16);
 
   this.tabs = new OEX.BrowserTabsManager(this);
-  // TODO Implement BrowserTabGroupsManager
+  // TODO Implement BrowserTabGroupsManager interface
   //this.tabGroups = new OEX.BrowserTabGroupsManager( this );
 };
 
@@ -1121,7 +1120,7 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
   }
 /* else if( browserTab instanceof OEX.BrowserTabGroup ) {
 
-    // TODO
+    // TODO implement BrowserTabGroup interface
 
   }*/
 
@@ -1158,9 +1157,9 @@ OEX.BrowserWindow.prototype.update = function(browserWindowProperties) {
     this.properties[i] = browserWindowProperties[i];
   }
 
-  // TODO enforce incognito because we can't make a tab incognito once it
-  // has been added to a non-incognito window.
+  // TODO enforce incognito because we can't make a tab incognito once it has been added to a non-incognito window.
   //browserWindowProperties.incognito = browserWindowProperties.private || false;
+  
   // Make any requested changes take effect in the user agent
   chrome.windows.update(
     this.properties.id, 
@@ -1897,7 +1896,7 @@ OEC.ToolbarContext = function() {
   // to a registered browser action in Chromium :(
   // http://stackoverflow.com/questions/1938356/chrome-browser-action-click-not-working
   //
-  // TODO invoke this function when a popup page loads
+  // TODO also invoke clickEventHandler function when a popup page loads
   function clickEventHandler(_tab) {
     
     if( this[ 0 ] ) {
@@ -2089,8 +2088,7 @@ ToolbarPopup.prototype.__defineSetter__("width", function( val ) {
   this.properties.width = val;
   // not implemented in chromium
   //
-  // TODO will need to pass this message to the popup process itself
-  // to resize the popup window
+  // TODO pass this message to the popup process itself to resize the popup window
 });
 
 ToolbarPopup.prototype.__defineGetter__("height", function() {
@@ -2101,8 +2099,7 @@ ToolbarPopup.prototype.__defineSetter__("height", function( val ) {
   this.properties.height = val;
   // not implemented in chromium
   //
-  // TODO will need to pass this message to the popup process itself
-  // to resize the popup window
+  // TODO pass this message to the popup process itself to resize the popup window
 });
 
 var ToolbarUIItem = function( properties ) {

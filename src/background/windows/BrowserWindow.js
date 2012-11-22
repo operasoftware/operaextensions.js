@@ -13,7 +13,7 @@ OEX.BrowserWindow = function(browserWindowProperties) {
   this._operaId = Math.floor(Math.random() * 1e16);
 
   this.tabs = new OEX.BrowserTabsManager(this);
-  // TODO Implement BrowserTabGroupsManager
+  // TODO Implement BrowserTabGroupsManager interface
   //this.tabGroups = new OEX.BrowserTabGroupsManager( this );
 };
 
@@ -101,7 +101,7 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
   }
 /* else if( browserTab instanceof OEX.BrowserTabGroup ) {
 
-    // TODO
+    // TODO implement BrowserTabGroup interface
 
   }*/
 
@@ -138,9 +138,9 @@ OEX.BrowserWindow.prototype.update = function(browserWindowProperties) {
     this.properties[i] = browserWindowProperties[i];
   }
 
-  // TODO enforce incognito because we can't make a tab incognito once it
-  // has been added to a non-incognito window.
+  // TODO enforce incognito because we can't make a tab incognito once it has been added to a non-incognito window.
   //browserWindowProperties.incognito = browserWindowProperties.private || false;
+  
   // Make any requested changes take effect in the user agent
   chrome.windows.update(
     this.properties.id, 
