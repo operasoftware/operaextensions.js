@@ -6,22 +6,7 @@
       console.log.apply( null, arguments ); 
     } 
   };
-  
-var OEvent = function(eventType, eventProperties) {
-
-  var evt = document.createEvent("Event");
-
-  evt.initEvent(eventType, true, true);
-
-  // Add custom properties or override standard event properties
-  for (var i in eventProperties) {
-    evt[i] = eventProperties[i];
-  }
-
-  return evt;
-
-};
-/**
+  /**
  * rsvp.js
  *
  * Author: Tilde, Inc.
@@ -240,13 +225,13 @@ var OEvent = function(eventType, eventProperties) {
 
   EventTarget.mixin(Promise.prototype);
   
-})(this.RSVP = {});
+})(opera._RSVP = {});
 
 /** end rsvp.js */
 
 var OPromise = function() {
 
-  RSVP.Promise.call( this );
+  opera._RSVP.Promise.call( this );
 
   // General enqueue/dequeue infrastructure
 
@@ -264,7 +249,7 @@ var OPromise = function() {
 
 };
 
-OPromise.prototype = Object.create( RSVP.Promise.prototype );
+OPromise.prototype = Object.create( opera._RSVP.Promise.prototype );
 
 OPromise.prototype.addEventListener = OPromise.prototype.on;
 
@@ -324,6 +309,21 @@ OPromise.prototype.dequeue = function() {
   //console.log("Dequeue on obj[" + this._operaId + "] queue length = " + this._queue.length);
 };
 
+var OEvent = function(eventType, eventProperties) {
+
+  var evt = document.createEvent("Event");
+
+  evt.initEvent(eventType, true, true);
+
+  // Add custom properties or override standard event properties
+  for (var i in eventProperties) {
+    evt[i] = eventProperties[i];
+  }
+
+  return evt;
+
+};
+
 var OMessagePort = function( isBackground ) {
 
   OPromise.call( this );
@@ -345,8 +345,13 @@ var OMessagePort = function( isBackground ) {
     
     this._localPort.onMessage.addListener( function( _message, _sender, responseCallback ) {
 
+      var messageType = 'message';
+      if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
+        messageType = 'controlmessage';
+      }
+
       this.fireEvent( new OEvent(
-        'message', 
+        messageType, 
         { 
           "data": _message, 
           "source": {
@@ -409,9 +414,14 @@ var OBackgroundMessagePort = function() {
     this._allPorts[ portIndex ] = _remotePort;
     
     _remotePort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+      
+      var messageType = 'message';
+      if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
+        messageType = 'controlmessage';
+      }
 
       this.fireEvent( new OEvent(
-        'message', 
+        messageType, 
         { 
           "data": _message, 
           "source": {
@@ -456,6 +466,212 @@ var OEX = opera.extension = opera.extension || (function() { return new OExtensi
 
 var OEC = opera.contexts = opera.contexts || {};
 
+var OStorage = function () {
+  
+  // All attributes and methods defined in this class must be non-enumerable, 
+  // hence the structure of this class and use of Object.defineProperty.
+  
+  Object.defineProperty(this, "_storage", { value : localStorage });
+  
+  Object.defineProperty(this, "length", { value : 0, writable:true });
+  
+  Object.defineProperty(OStorage.prototype, "getItem", { 
+    value: function( key ) {
+      return this._storage.getItem(key);
+    }.bind(this)
+  });
+  
+  Object.defineProperty(OStorage.prototype, "key", { 
+    value: function( i ) {
+      return this._storage.key(i);
+    }.bind(this)
+  });
+  
+  Object.defineProperty(OStorage.prototype, "removeItem", { 
+    value: function( key, proxiedChange ) {
+      this._storage.removeItem(key);
+      
+      if( this.hasOwnProperty( key ) ) {
+        delete this[key];
+        this.length--;
+      }
+      
+      if( !proxiedChange ) {
+        OEX.postMessage({
+          "action": "___O_widgetPreferences_removeItem_RESPONSE",
+          "data": {
+            "key": key
+          }
+        });
+      }
+    }.bind(this)
+  });
+  
+  Object.defineProperty(OStorage.prototype, "setItem", { 
+    value: function( key, value, proxiedChange ) {
+      this._storage.setItem(key, value);
+      
+      if( !this[key] ) {
+        this.length++;
+      }
+      this[key] = value;
+      
+      if( !proxiedChange ) {
+        OEX.postMessage({
+          "action": "___O_widgetPreferences_setItem_RESPONSE",
+          "data": {
+            "key": key,
+            "val": value
+          }
+        });
+      } 
+    }.bind(this)
+  });
+  
+  Object.defineProperty(OStorage.prototype, "clear", { 
+    value: function( proxiedChange ) {
+      this._storage.clear();
+      
+      for(var i in this) {
+        if( this.hasOwnProperty( i ) ) {
+          delete this[ i ];
+        }
+      }
+      this.length = 0;
+      
+      if( !proxiedChange ) {
+        OEX.postMessage({
+          "action": "___O_widgetPreferences_clearItem_RESPONSE"
+        });
+      }
+    }.bind(this)
+  });
+
+};
+
+var OWidgetObj = function() {
+  
+  OPromise.call(this);
+  
+  this.properties = {};
+  
+  // LocalStorage shim
+  this._preferences = new OStorage();
+  
+  // Setup the widget interface
+  var xhr = new XMLHttpRequest();
+
+  xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+          this.properties = JSON.parse(xhr.responseText);
+          this.resolve();
+      }
+  }.bind(this);
+  xhr.open("GET", chrome.extension.getURL('/manifest.json'), false);
+
+  try {
+      xhr.send();
+  } catch(e) {}
+  
+  // Setup widget object proxy listener 
+  // for injected scripts and popups to connect to
+  OEX.addEventListener('controlmessage', function( msg ) {
+    
+    if( !msg.data || !msg.data.action ) {
+      return;
+    }
+    
+    switch( msg.data.action ) {
+      
+      // Set up all storage properties
+      case '___O_widget_setup_REQUEST':
+      
+        var dataObj = {};
+        for(var i in this.properties) {
+          dataObj[ i ] = this.properties[ i ];
+        }
+
+        msg.source.postMessage({
+          "action": "___O_widget_setup_RESPONSE",
+          "attrs": dataObj,
+          // Add a copy of the preferences object
+          "_prefs": this._preferences
+        });
+
+        break;
+        
+      // Update a storage item
+      case '___O_widgetPreferences_setItem_REQUEST':
+        
+        this._preferences.setItem( msg.data.data.key, msg.data.data.val, true );
+        
+        break;
+      
+      // Remove a storage item
+      case '___O_widgetPreferences_removeItem_REQUEST':
+
+        this._preferences.removeItem( msg.data.data.key, true );
+
+        break;
+        
+      // Clear all storage items
+      case '___O_widgetPreferences_clear_REQUEST':
+
+        this._preferences.clear( true );
+        
+        break;
+        
+      default:
+        break;
+    }
+    
+  }.bind(this), false);
+  
+};
+
+OWidgetObj.prototype = Object.create( OPromise.prototype );
+
+OWidgetObj.prototype.__defineGetter__('name', function() {
+  return this.properties.name || "";
+});
+
+OWidgetObj.prototype.__defineGetter__('shortName', function() {
+  return this.properties.name ? this.properties.name.short || "" : "";
+});
+
+OWidgetObj.prototype.__defineGetter__('id', function() {
+  // TODO return better id
+  return this.properties.id || "";
+});
+
+OWidgetObj.prototype.__defineGetter__('description', function() {
+  return this.properties.description || "";
+});
+
+OWidgetObj.prototype.__defineGetter__('author', function() {
+  return this.properties.author || "";
+});
+
+OWidgetObj.prototype.__defineGetter__('authorHref', function() {
+  return this.properties.author ? this.properties.author.href || "" : "";
+});
+
+OWidgetObj.prototype.__defineGetter__('authorEmail', function() {
+  return this.properties.author ? this.properties.author.email || "" : "";
+});
+
+OWidgetObj.prototype.__defineGetter__('version', function() {
+  return this.properties.version || "";
+});
+
+OWidgetObj.prototype.__defineGetter__('preferences', function() {
+  return this._preferences;
+});
+
+// Add Widget API directly to global window
+global.widget = global.widget || (function() {
+  return new OWidgetObj();
+})();
 OEX.BrowserWindowsManager = function() {
 
   OPromise.call(this);

@@ -1,12 +1,16 @@
 [
   "../src/Header.js",
 
-  "../src/utils/Event.js",
   "../src/utils/third_party/rsvp.js",
   "../src/utils/Promise.js",
+  "../src/utils/Event.js",
 
   "../src/utils/MessagePort.js",
   "../src/injectedscript/Root.js",
+
+  "../src/utils/proxies/StorageProxy.js",
+  "../src/utils/proxies/WidgetObjProxy.js",
+  "../src/WidgetProxy.js",
 
   "../src/Footer.js"
 ]
