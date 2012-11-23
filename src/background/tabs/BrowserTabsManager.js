@@ -132,7 +132,7 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
     return;
   }
   // no windowId will default to adding the tab to the current window
-  browserTabProperties.windowId = this._parent ? this._parent.properties.id : null;
+  browserTabProperties.windowId = this._parent ? this._parent.properties.id : undefined;
 
   // Set insert position for the new tab from 'before' attribute, if any
   if( before && before instanceof OEX.BrowserTab ) {
