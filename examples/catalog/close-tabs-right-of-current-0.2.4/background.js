@@ -28,12 +28,10 @@ function closeTabsLeftOfCurrent(current_tabs) {
 
 function setupConnection() {
   extension.onmessage = function(event) {
-    console.log('message received');
     resetButtons();
   };
 
   extension.onconnect = function(event) {
-    console.log('connect event fired');
     event.source.postMessage("hello");
   };
 }

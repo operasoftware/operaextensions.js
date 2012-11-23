@@ -29,3 +29,10 @@ cp ../build/operaextensions_injectedscript.js ../examples/WidgetAPI/operaextensi
 # Screenshot API Test Extension
 cp ../build/operaextensions_background.js ../examples/Screenshot/operaextensions_background.js
 cp ../build/operaextensions_injectedscript.js ../examples/Screenshot/operaextensions_injectedscript.js
+
+# Ported addons.opera.com Extension examples
+
+# Close Tabs to Right of Current Extension
+cp ../build/operaextensions_background.js ../examples/catalog/close-tabs-right-of-current-0.2.4/shim/operaextensions_background.min.js
+cp ../build/operaextensions_injectedscript.js ../examples/catalog/close-tabs-right-of-current-0.2.4/shim/operaextensions_injectedscript.min.js
+cp ../build/operaextensions_popup.js ../examples/catalog/close-tabs-right-of-current-0.2.4/shim/operaextensions_popup.min.js

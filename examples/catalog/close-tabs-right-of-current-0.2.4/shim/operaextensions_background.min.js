@@ -1343,7 +1343,7 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
     return;
   }
   // no windowId will default to adding the tab to the current window
-  browserTabProperties.windowId = this._parent ? this._parent.properties.id : null;
+  browserTabProperties.windowId = this._parent ? this._parent.properties.id : undefined;
 
   // Set insert position for the new tab from 'before' attribute, if any
   if( before && before instanceof OEX.BrowserTab ) {
@@ -1887,9 +1887,7 @@ OEX.BrowserTab.prototype.close = function() {
 OEX.BrowserTab.prototype.focus = function() {
 
   // If current object is not resolved, then enqueue this action
-  if (!this.resolved ||
-        (this._windowParent && !this._windowParent.resolved) ||
-            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
+  if (!this.resolved) {
     this.enqueue('focus');
     return;
   }
@@ -1905,9 +1903,7 @@ OEX.BrowserTab.prototype.focus = function() {
 OEX.BrowserTab.prototype.update = function(browserTabProperties) {
 
   // If current object is not resolved, then enqueue this action
-  if (!this.resolved ||
-        (this._windowParent && !this._windowParent.resolved) ||
-            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
+  if (!this.resolved) {
     this.enqueue('update', browserTabProperties);
     return;
   }
@@ -2067,9 +2063,13 @@ OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
   this[ 0 ] = toolbarUIItem;
   this.length = 1;
 
+  toolbarUIItem.resolve();
   toolbarUIItem.apply();
   
+  toolbarUIItem.badge.resolve();
   toolbarUIItem.badge.apply();
+  
+  toolbarUIItem.popup.resolve();
   toolbarUIItem.popup.apply();
   
   // Enable the toolbar button
@@ -2112,7 +2112,7 @@ var ToolbarBadge = function( properties ) {
   this.properties.color = properties.color;
   this.properties.display = properties.display;
   
-  this.enqueue('apply');
+  //this.enqueue('apply');
   
 };
 
@@ -2120,7 +2120,7 @@ ToolbarBadge.prototype = Object.create( OPromise.prototype );
 
 ToolbarBadge.prototype.apply = function() {
 
-  chrome.browserAction.setBadgeBackgroundColor({ "color": this.backgroundColor || "#f00" });
+  chrome.browserAction.setBadgeBackgroundColor({ "color": (this.backgroundColor || "#f00") });
   
   if( this.display === "block" ) {
     chrome.browserAction.setBadgeText({ "text": this.textContent });
@@ -2195,7 +2195,7 @@ var ToolbarPopup = function( properties ) {
   this.properties.width = properties.width;
   this.properties.height = properties.height;
   
-  this.enqueue('apply');
+  //this.enqueue('apply');
 
 };
 
@@ -2254,7 +2254,7 @@ var ToolbarUIItem = function( properties ) {
   this.properties.popup = new ToolbarPopup( properties.popup || {} );
   this.properties.badge = new ToolbarBadge( properties.badge || {} );
   
-  this.enqueue('apply');
+  //this.enqueue('apply');
   
 };
 
