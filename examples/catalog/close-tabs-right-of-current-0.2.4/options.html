@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Options page for close tabs right/left of current</title>    
+    <link rel="stylesheet" href="options.css">
+    <script src="/shim/operaextensions_popup.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <img src="icons/icon_64.png">
+      <h1 id="widget-name">Close tabs right/left of current</h1>
+      <br/>
+      <h2>Made by <span id="widget-author"><a href="mailto:schzunio@gmail.com">schizunio</a></h2>
+    </header>
+
+    <fieldset>
+      <p>
+	<label for="option">Select which buttons you want to display:</label>
+	<select name="option" id="option">
+	  <option value="0">None</option>
+	  <option value="1">Left</option>
+	  <option value="2">Right</option>
+	</select>	
+      </p>
+      <p>
+	<label for="includeSelf">Close also current (active) tab?</label>
+	<input id="includeSelf" type="checkbox" value="1">
+    </fieldset>
+    <p>
+      <h2>Remember - you need to restart opera for extension to work with already opened tabs!</h2>
+    </p>
+    <p>
+      Currently it's impossible for extension to have 2 buttons, so for now, you have to choose..
+      <br/>
+      I could make a popup, with 2 links/buttons, but that would be 2 clicks, not 1.
+    </p>
+
+    <script src="./options.inline.1.js"></script>
+  </body>
+</html>
