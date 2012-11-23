@@ -11,3 +11,10 @@ cp ../build/operaextensions_injectedscript.js ../examples/Messaging/operaextensi
 
 cp ../build/operaextensions_background.js ../examples/WidgetAPI/operaextensions_background.js
 cp ../build/operaextensions_injectedscript.js ../examples/WidgetAPI/operaextensions_injectedscript.js
+
+cp ../build/operaextensions_background.js ../examples/Screenshot/operaextensions_background.js
+cp ../build/operaextensions_injectedscript.js ../examples/Screenshot/operaextensions_injectedscript.js
+
+cp ../build/operaextensions_background.js ../examples/catalog/close-tabs-right-of-current-0.2.4/shim/operaextensions_background.min.js
+cp ../build/operaextensions_injectedscript.js ../examples/catalog/close-tabs-right-of-current-0.2.4/shim/operaextensions_injectedscript.min.js
+cp ../build/operaextensions_popup.js ../examples/catalog/close-tabs-right-of-current-0.2.4/shim/operaextensions_popup.min.js
