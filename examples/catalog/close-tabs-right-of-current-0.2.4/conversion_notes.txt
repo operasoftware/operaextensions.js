@@ -1,0 +1,38 @@
+
+In /config.xml:
+
+- convert to manifest.json
+
+- remove /config.xml file
+
+In /index.html:
+
+- move file reference to manifest.json in "background": { "page": "index.html" } section
+
+- include '/shim/operaextensions_background.html' in HTML <head> element of index.html
+
+- widget.preferences.option = ... && widget.preferences.includeSelf = ... needs to be converted to widget.preferences.setItem('option', ...) and widget.preferences.setItem('includeSelf', ...);
+
+- var ... = widget.preferences.option && var ... = widget.preferences.includeSelf needs to be converted to var ... = widget.preferences.getItem('option') and var ... = widget.preferences.getItem('includeSelf');
+
+In /includes/userJS.js:
+
+- move file reference to manifest.json in "content_scripts" section
+
+- include '/shim/operaextensions_injectedscript.html' also in manifest.json
+
+In /options.html:
+
+- move file reference to manifest.json in "options_page" section
+
+- include '/shim/operaextensions_popup.html' in HTML <head> element of options.html
+
+- inline JS script needs to be made in to a file and then included (options.inline.js) in the same place.
+
+- inline JS script needs to be delayed so that widget.preferences can be set up in time.
+
+- hoist opera.extension.onmessage out of load event in options.inline.js
+
+- widget.preferences.option = ... && widget.preferences.includeSelf = ... needs to be converted to widget.preferences.setItem('option', ...) and widget.preferences.setItem('includeSelf', ...);
+
+- var ... = widget.preferences.option && var ... = widget.preferences.includeSelf needs to be converted to var ... = widget.preferences.getItem('option') and var ... = widget.preferences.getItem('includeSelf');

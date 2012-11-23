@@ -1,0 +1,23 @@
+{
+  "name": "Close tabs right of current",
+  "version": "0.2.4",
+  "manifest_version": 2,
+  "description": "OPERA PORT: Closes tabs right/left of current (focused) tab",
+  "icons": { "16": "/icons/icon_left_18.png",
+             "48": "/icons/icon_64.png",
+             "128": "/icons/icon_64.png" },
+  "background": {
+      "page": "index.html"
+  },
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/shim/operaextensions_injectedscript.min.js", "/includes/userJS.js"]
+      }
+  ],
+  "options_page": "options.html",
+  "permissions": [
+    "tabs", "http://*/*", "https://*/*"
+  ],
+  "browser_action": {}
+}
