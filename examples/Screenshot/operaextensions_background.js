@@ -17,221 +17,223 @@
  * By: Rich Tibbett
  */
 
-(function(exports) { "use strict";
+ var exports = {};
+ var browserGlobal = (typeof window !== 'undefined') ? window : {};
 
-  var browserGlobal = (typeof window !== 'undefined') ? window : {};
+ var MutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
+ var async;
 
-  var MutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-  var async;
+ if (typeof process !== 'undefined' &&
+   {}.toString.call(process) === '[object process]') {
+   async = function(callback, binding) {
+     process.nextTick(function() {
+       callback.call(binding);
+     });
+   };
+ } else if (MutationObserver) {
+   var queue = [];
 
-  if (typeof process !== 'undefined') {
-    async = function(callback, binding) {
-      process.nextTick(function() {
-        callback.call(binding);
-      });
-    };
-  } else if (MutationObserver) {
-    var queue = [];
+   var observer = new MutationObserver(function() {
+     var toProcess = queue.slice();
+     queue = [];
 
-    var observer = new MutationObserver(function() {
-      var toProcess = queue.slice();
-      queue = [];
+     toProcess.forEach(function(tuple) {
+       var callback = tuple[0], binding = tuple[1];
+       callback.call(binding);
+     });
+   });
 
-      toProcess.forEach(function(tuple) {
-        var callback = tuple[0], binding = tuple[1];
-        callback.call(binding);
-      });
-    });
+   var element = document.createElement('div');
+   observer.observe(element, { attributes: true });
 
-    var element = document.createElement('div');
-    observer.observe(element, { attributes: true });
+   async = function(callback, binding) {
+     queue.push([callback, binding]);
+     element.setAttribute('drainQueue', 'drainQueue');
+   };
+ } else {
+   async = function(callback, binding) {
+     setTimeout(function() {
+       callback.call(binding);
+     }, 1);
+   };
+ }
 
-    async = function(callback, binding) {
-      queue.push([callback, binding]);
-      element.setAttribute('drainQueue', 'drainQueue');
-    };
-  } else {
-    async = function(callback, binding) {
-      setTimeout(function() {
-        callback.call(binding);
-      }, 1);
-    };
-  }
+ exports.async = async;
 
-  exports.async = async;
+ var Event = exports.Event = function(type, options) {
+   this.type = type;
 
-  var Event = exports.Event = function(type, options) {
-    this.type = type;
+   for (var option in options) {
+     if (!options.hasOwnProperty(option)) { continue; }
 
-    for (var option in options) {
-      if (!options.hasOwnProperty(option)) { continue; }
+     this[option] = options[option];
+   }
+ };
 
-      this[option] = options[option];
-    }
-  };
+ var indexOf = function(callbacks, callback) {
+   for (var i=0, l=callbacks.length; i<l; i++) {
+     if (callbacks[i][0] === callback) { return i; }
+   }
 
-  var indexOf = function(callbacks, callback) {
-    for (var i=0, l=callbacks.length; i<l; i++) {
-      if (callbacks[i][0] === callback) { return i; }
-    }
+   return -1;
+ };
 
-    return -1;
-  };
+ var callbacksFor = function(object) {
+   var callbacks = object._promiseCallbacks;
 
-  var callbacksFor = function(object) {
-    var callbacks = object._promiseCallbacks;
+   if (!callbacks) {
+     callbacks = object._promiseCallbacks = {};
+   }
 
-    if (!callbacks) {
-      callbacks = object._promiseCallbacks = {};
-    }
+   return callbacks;
+ };
 
-    return callbacks;
-  };
+ var EventTarget = exports.EventTarget = {
+   mixin: function(object) {
+     object.on = this.on;
+     object.off = this.off;
+     object.trigger = this.trigger;
+     return object;
+   },
 
-  var EventTarget = exports.EventTarget = {
-    mixin: function(object) {
-      object.on = this.on;
-      object.off = this.off;
-      object.trigger = this.trigger;
-      return object;
-    },
+   on: function(eventNames, callback, binding) {
+     var allCallbacks = callbacksFor(this), callbacks, eventName;
+     eventNames = eventNames.split(/\s+/);
+     binding = binding || this;
 
-    on: function(eventName, callback, binding) {
-      var allCallbacks = callbacksFor(this), callbacks;
-      binding = binding || this;
+     while (eventName = eventNames.shift()) {
+       callbacks = allCallbacks[eventName];
 
-      callbacks = allCallbacks[eventName];
+       if (!callbacks) {
+         callbacks = allCallbacks[eventName] = [];
+       }
 
-      if (!callbacks) {
-        callbacks = allCallbacks[eventName] = [];
-      }
+       if (indexOf(callbacks, callback) === -1) {
+         callbacks.push([callback, binding]);
+       }
+     }
+   },
 
-      if (indexOf(callbacks, callback) === -1) {
-        callbacks.push([callback, binding]);
-      }
-    },
+   off: function(eventNames, callback) {
+     var allCallbacks = callbacksFor(this), callbacks, eventName, index;
+     eventNames = eventNames.split(/\s+/);
 
-    off: function(eventName, callback) {
-      var allCallbacks = callbacksFor(this), callbacks;
+     while (eventName = eventNames.shift()) {
+       if (!callback) {
+         allCallbacks[eventName] = [];
+         continue;
+       }
 
-      if (!callback) {
-        allCallbacks[eventName] = [];
-        return;
-      }
+       callbacks = allCallbacks[eventName];
 
-      callbacks = allCallbacks[eventName];
+       index = indexOf(callbacks, callback);
 
-      var index = indexOf(callbacks, callback);
+       if (index !== -1) { callbacks.splice(index, 1); }
+     }
+   },
 
-      if (index !== -1) { callbacks.splice(index, 1); }
-    },
+   trigger: function(eventName, options) {
+     var allCallbacks = callbacksFor(this),
+         callbacks, callbackTuple, callback, binding, event;
 
-    trigger: function(eventName, options) {
-      var allCallbacks = callbacksFor(this),
-          callbacks, callbackTuple, callback, binding, event;
+     if (callbacks = allCallbacks[eventName]) {
+       for (var i=0, l=callbacks.length; i<l; i++) {
+         callbackTuple = callbacks[i];
+         callback = callbackTuple[0];
+         binding = callbackTuple[1];
 
-      if (callbacks = allCallbacks[eventName]) {
-        for (var i=0, l=callbacks.length; i<l; i++) {
-          callbackTuple = callbacks[i];
-          callback = callbackTuple[0];
-          binding = callbackTuple[1];
+         if (typeof options !== 'object') {
+           options = { detail: options };
+         }
 
-          if (typeof options !== 'object') {
-            options = { detail: options };
-          }
+         event = new Event(eventName, options);
+         callback.call(binding, event);
+       }
+     }
+   }
+ };
 
-          event = new Event(eventName, options);
-          callback.call(binding, event);
-        }
-      }
-    }
-  };
+ var Promise = exports.Promise = function() {
+   this.on('promise:resolved', function(event) {
+     this.trigger('success', { detail: event.detail });
+   }, this);
 
-  var Promise = exports.Promise = function() {
-    this.on('promise:resolved', function(event) {
-      this.trigger('success', { detail: event.detail });
-    }, this);
+   this.on('promise:failed', function(event) {
+     this.trigger('error', { detail: event.detail });
+   }, this);
+ };
 
-    this.on('promise:failed', function(event) {
-      this.trigger('error', { detail: event.detail });
-    }, this);
-  };
+ var noop = function() {};
 
-  var noop = function() {};
+ var invokeCallback = function(type, promise, callback, event) {
+   var value, error;
 
-  exports.invokeCallback = function(type, promise, callback, event) {
-    var value, error;
+   if (callback) {
+     try {
+       value = callback(event.detail);
+     } catch(e) {
+       error = e;
+     }
+   } else {
+     value = event.detail;
+   }
 
-    if (callback) {
-      try {
-        value = callback(event.detail);
-      } catch(e) {
-        error = e;
-      }
-    } else {
-      value = event.detail;
-    }
+   if (value instanceof Promise) {
+     value.then(function(value) {
+       promise.resolve(value);
+     }, function(error) {
+       promise.reject(error);
+     });
+   } else if (callback && value) {
+     promise.resolve(value);
+   } else if (error) {
+     promise.reject(error);
+   } else {
+     promise[type](value);
+   }
+ };
 
-    if (value instanceof Promise) {
-      value.then(function(value) {
-        promise.resolve(value);
-      }, function(error) {
-        promise.reject(error);
-      });
-    } else if (callback && value) {
-      promise.resolve(value);
-    } else if (error) {
-      promise.reject(error);
-    } else {
-      promise[type](value);
-    }
-  };
+ Promise.prototype = {
+   then: function(done, fail) {
+     var thenPromise = new Promise();
 
-  Promise.prototype = {
-    then: function(done, fail) {
-      var thenPromise = new Promise();
+     this.on('promise:resolved', function(event) {
+       invokeCallback('resolve', thenPromise, done, event);
+     });
 
-      this.on('promise:resolved', function(event) {
-        exports.invokeCallback('resolve', thenPromise, done, event);
-      });
+     this.on('promise:failed', function(event) {
+       invokeCallback('reject', thenPromise, fail, event);
+     });
 
-      this.on('promise:failed', function(event) {
-        exports.invokeCallback('reject', thenPromise, fail, event);
-      });
+     return thenPromise;
+   },
 
-      return thenPromise;
-    },
+   resolve: function(value) {
+     exports.async(function() {
+       this.trigger('promise:resolved', { detail: value });
+       this.isResolved = value;
+     }, this);
 
-    resolve: function(value) {
-      exports.async(function() {
-        this.trigger('promise:resolved', { detail: value });
-        //this.resolvedValue = value;
-      }, this);
+     this.resolve = noop;
+     this.reject = noop;
+   },
 
-      this.resolve = function() {}; // noop
-      this.reject = function() {}; // noop
-    },
+   reject: function(value) {
+     exports.async(function() {
+       this.trigger('promise:failed', { detail: value });
+       this.isRejected = value;
+     }, this);
 
-    reject: function(value) {
-      exports.async(function() {
-        this.trigger('promise:failed', { detail: value });
-        //this.rejectedValue = value;
-      }, this);
+     this.resolve = noop;
+     this.reject = noop;
+   }
+ };
 
-      this.resolve = function() {}; // noop
-      this.reject = function() {}; // noop
-    }
-  };
-
-  EventTarget.mixin(Promise.prototype);
-  
-})(opera._RSVP = {});
-
-/** end rsvp.js */
+ EventTarget.mixin(Promise.prototype);
 
 var OPromise = function() {
 
-  opera._RSVP.Promise.call( this );
+  Promise.call( this );
 
   // General enqueue/dequeue infrastructure
 
@@ -249,7 +251,7 @@ var OPromise = function() {
 
 };
 
-OPromise.prototype = Object.create( opera._RSVP.Promise.prototype );
+OPromise.prototype = Object.create( Promise.prototype );
 
 OPromise.prototype.addEventListener = OPromise.prototype.on;
 
@@ -351,6 +353,8 @@ var OMessagePort = function( isBackground ) {
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
         messageType = 'controlmessage';
       }
+      
+      var localPort = this._localPort;
 
       this.fireEvent( new OEvent(
         messageType, 
@@ -358,12 +362,12 @@ var OMessagePort = function( isBackground ) {
           "data": _message,
           "source": {
             postMessage: function( data ) {
-              this._localPort.postMessage( data );
+              localPort.postMessage( data );
             },
             "tabId": _sender && _sender.tab ? _sender.tab.id : null
           }
         }
-      ));
+      ) );
 
     }.bind(this) );
 
@@ -1723,7 +1727,7 @@ OEX.RootBrowserTabsManager = function() {
 
             OEX.windows[i].tabs[j].properties.active = true;
             
-            OEX.windows[i]._lastFocusedTab = OEX.windows[i].tabs[j];
+            OEX.windows[i].tabs._lastFocusedTab = OEX.windows[i].tabs[j];
             
             this._lastFocusedTab = OEX.windows[i].tabs[j];
 
@@ -2063,10 +2067,10 @@ OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
   this[ 0 ] = toolbarUIItem;
   this.length = 1;
 
-  toolbarUIItem.resolve();
+  toolbarUIItem.apply();
   
-  toolbarUIItem.badge.resolve();
-  toolbarUIItem.popup.resolve();
+  toolbarUIItem.badge.apply();
+  toolbarUIItem.popup.apply();
   
   // Enable the toolbar button
   chrome.browserAction.enable();
@@ -2116,7 +2120,7 @@ ToolbarBadge.prototype = Object.create( OPromise.prototype );
 
 ToolbarBadge.prototype.apply = function() {
 
-  chrome.browserAction.setBadgeBackgroundColor({ "color": this.backgroundColor });
+  chrome.browserAction.setBadgeBackgroundColor({ "color": this.backgroundColor || "#f00" });
   
   if( this.display === "block" ) {
     chrome.browserAction.setBadgeText({ "text": this.textContent });
