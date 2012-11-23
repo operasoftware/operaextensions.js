@@ -87,9 +87,7 @@ OEX.BrowserTab.prototype.close = function() {
 OEX.BrowserTab.prototype.focus = function() {
 
   // If current object is not resolved, then enqueue this action
-  if (!this.resolved ||
-        (this._windowParent && !this._windowParent.resolved) ||
-            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
+  if (!this.resolved) {
     this.enqueue('focus');
     return;
   }
@@ -105,9 +103,7 @@ OEX.BrowserTab.prototype.focus = function() {
 OEX.BrowserTab.prototype.update = function(browserTabProperties) {
 
   // If current object is not resolved, then enqueue this action
-  if (!this.resolved ||
-        (this._windowParent && !this._windowParent.resolved) ||
-            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
+  if (!this.resolved) {
     this.enqueue('update', browserTabProperties);
     return;
   }

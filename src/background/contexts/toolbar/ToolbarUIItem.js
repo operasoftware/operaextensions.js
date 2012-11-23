@@ -11,7 +11,7 @@ var ToolbarUIItem = function( properties ) {
   this.properties.popup = new ToolbarPopup( properties.popup || {} );
   this.properties.badge = new ToolbarBadge( properties.badge || {} );
   
-  this.enqueue('apply');
+  //this.enqueue('apply');
   
 };
 

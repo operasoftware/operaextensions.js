@@ -10,7 +10,7 @@ var ToolbarPopup = function( properties ) {
   this.properties.width = properties.width;
   this.properties.height = properties.height;
   
-  this.enqueue('apply');
+  //this.enqueue('apply');
 
 };
 
