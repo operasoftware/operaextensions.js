@@ -262,7 +262,7 @@ OEX.RootBrowserTabsManager = function() {
 
             OEX.windows[i].tabs[j].properties.active = true;
             
-            OEX.windows[i]._lastFocusedTab = OEX.windows[i].tabs[j];
+            OEX.windows[i].tabs._lastFocusedTab = OEX.windows[i].tabs[j];
             
             this._lastFocusedTab = OEX.windows[i].tabs[j];
 

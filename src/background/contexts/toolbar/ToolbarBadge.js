@@ -19,7 +19,7 @@ ToolbarBadge.prototype = Object.create( OPromise.prototype );
 
 ToolbarBadge.prototype.apply = function() {
 
-  chrome.browserAction.setBadgeBackgroundColor({ "color": this.backgroundColor });
+  chrome.browserAction.setBadgeBackgroundColor({ "color": this.backgroundColor || "#f00" });
   
   if( this.display === "block" ) {
     chrome.browserAction.setBadgeText({ "text": this.textContent });

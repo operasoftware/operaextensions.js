@@ -1,7 +1,7 @@
 
 var OPromise = function() {
 
-  opera._RSVP.Promise.call( this );
+  Promise.call( this );
 
   // General enqueue/dequeue infrastructure
 
@@ -19,7 +19,7 @@ var OPromise = function() {
 
 };
 
-OPromise.prototype = Object.create( opera._RSVP.Promise.prototype );
+OPromise.prototype = Object.create( Promise.prototype );
 
 OPromise.prototype.addEventListener = OPromise.prototype.on;
 

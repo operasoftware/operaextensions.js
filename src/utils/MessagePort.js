@@ -26,6 +26,8 @@ var OMessagePort = function( isBackground ) {
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
         messageType = 'controlmessage';
       }
+      
+      var localPort = this._localPort;
 
       this.fireEvent( new OEvent(
         messageType, 
@@ -33,12 +35,12 @@ var OMessagePort = function( isBackground ) {
           "data": _message,
           "source": {
             postMessage: function( data ) {
-              this._localPort.postMessage( data );
+              localPort.postMessage( data );
             },
             "tabId": _sender && _sender.tab ? _sender.tab.id : null
           }
         }
-      ));
+      ) );
 
     }.bind(this) );
 
