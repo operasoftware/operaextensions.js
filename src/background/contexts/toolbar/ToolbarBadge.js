@@ -11,7 +11,7 @@ var ToolbarBadge = function( properties ) {
   this.properties.color = properties.color;
   this.properties.display = properties.display;
   
-  this.enqueue('apply');
+  //this.enqueue('apply');
   
 };
 
@@ -19,7 +19,7 @@ ToolbarBadge.prototype = Object.create( OPromise.prototype );
 
 ToolbarBadge.prototype.apply = function() {
 
-  chrome.browserAction.setBadgeBackgroundColor({ "color": this.backgroundColor || "#f00" });
+  chrome.browserAction.setBadgeBackgroundColor({ "color": (this.backgroundColor || "#f00") });
   
   if( this.display === "block" ) {
     chrome.browserAction.setBadgeText({ "text": this.textContent });

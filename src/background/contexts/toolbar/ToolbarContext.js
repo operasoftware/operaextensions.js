@@ -43,9 +43,13 @@ OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
   this[ 0 ] = toolbarUIItem;
   this.length = 1;
 
+  toolbarUIItem.resolve();
   toolbarUIItem.apply();
   
+  toolbarUIItem.badge.resolve();
   toolbarUIItem.badge.apply();
+  
+  toolbarUIItem.popup.resolve();
   toolbarUIItem.popup.apply();
   
   // Enable the toolbar button
