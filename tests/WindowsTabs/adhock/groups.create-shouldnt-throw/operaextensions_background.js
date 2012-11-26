@@ -2,25 +2,10 @@
 
   var opera = global.opera || { 
     REVISION: '1', 
-    postError: function() { 
-      console.log.apply( null, arguments ); 
+    postError: function( str ) { 
+      console.log( str ); 
     } 
   };
-  
-var OEvent = function(eventType, eventProperties) {
-
-  var evt = document.createEvent("Event");
-
-  evt.initEvent(eventType, true, true);
-
-  // Add custom properties or override standard event properties
-  for (var i in eventProperties) {
-    evt[i] = eventProperties[i];
-  }
-
-  return evt;
-
-};
 /**
  * rsvp.js
  *
@@ -32,221 +17,223 @@ var OEvent = function(eventType, eventProperties) {
  * By: Rich Tibbett
  */
 
-(function(exports) { "use strict";
+ var exports = {};
+ var browserGlobal = (typeof window !== 'undefined') ? window : {};
 
-  var browserGlobal = (typeof window !== 'undefined') ? window : {};
+ var MutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
+ var async;
 
-  var MutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-  var async;
+ if (typeof process !== 'undefined' &&
+   {}.toString.call(process) === '[object process]') {
+   async = function(callback, binding) {
+     process.nextTick(function() {
+       callback.call(binding);
+     });
+   };
+ } else if (MutationObserver) {
+   var queue = [];
 
-  if (typeof process !== 'undefined') {
-    async = function(callback, binding) {
-      process.nextTick(function() {
-        callback.call(binding);
-      });
-    };
-  } else if (MutationObserver) {
-    var queue = [];
+   var observer = new MutationObserver(function() {
+     var toProcess = queue.slice();
+     queue = [];
 
-    var observer = new MutationObserver(function() {
-      var toProcess = queue.slice();
-      queue = [];
+     toProcess.forEach(function(tuple) {
+       var callback = tuple[0], binding = tuple[1];
+       callback.call(binding);
+     });
+   });
 
-      toProcess.forEach(function(tuple) {
-        var callback = tuple[0], binding = tuple[1];
-        callback.call(binding);
-      });
-    });
+   var element = document.createElement('div');
+   observer.observe(element, { attributes: true });
 
-    var element = document.createElement('div');
-    observer.observe(element, { attributes: true });
+   async = function(callback, binding) {
+     queue.push([callback, binding]);
+     element.setAttribute('drainQueue', 'drainQueue');
+   };
+ } else {
+   async = function(callback, binding) {
+     setTimeout(function() {
+       callback.call(binding);
+     }, 1);
+   };
+ }
 
-    async = function(callback, binding) {
-      queue.push([callback, binding]);
-      element.setAttribute('drainQueue', 'drainQueue');
-    };
-  } else {
-    async = function(callback, binding) {
-      setTimeout(function() {
-        callback.call(binding);
-      }, 1);
-    };
-  }
+ exports.async = async;
 
-  exports.async = async;
+ var Event = exports.Event = function(type, options) {
+   this.type = type;
 
-  var Event = exports.Event = function(type, options) {
-    this.type = type;
+   for (var option in options) {
+     if (!options.hasOwnProperty(option)) { continue; }
 
-    for (var option in options) {
-      if (!options.hasOwnProperty(option)) { continue; }
+     this[option] = options[option];
+   }
+ };
 
-      this[option] = options[option];
-    }
-  };
+ var indexOf = function(callbacks, callback) {
+   for (var i=0, l=callbacks.length; i<l; i++) {
+     if (callbacks[i][0] === callback) { return i; }
+   }
 
-  var indexOf = function(callbacks, callback) {
-    for (var i=0, l=callbacks.length; i<l; i++) {
-      if (callbacks[i][0] === callback) { return i; }
-    }
+   return -1;
+ };
 
-    return -1;
-  };
+ var callbacksFor = function(object) {
+   var callbacks = object._promiseCallbacks;
 
-  var callbacksFor = function(object) {
-    var callbacks = object._promiseCallbacks;
+   if (!callbacks) {
+     callbacks = object._promiseCallbacks = {};
+   }
 
-    if (!callbacks) {
-      callbacks = object._promiseCallbacks = {};
-    }
+   return callbacks;
+ };
 
-    return callbacks;
-  };
+ var EventTarget = exports.EventTarget = {
+   mixin: function(object) {
+     object.on = this.on;
+     object.off = this.off;
+     object.trigger = this.trigger;
+     return object;
+   },
 
-  var EventTarget = exports.EventTarget = {
-    mixin: function(object) {
-      object.on = this.on;
-      object.off = this.off;
-      object.trigger = this.trigger;
-      return object;
-    },
+   on: function(eventNames, callback, binding) {
+     var allCallbacks = callbacksFor(this), callbacks, eventName;
+     eventNames = eventNames.split(/\s+/);
+     binding = binding || this;
 
-    on: function(eventName, callback, binding) {
-      var allCallbacks = callbacksFor(this), callbacks;
-      binding = binding || this;
+     while (eventName = eventNames.shift()) {
+       callbacks = allCallbacks[eventName];
 
-      callbacks = allCallbacks[eventName];
+       if (!callbacks) {
+         callbacks = allCallbacks[eventName] = [];
+       }
 
-      if (!callbacks) {
-        callbacks = allCallbacks[eventName] = [];
-      }
+       if (indexOf(callbacks, callback) === -1) {
+         callbacks.push([callback, binding]);
+       }
+     }
+   },
 
-      if (indexOf(callbacks, callback) === -1) {
-        callbacks.push([callback, binding]);
-      }
-    },
+   off: function(eventNames, callback) {
+     var allCallbacks = callbacksFor(this), callbacks, eventName, index;
+     eventNames = eventNames.split(/\s+/);
 
-    off: function(eventName, callback) {
-      var allCallbacks = callbacksFor(this), callbacks;
+     while (eventName = eventNames.shift()) {
+       if (!callback) {
+         allCallbacks[eventName] = [];
+         continue;
+       }
 
-      if (!callback) {
-        allCallbacks[eventName] = [];
-        return;
-      }
+       callbacks = allCallbacks[eventName];
 
-      callbacks = allCallbacks[eventName];
+       index = indexOf(callbacks, callback);
 
-      var index = indexOf(callbacks, callback);
+       if (index !== -1) { callbacks.splice(index, 1); }
+     }
+   },
 
-      if (index !== -1) { callbacks.splice(index, 1); }
-    },
+   trigger: function(eventName, options) {
+     var allCallbacks = callbacksFor(this),
+         callbacks, callbackTuple, callback, binding, event;
 
-    trigger: function(eventName, options) {
-      var allCallbacks = callbacksFor(this),
-          callbacks, callbackTuple, callback, binding, event;
+     if (callbacks = allCallbacks[eventName]) {
+       for (var i=0, l=callbacks.length; i<l; i++) {
+         callbackTuple = callbacks[i];
+         callback = callbackTuple[0];
+         binding = callbackTuple[1];
 
-      if (callbacks = allCallbacks[eventName]) {
-        for (var i=0, l=callbacks.length; i<l; i++) {
-          callbackTuple = callbacks[i];
-          callback = callbackTuple[0];
-          binding = callbackTuple[1];
+         if (typeof options !== 'object') {
+           options = { detail: options };
+         }
 
-          if (typeof options !== 'object') {
-            options = { detail: options };
-          }
+         event = new Event(eventName, options);
+         callback.call(binding, event);
+       }
+     }
+   }
+ };
 
-          event = new Event(eventName, options);
-          callback.call(binding, event);
-        }
-      }
-    }
-  };
+ var Promise = exports.Promise = function() {
+   this.on('promise:resolved', function(event) {
+     this.trigger('success', { detail: event.detail });
+   }, this);
 
-  var Promise = exports.Promise = function() {
-    this.on('promise:resolved', function(event) {
-      this.trigger('success', { detail: event.detail });
-    }, this);
+   this.on('promise:failed', function(event) {
+     this.trigger('error', { detail: event.detail });
+   }, this);
+ };
 
-    this.on('promise:failed', function(event) {
-      this.trigger('error', { detail: event.detail });
-    }, this);
-  };
+ var noop = function() {};
 
-  var noop = function() {};
+ var invokeCallback = function(type, promise, callback, event) {
+   var value, error;
 
-  exports.invokeCallback = function(type, promise, callback, event) {
-    var value, error;
+   if (callback) {
+     try {
+       value = callback(event.detail);
+     } catch(e) {
+       error = e;
+     }
+   } else {
+     value = event.detail;
+   }
 
-    if (callback) {
-      try {
-        value = callback(event.detail);
-      } catch(e) {
-        error = e;
-      }
-    } else {
-      value = event.detail;
-    }
+   if (value instanceof Promise) {
+     value.then(function(value) {
+       promise.resolve(value);
+     }, function(error) {
+       promise.reject(error);
+     });
+   } else if (callback && value) {
+     promise.resolve(value);
+   } else if (error) {
+     promise.reject(error);
+   } else {
+     promise[type](value);
+   }
+ };
 
-    if (value instanceof Promise) {
-      value.then(function(value) {
-        promise.resolve(value);
-      }, function(error) {
-        promise.reject(error);
-      });
-    } else if (callback && value) {
-      promise.resolve(value);
-    } else if (error) {
-      promise.reject(error);
-    } else {
-      promise[type](value);
-    }
-  };
+ Promise.prototype = {
+   then: function(done, fail) {
+     var thenPromise = new Promise();
 
-  Promise.prototype = {
-    then: function(done, fail) {
-      var thenPromise = new Promise();
+     this.on('promise:resolved', function(event) {
+       invokeCallback('resolve', thenPromise, done, event);
+     });
 
-      this.on('promise:resolved', function(event) {
-        exports.invokeCallback('resolve', thenPromise, done, event);
-      });
+     this.on('promise:failed', function(event) {
+       invokeCallback('reject', thenPromise, fail, event);
+     });
 
-      this.on('promise:failed', function(event) {
-        exports.invokeCallback('reject', thenPromise, fail, event);
-      });
+     return thenPromise;
+   },
 
-      return thenPromise;
-    },
+   resolve: function(value) {
+     exports.async(function() {
+       this.trigger('promise:resolved', { detail: value });
+       this.isResolved = value;
+     }, this);
 
-    resolve: function(value) {
-      exports.async(function() {
-        this.trigger('promise:resolved', { detail: value });
-        //this.resolvedValue = value;
-      }, this);
+     this.resolve = noop;
+     this.reject = noop;
+   },
 
-      this.resolve = function() {}; // noop
-      this.reject = function() {}; // noop
-    },
+   reject: function(value) {
+     exports.async(function() {
+       this.trigger('promise:failed', { detail: value });
+       this.isRejected = value;
+     }, this);
 
-    reject: function(value) {
-      exports.async(function() {
-        this.trigger('promise:failed', { detail: value });
-        //this.rejectedValue = value;
-      }, this);
+     this.resolve = noop;
+     this.reject = noop;
+   }
+ };
 
-      this.resolve = function() {}; // noop
-      this.reject = function() {}; // noop
-    }
-  };
-
-  EventTarget.mixin(Promise.prototype);
-  
-})(this.RSVP = {});
-
-/** end rsvp.js */
+ EventTarget.mixin(Promise.prototype);
 
 var OPromise = function() {
 
-  RSVP.Promise.call( this );
+  Promise.call( this );
 
   // General enqueue/dequeue infrastructure
 
@@ -264,7 +251,7 @@ var OPromise = function() {
 
 };
 
-OPromise.prototype = Object.create( RSVP.Promise.prototype );
+OPromise.prototype = Object.create( Promise.prototype );
 
 OPromise.prototype.addEventListener = OPromise.prototype.on;
 
@@ -324,6 +311,21 @@ OPromise.prototype.dequeue = function() {
   //console.log("Dequeue on obj[" + this._operaId + "] queue length = " + this._queue.length);
 };
 
+var OEvent = function(eventType, eventProperties) {
+
+  var evt = document.createEvent("Event");
+
+  evt.initEvent(eventType, true, true);
+
+  // Add custom properties or override standard event properties
+  for (var i in eventProperties) {
+    evt[i] = eventProperties[i];
+  }
+
+  return evt;
+
+};
+
 var OMessagePort = function( isBackground ) {
 
   OPromise.call( this );
@@ -339,23 +341,33 @@ var OMessagePort = function( isBackground ) {
     
     this._localPort.onDisconnect.addListener(function() {
     
+      this.fireEvent( new OEvent( 'disconnect', { "source": this._localPort } ) );
+      
       this._localPort = null;
       
     }.bind(this));
     
     this._localPort.onMessage.addListener( function( _message, _sender, responseCallback ) {
 
+      var messageType = 'message';
+      if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
+        messageType = 'controlmessage';
+      }
+      
+      var localPort = this._localPort;
+
       this.fireEvent( new OEvent(
-        'message', 
+        messageType, 
         { 
-          "data": _message, 
+          "data": _message,
           "source": {
             postMessage: function( data ) {
-              this._localPort.postMessage( data );
-            }
+              localPort.postMessage( data );
+            },
+            "tabId": _sender && _sender.tab ? _sender.tab.id : null
           }
         }
-      ));
+      ) );
 
     }.bind(this) );
 
@@ -402,30 +414,34 @@ var OBackgroundMessagePort = function() {
       
       this._allPorts.splice( portIndex - 1, 1 );
       
-      this.fireEvent( new OEvent('disconnect', {}) );
+      this.fireEvent( new OEvent('disconnect', { "source": _remotePort }) );
       
     }.bind(this));
     
     this._allPorts[ portIndex ] = _remotePort;
     
     _remotePort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+      
+      var messageType = 'message';
+      if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
+        messageType = 'controlmessage';
+      }
 
       this.fireEvent( new OEvent(
-        'message', 
+        messageType, 
         { 
           "data": _message, 
           "source": {
             postMessage: function( data ) {
               _remotePort.postMessage( data );
-            }
+            },
+            "tabId": _remotePort.sender && _remotePort.sender.tab ? _remotePort.sender.tab.id : null
           }
         }
       ));
 
     }.bind(this) );
   
-    // TODO delay this call until we actually have an onconnect listener 
-    // e.g. so it triggers when in a document.onload function
     this.fireEvent( new OEvent('connect', { "source": _remotePort }) );
   
   }.bind(this));
@@ -456,6 +472,217 @@ var OEX = opera.extension = opera.extension || (function() { return new OExtensi
 
 var OEC = opera.contexts = opera.contexts || {};
 
+var OStorage = function () {
+  
+  // All attributes and methods defined in this class must be non-enumerable, 
+  // hence the structure of this class and use of Object.defineProperty.
+  
+  Object.defineProperty(this, "_storage", { value : localStorage });
+  
+  Object.defineProperty(this, "length", { value : 0, writable:true });
+  
+  Object.defineProperty(OStorage.prototype, "getItem", { 
+    value: function( key ) {
+      var value = this._storage.getItem(key);
+      // We return 'undefined' rather than 'null' if the key
+      // does not exist in the Opera implementation according to
+      // http://dev.opera.com/articles/view/extensions-api-widget-preferences/
+      // so hack that return value here instead of returning null.
+      return value === null ? undefined : value;
+    }.bind(this)
+  });
+  
+  Object.defineProperty(OStorage.prototype, "key", { 
+    value: function( i ) {
+      return this._storage.key(i);
+    }.bind(this)
+  });
+  
+  Object.defineProperty(OStorage.prototype, "removeItem", { 
+    value: function( key, proxiedChange ) {
+      this._storage.removeItem(key);
+      
+      if( this.hasOwnProperty( key ) ) {
+        delete this[key];
+        this.length--;
+      }
+      
+      if( !proxiedChange ) {
+        OEX.postMessage({
+          "action": "___O_widgetPreferences_removeItem_RESPONSE",
+          "data": {
+            "key": key
+          }
+        });
+      }
+    }.bind(this)
+  });
+  
+  Object.defineProperty(OStorage.prototype, "setItem", { 
+    value: function( key, value, proxiedChange ) {
+      this._storage.setItem(key, value);
+      
+      if( !this[key] ) {
+        this.length++;
+      }
+      this[key] = value;
+      
+      if( !proxiedChange ) {
+        OEX.postMessage({
+          "action": "___O_widgetPreferences_setItem_RESPONSE",
+          "data": {
+            "key": key,
+            "val": value
+          }
+        });
+      } 
+    }.bind(this)
+  });
+  
+  Object.defineProperty(OStorage.prototype, "clear", { 
+    value: function( proxiedChange ) {
+      this._storage.clear();
+      
+      for(var i in this) {
+        if( this.hasOwnProperty( i ) ) {
+          delete this[ i ];
+        }
+      }
+      this.length = 0;
+      
+      if( !proxiedChange ) {
+        OEX.postMessage({
+          "action": "___O_widgetPreferences_clearItem_RESPONSE"
+        });
+      }
+    }.bind(this)
+  });
+
+};
+
+var OWidgetObj = function() {
+  
+  OPromise.call(this);
+  
+  this.properties = {};
+  
+  // LocalStorage shim
+  this._preferences = new OStorage();
+  
+  // Setup the widget interface
+  var xhr = new XMLHttpRequest();
+
+  xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+          this.properties = JSON.parse(xhr.responseText);
+          this.resolve();
+      }
+  }.bind(this);
+  xhr.open("GET", chrome.extension.getURL('/manifest.json'), false);
+
+  try {
+      xhr.send();
+  } catch(e) {}
+  
+  // Setup widget object proxy listener 
+  // for injected scripts and popups to connect to
+  OEX.addEventListener('controlmessage', function( msg ) {
+    
+    if( !msg.data || !msg.data.action ) {
+      return;
+    }
+    
+    switch( msg.data.action ) {
+      
+      // Set up all storage properties
+      case '___O_widget_setup_REQUEST':
+      
+        var dataObj = {};
+        for(var i in this.properties) {
+          dataObj[ i ] = this.properties[ i ];
+        }
+
+        msg.source.postMessage({
+          "action": "___O_widget_setup_RESPONSE",
+          "attrs": dataObj,
+          // Add a copy of the preferences object
+          "_prefs": this._preferences
+        });
+
+        break;
+        
+      // Update a storage item
+      case '___O_widgetPreferences_setItem_REQUEST':
+        
+        this._preferences.setItem( msg.data.data.key, msg.data.data.val, true );
+        
+        break;
+      
+      // Remove a storage item
+      case '___O_widgetPreferences_removeItem_REQUEST':
+
+        this._preferences.removeItem( msg.data.data.key, true );
+
+        break;
+        
+      // Clear all storage items
+      case '___O_widgetPreferences_clear_REQUEST':
+
+        this._preferences.clear( true );
+        
+        break;
+        
+      default:
+        break;
+    }
+    
+  }.bind(this), false);
+  
+};
+
+OWidgetObj.prototype = Object.create( OPromise.prototype );
+
+OWidgetObj.prototype.__defineGetter__('name', function() {
+  return this.properties.name || "";
+});
+
+OWidgetObj.prototype.__defineGetter__('shortName', function() {
+  return this.properties.name ? this.properties.name.short || "" : "";
+});
+
+OWidgetObj.prototype.__defineGetter__('id', function() {
+  // TODO return an id (currently no id attribute is set up)
+  return this.properties.id || "";
+});
+
+OWidgetObj.prototype.__defineGetter__('description', function() {
+  return this.properties.description || "";
+});
+
+OWidgetObj.prototype.__defineGetter__('author', function() {
+  return this.properties.author || "";
+});
+
+OWidgetObj.prototype.__defineGetter__('authorHref', function() {
+  return this.properties.author ? this.properties.author.href || "" : "";
+});
+
+OWidgetObj.prototype.__defineGetter__('authorEmail', function() {
+  return this.properties.author ? this.properties.author.email || "" : "";
+});
+
+OWidgetObj.prototype.__defineGetter__('version', function() {
+  return this.properties.version || "";
+});
+
+OWidgetObj.prototype.__defineGetter__('preferences', function() {
+  return this._preferences;
+});
+
+// Add Widget API directly to global window
+global.widget = global.widget || (function() {
+  return new OWidgetObj();
+})();
 OEX.BrowserWindowsManager = function() {
 
   OPromise.call(this);
@@ -483,6 +710,13 @@ OEX.BrowserWindowsManager = function() {
       var _tabs = [];
       for (var j = 0, k = _windows[0].tabs.length; j < k; j++) {
         _tabs[j] = new OEX.BrowserTab(_windows[0].tabs[j], this[0]);
+        
+        // Set as the currently focused tab?
+        if(_tabs[j].properties.active == true && this[0].properties.focused == true) {
+          this[0].tabs._lastFocusedTab = _tabs[j];
+          OEX.tabs._lastFocusedTab = _tabs[j];
+        }
+        
       }
       this[0].tabs.replaceTabs(_tabs);
 
@@ -497,6 +731,13 @@ OEX.BrowserWindowsManager = function() {
       var _tabs = [];
       for (var j = 0, k = _windows[i].tabs.length; j < k; j++) {
         _tabs[j] = new OEX.BrowserTab(_windows[i].tabs[j], this[i]);
+        
+        // Set as the currently focused tab?
+        if(_tabs[j].properties.active == true && this[i].properties.focused == true) {
+          this[i].tabs._lastFocusedTab = _tabs[j];
+          OEX.tabs._lastFocusedTab = _tabs[j];
+        }
+        
       }
       this[i].tabs.replaceTabs(_tabs);
 
@@ -517,7 +758,7 @@ OEX.BrowserWindowsManager = function() {
             break;
           }
         }
-      }
+      }.bind(this)
     );
 
     // Resolve root window manager
@@ -729,7 +970,8 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
 
           } else if (tabsToInject[i] instanceof OEX.BrowserTabGroup) {
 
-            // TODO
+            // TODO Implement BrowserTabGroup object handling here
+            
           } else { // Treat as a BrowserTabProperties object by default
             (function(browserTabProperties) {
 
@@ -817,7 +1059,7 @@ OEX.BrowserWindow = function(browserWindowProperties) {
   this._operaId = Math.floor(Math.random() * 1e16);
 
   this.tabs = new OEX.BrowserTabsManager(this);
-  // TODO Implement BrowserTabGroupsManager
+  // TODO Implement BrowserTabGroupsManager interface
   //this.tabGroups = new OEX.BrowserTabGroupsManager( this );
 };
 
@@ -905,7 +1147,7 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
   }
 /* else if( browserTab instanceof OEX.BrowserTabGroup ) {
 
-    // TODO
+    // TODO implement BrowserTabGroup interface
 
   }*/
 
@@ -942,9 +1184,9 @@ OEX.BrowserWindow.prototype.update = function(browserWindowProperties) {
     this.properties[i] = browserWindowProperties[i];
   }
 
-  // TODO enforce incognito because we can't make a tab incognito once it
-  // has been added to a non-incognito window.
+  // TODO enforce incognito because we can't make a tab incognito once it has been added to a non-incognito window.
   //browserWindowProperties.incognito = browserWindowProperties.private || false;
+  
   // Make any requested changes take effect in the user agent
   chrome.windows.update(
     this.properties.id, 
@@ -1196,7 +1438,7 @@ OEX.BrowserTabsManager.prototype.getAll = function() {
 
 OEX.BrowserTabsManager.prototype.getSelected = function() {
 
-  return this._lastFocusedTab;
+  return this._lastFocusedTab || this[ 0 ];
 
 };
 // Alias of .getSelected()
@@ -1484,6 +1726,10 @@ OEX.RootBrowserTabsManager = function() {
                 OEX.windows[i].tabs[j].properties.id == highlightInfo.tabIds[x]) {
 
             OEX.windows[i].tabs[j].properties.active = true;
+            
+            OEX.windows[i].tabs._lastFocusedTab = OEX.windows[i].tabs[j];
+            
+            this._lastFocusedTab = OEX.windows[i].tabs[j];
 
           } else {
 
@@ -1497,7 +1743,57 @@ OEX.RootBrowserTabsManager = function() {
 
     }
 
-  });
+  }.bind(this));
+  
+  // Listen for getScreenshot requests from Injected Scripts
+  OEX.addEventListener('controlmessage', function( msg ) {
+
+    if( !msg.data || !msg.data.action || msg.data.action !== '___O_getScreenshot_REQUEST' || !msg.source.tabId ) {
+      return;
+    }
+    
+    // Resolve tabId to BrowserTab object
+    var sourceBrowserTab = null
+    for(var i = 0, l = this.length; i < l; i++) {
+      if( this[ i ].properties.id == msg.source.tabId ) {
+        sourceBrowserTab = this[ i ];
+        break;
+      }
+    }
+    
+    if( sourceBrowserTab !== null && 
+          sourceBrowserTab._windowParent && 
+              sourceBrowserTab._windowParent.properties.closed != true ) { 
+      
+      try {
+      
+        // Get screenshot of requested window belonging to current tab
+        chrome.tabs.captureVisibleTab(
+          sourceBrowserTab._windowParent.properties.id, 
+          {},
+          function( nativeCallback ) {
+
+            // Return the result to the callee
+            msg.source.postMessage({
+              "action": "___O_getScreenshot_RESPONSE",
+              "dataUrl": nativeCallback || null
+            });
+      
+          }.bind(this)
+        );
+    
+      } catch(e) {}
+    
+    } else {
+      
+      msg.source.postMessage({
+        "action": "___O_getScreenshot_RESPONSE",
+        "dataUrl": undefined
+      });
+      
+    }
+    
+  }.bind(this));
 
 };
 
@@ -1591,9 +1887,7 @@ OEX.BrowserTab.prototype.close = function() {
 OEX.BrowserTab.prototype.focus = function() {
 
   // If current object is not resolved, then enqueue this action
-  if (!this.resolved ||
-        (this._windowParent && !this._windowParent.resolved) ||
-            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
+  if (!this.resolved) {
     this.enqueue('focus');
     return;
   }
@@ -1609,9 +1903,7 @@ OEX.BrowserTab.prototype.focus = function() {
 OEX.BrowserTab.prototype.update = function(browserTabProperties) {
 
   // If current object is not resolved, then enqueue this action
-  if (!this.resolved ||
-        (this._windowParent && !this._windowParent.resolved) ||
-            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
+  if (!this.resolved) {
     this.enqueue('update', browserTabProperties);
     return;
   }
@@ -1660,6 +1952,65 @@ OEX.BrowserTab.prototype.postMessage = function( postData ) {
   
 };
 
+// Screenshot API support for BrowserTab objects
+OEX.BrowserTab.prototype.getScreenshot = function( callback ) {
+  
+  // If current object is not resolved, then enqueue this action
+  if (!this.resolved ||
+        (this._windowParent && !this._windowParent.resolved) ||
+            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
+    this.enqueue('getScreenshot', callback);
+    return;
+  }
+  
+  if( !this._windowParent || this._windowParent.properties.closed === true) {
+    callback.call( this, undefined );
+    return;
+  }
+  
+  try {
+  
+    // Get screenshot of requesting tab
+    chrome.tabs.captureVisibleTab(
+      this._windowParent.properties.id, 
+      {}, 
+      function( nativeCallback ) {
+      
+        if( nativeCallback ) {
+      
+          // Convert the returned dataURL in to an ImageData object and
+          // return via the main callback function argument
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var img = new Image();
+          img.onload = function(){
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img,0,0);
+
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            // Return the ImageData object to the callee
+            callback.call( this, imageData );
+        
+            this.dequeue();
+            
+          }.bind(this);
+          img.src = nativeCallback;
+      
+        } else {
+        
+          callback.call( this, undefined );
+        
+        }
+    
+      }.bind(this)
+    );
+  
+  } catch(e) {} 
+  
+};
+
 OEX.windows = OEX.windows || (function() {
   return new OEX.BrowserWindowsManager();
 })();
@@ -1681,7 +2032,7 @@ OEC.ToolbarContext = function() {
   // to a registered browser action in Chromium :(
   // http://stackoverflow.com/questions/1938356/chrome-browser-action-click-not-working
   //
-  // TODO invoke this function when a popup page loads
+  // TODO also invoke clickEventHandler function when a popup page loads
   function clickEventHandler(_tab) {
     
     if( this[ 0 ] ) {
@@ -1713,9 +2064,13 @@ OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
   this.length = 1;
 
   toolbarUIItem.resolve();
+  toolbarUIItem.apply();
   
   toolbarUIItem.badge.resolve();
+  toolbarUIItem.badge.apply();
+  
   toolbarUIItem.popup.resolve();
+  toolbarUIItem.popup.apply();
   
   // Enable the toolbar button
   chrome.browserAction.enable();
@@ -1757,7 +2112,7 @@ var ToolbarBadge = function( properties ) {
   this.properties.color = properties.color;
   this.properties.display = properties.display;
   
-  this.enqueue('apply');
+  //this.enqueue('apply');
   
 };
 
@@ -1765,7 +2120,7 @@ ToolbarBadge.prototype = Object.create( OPromise.prototype );
 
 ToolbarBadge.prototype.apply = function() {
 
-  chrome.browserAction.setBadgeBackgroundColor({ "color": this.backgroundColor });
+  chrome.browserAction.setBadgeBackgroundColor({ "color": (this.backgroundColor || "#f00") });
   
   if( this.display === "block" ) {
     chrome.browserAction.setBadgeText({ "text": this.textContent });
@@ -1840,7 +2195,7 @@ var ToolbarPopup = function( properties ) {
   this.properties.width = properties.width;
   this.properties.height = properties.height;
   
-  this.enqueue('apply');
+  //this.enqueue('apply');
 
 };
 
@@ -1873,8 +2228,7 @@ ToolbarPopup.prototype.__defineSetter__("width", function( val ) {
   this.properties.width = val;
   // not implemented in chromium
   //
-  // TODO will need to pass this message to the popup process itself
-  // to resize the popup window
+  // TODO pass this message to the popup process itself to resize the popup window
 });
 
 ToolbarPopup.prototype.__defineGetter__("height", function() {
@@ -1885,8 +2239,7 @@ ToolbarPopup.prototype.__defineSetter__("height", function( val ) {
   this.properties.height = val;
   // not implemented in chromium
   //
-  // TODO will need to pass this message to the popup process itself
-  // to resize the popup window
+  // TODO pass this message to the popup process itself to resize the popup window
 });
 
 var ToolbarUIItem = function( properties ) {
@@ -1901,7 +2254,7 @@ var ToolbarUIItem = function( properties ) {
   this.properties.popup = new ToolbarPopup( properties.popup || {} );
   this.properties.badge = new ToolbarBadge( properties.badge || {} );
   
-  this.enqueue('apply');
+  //this.enqueue('apply');
   
 };
 
