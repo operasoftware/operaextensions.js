@@ -1,5 +1,6 @@
 [
   "../src/Header.js",
+  "../src/injectedscript/Require.js",
 
   "../src/utils/third_party/rsvp.js",
   "../src/utils/Promise.js",
@@ -11,8 +12,8 @@
   "../src/utils/proxies/StorageProxy.js",
   "../src/utils/proxies/WidgetObjProxy.js",
   "../src/WidgetProxy.js",
-      
+
   "../src/utils/File.js",
-   
+
   "../src/Footer.js"
 ]

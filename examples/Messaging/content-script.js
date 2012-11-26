@@ -1,18 +1,21 @@
-
-// Send and receive messages to/from the background process
-
-opera.extension.onconnect = function() {
-
-  console.log("Injected Script messaging channel connected.");
-
-};
-
-opera.extension.onmessage = function( msg ) {
+opera.isReady(function() {
   
-  console.log( msg.data );
+  // Send and receive messages to/from the background process
+
+  opera.extension.onconnect = function() {
+
+    console.log("Injected Script messaging channel connected.");
+
+  };
+
+  opera.extension.onmessage = function( msg ) {
   
-  if( msg.data === "background -> injected script #1" ) {
-    opera.extension.postMessage( 'injected script -> extension #1' );
-  }
+    console.log( msg.data );
   
-};
+    if( msg.data === "background -> injected script #1" ) {
+      opera.extension.postMessage( 'injected script -> extension #1' );
+    }
+  
+  };
+
+});

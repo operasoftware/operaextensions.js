@@ -95,6 +95,9 @@ OEX.BrowserWindowsManager = function() {
         this[i].tabs[j].resolve();
       }
     }
+    
+    // Set WinTabs feature to LOADED
+    deferredComponentsLoadStatus['WINTABS_LOADED'] = true;
 
   }.bind(this));
 
