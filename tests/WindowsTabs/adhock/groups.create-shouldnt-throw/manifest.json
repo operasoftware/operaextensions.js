@@ -1,0 +1,15 @@
+{
+  "name": "tc-groups.create-shouldnt-throw",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Create group in default window",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {
+       "default_popup": "popup.html" 
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

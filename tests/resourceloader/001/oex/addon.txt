@@ -1,0 +1,1 @@
+Interface check for the extension background process, popup process and injected script process

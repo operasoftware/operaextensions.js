@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserWindowManager-008",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Private windows",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

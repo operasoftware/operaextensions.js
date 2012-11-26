@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserWindowManager-012",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Creating focused and unfocussed windows",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

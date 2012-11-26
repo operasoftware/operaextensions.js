@@ -1,0 +1,1 @@
+Repeatedly calling the same file 50 times in quick succession should generate no errors (stress test)

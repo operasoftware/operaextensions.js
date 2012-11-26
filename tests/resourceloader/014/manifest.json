@@ -1,0 +1,18 @@
+{
+  "name": "tc-OperaResourceLoader-014",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Appending a resource by widget URL (widget://) to a web page should not be possible.",
+  "background": {
+      "page": "background.html"
+  },
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js", "/oex/includes/resourceloadtest.js"]
+      }
+  ],
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

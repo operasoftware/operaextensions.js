@@ -1,0 +1,1 @@
+Events for opening, implicitly focussing and closing a window

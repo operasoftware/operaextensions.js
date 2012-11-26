@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserWindowManager-010",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Creating windows with tab groups",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

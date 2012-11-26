@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserWindowManager-002",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Events for creating a background window",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

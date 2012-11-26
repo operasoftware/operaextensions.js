@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserWindowManager-006",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Events for closing a foreground window causing other window to gain focus",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

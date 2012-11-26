@@ -1,0 +1,1 @@
+Calling getFile with no argument should return null

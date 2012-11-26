@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserWindowManager-014",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Creating windows, checking tab numbers",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "tc-OperaResourceLoader-006",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Attempting to traverse up beyond the root of the widget package should default to the root of the package",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
