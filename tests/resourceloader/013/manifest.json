@@ -1,0 +1,12 @@
+{
+  "name": "tc-OperaResourceLoader-013",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Repeatedly calling the same file 50 times in quick succession should generate no errors (stress test)",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

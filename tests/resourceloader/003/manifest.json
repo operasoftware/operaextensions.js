@@ -1,0 +1,12 @@
+{
+  "name": "tc-OperaResourceLoader-003",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Load non-existent txt file check",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

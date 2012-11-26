@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserWindowManager-009",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Opening windows with tabs",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

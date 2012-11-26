@@ -1,0 +1,1 @@
+Appending a resource by widget URL (widget://) to a web page should not be possible.

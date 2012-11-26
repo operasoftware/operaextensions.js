@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserWindowManager-013",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Closing windows",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

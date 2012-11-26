@@ -1,0 +1,1 @@
+Events for closing a foreground window causing other window to gain focus

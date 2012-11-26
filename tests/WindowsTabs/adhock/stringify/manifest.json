@@ -1,0 +1,12 @@
+{
+  "name": "tc-tabs-adhoc-stringify",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Check JSON.stringify and JSON.parse",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

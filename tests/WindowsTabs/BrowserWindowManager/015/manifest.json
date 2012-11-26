@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserWindowManager-015",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Events for opening, implicitly focussing and closing a window",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

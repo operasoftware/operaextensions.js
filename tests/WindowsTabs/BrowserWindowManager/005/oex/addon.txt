@@ -1,0 +1,1 @@
+Events for closing a background window
