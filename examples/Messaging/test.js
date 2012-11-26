@@ -1,23 +1,26 @@
+opera.isReady(function() {
+  
+  /**
+   * Opera API shim test - Messaging API
+   *
+   * This extension uses the Opera Extension's Messaging API.
+   * 
+   */
 
-/**
- * Opera API shim test - Messaging API
- *
- * This extension uses the Opera Extension's Messaging API.
- * 
- */
+  var oex = opera.extension;
 
-var oex = opera.extension;
+  oex.addEventListener('connect', function( e ) {
+  
+    e.source.postMessage( "background -> injected script #1" );
+  
+  }, false);
 
-oex.addEventListener('connect', function( e ) {
+  oex.onmessage = function( msg ) {
   
-  e.source.postMessage( "background -> injected script #1" );
+    console.log( "Received: " + msg.data );
   
-}, false);
+    msg.source.postMessage( "background -> injected script #2" );
+  
+  };
 
-oex.onmessage = function( msg ) {
-  
-  console.log( "Received: " + msg.data );
-  
-  msg.source.postMessage( "background -> injected script #2" );
-  
-};
+});
