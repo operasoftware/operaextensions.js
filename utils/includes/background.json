@@ -25,6 +25,8 @@
   "../src/background/contexts/toolbar/ToolbarPopup.js",
   "../src/background/contexts/toolbar/ToolbarUIItem.js",
   "../src/background/contexts/Toolbar.js",
+  
+  "../src/utils/File.js",
 
   "../src/Footer.js"
 ]

@@ -12,5 +12,7 @@
   "../src/utils/proxies/WidgetObjProxy.js",
   "../src/WidgetProxy.js",
 
+   "../src/utils/File.js",
+   
   "../src/Footer.js"
 ]
