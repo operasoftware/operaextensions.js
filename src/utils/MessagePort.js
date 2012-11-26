@@ -22,33 +22,49 @@ var OMessagePort = function( isBackground ) {
     
     this._localPort.onMessage.addListener( function( _message, _sender, responseCallback ) {
 
-      var messageType = 'message';
+      var localPort = this._localPort;
+      
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
-        messageType = 'controlmessage';
+
+        // Fire controlmessage events *immediately*
+        this.fireEvent( new OEvent(
+          'controlmessage', 
+          { 
+            "data": _message,
+            "source": {
+              postMessage: function( data ) {
+                localPort.postMessage( data );
+              },
+              "tabId": _sender && _sender.tab ? _sender.tab.id : null
+            }
+          }
+        ) );
+        
+      } else {
+        
+        // Fire 'message' event once we have all the initial listeners setup on the page
+        // so we don't miss any .onconnect call from the extension page.
+        // Or immediately if the shim isReady
+        addDelayedEvent(this, 'fireEvent', [ new OEvent(
+          'message', 
+          { 
+            "data": _message,
+            "source": {
+              postMessage: function( data ) {
+                localPort.postMessage( data );
+              },
+              "tabId": _sender && _sender.tab ? _sender.tab.id : null
+            }
+          }
+        ) ]);
+        
       }
       
-      var localPort = this._localPort;
-
-      this.fireEvent( new OEvent(
-        messageType, 
-        { 
-          "data": _message,
-          "source": {
-            postMessage: function( data ) {
-              localPort.postMessage( data );
-            },
-            "tabId": _sender && _sender.tab ? _sender.tab.id : null
-          }
-        }
-      ) );
-
     }.bind(this) );
 
     // Fire 'connect' event once we have all the initial listeners setup on the page
     // so we don't miss any .onconnect call from the extension page
-    global.addEventListener('load', function() {
-      this.fireEvent( new OEvent('connect', { "source": this._localPort }) );
-    }.bind(this), false);
+    addDelayedEvent(this, 'fireEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
     
   }
   

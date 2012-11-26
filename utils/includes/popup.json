@@ -1,5 +1,6 @@
 [
   "../src/Header.js",
+  "../src/popup/Require.js",
 
   "../src/utils/third_party/rsvp.js",
   "../src/utils/Promise.js",
@@ -13,6 +14,6 @@
   "../src/WidgetProxy.js",
 
    "../src/utils/File.js",
-   
+
   "../src/Footer.js"
 ]

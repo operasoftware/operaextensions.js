@@ -1,11 +1,6 @@
-
-// Send and receive messages to/from the background process
-
-// TODO we have a [race condition / bug] here :(
-// If we exclude the setTimeout then the widget.preferences do
-// not get setup in time for the call made to them below. 
-
-window.setTimeout(function() {
+opera.isReady(function() {
+  
+  // Test widget.* attributes and widget.preferences
 
   var oex = opera.extension;
 
@@ -148,4 +143,4 @@ window.setTimeout(function() {
   widget.preferences.setItem( "testObj1", "testVal1" );
   widget.preferences.setItem( "testObj10", "testVal10" );
 
-}, 500);
+});

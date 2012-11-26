@@ -8,6 +8,9 @@ var OWidgetObj = function() {
   // LocalStorage shim
   this._preferences = new OStorage();
   
+  // Set WIDGET_PREFERENCES_LOADED feature to LOADED
+  deferredComponentsLoadStatus['WIDGET_PREFERENCES_LOADED'] = true;
+  
   // Setup the widget interface
   var xhr = new XMLHttpRequest();
 
@@ -17,11 +20,12 @@ var OWidgetObj = function() {
           this.resolve();
       }
   }.bind(this);
-  xhr.open("GET", chrome.extension.getURL('/manifest.json'), false);
+  xhr.open("GET", '/manifest.json', false);
 
-  try {
-      xhr.send();
-  } catch(e) {}
+  xhr.send();
+  
+  // Set WIDGET_API_LOADED feature to LOADED
+  deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
   
   // Setup widget object proxy listener 
   // for injected scripts and popups to connect to
