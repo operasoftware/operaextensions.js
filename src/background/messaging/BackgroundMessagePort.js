@@ -22,23 +22,41 @@ var OBackgroundMessagePort = function() {
     
     _remotePort.onMessage.addListener( function( _message, _sender, responseCallback ) {
       
-      var messageType = 'message';
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
-        messageType = 'controlmessage';
-      }
 
-      this.fireEvent( new OEvent(
-        messageType, 
-        { 
-          "data": _message, 
-          "source": {
-            postMessage: function( data ) {
-              _remotePort.postMessage( data );
-            },
-            "tabId": _remotePort.sender && _remotePort.sender.tab ? _remotePort.sender.tab.id : null
+        // Fire controlmessage events *immediately*
+        this.fireEvent( new OEvent(
+          'controlmessage', 
+          { 
+            "data": _message,
+            "source": {
+              postMessage: function( data ) {
+                _remotePort.postMessage( data );
+              },
+              "tabId": _remotePort.sender && _remotePort.sender.tab ? _remotePort.sender.tab.id : null
+            }
           }
-        }
-      ));
+        ) );
+        
+      } else {
+        
+        // Fire 'message' event once we have all the initial listeners setup on the page
+        // so we don't miss any .onconnect call from the extension page.
+        // Or immediately if the shim isReady
+        addDelayedEvent(this, 'fireEvent', [ new OEvent(
+          'message', 
+          { 
+            "data": _message,
+            "source": {
+              postMessage: function( data ) {
+                _remotePort.postMessage( data );
+              },
+              "tabId": _remotePort.sender && _remotePort.sender.tab ? _remotePort.sender.tab.id : null
+            }
+          }
+        ) ]);
+        
+      }
 
     }.bind(this) );
   

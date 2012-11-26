@@ -22,6 +22,9 @@ var OWidgetObjProxy = function() {
         for(var i in msg.data.attrs) {
           this.properties[ i ] = msg.data.attrs[ i ];
         }
+        
+        // Set WIDGET_API_LOADED feature to LOADED
+        deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
 
         // Copy initial _preferences items to storage proxy object
         if(msg.data._prefs) {
@@ -31,6 +34,9 @@ var OWidgetObjProxy = function() {
             this._preferences.length++;
           }
         }
+        
+        // Set WIDGET_PREFERENCES_LOADED feature to LOADED
+        deferredComponentsLoadStatus['WIDGET_PREFERENCES_LOADED'] = true;
       
         break;
         
