@@ -83,3 +83,6 @@ var OStorageProxy = function () {
   });
 
 };
+
+// Inherit the standard Storage prototype
+OStorageProxy.prototype = Storage.prototype;

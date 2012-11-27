@@ -86,3 +86,6 @@ var OStorage = function () {
   });
 
 };
+
+// Inherit the standard Storage prototype
+OStorage.prototype = Storage.prototype;

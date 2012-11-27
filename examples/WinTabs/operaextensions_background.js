@@ -624,6 +624,9 @@ var OStorage = function () {
 
 };
 
+// Inherit the standard Storage prototype
+OStorage.prototype = Storage.prototype;
+
 var OWidgetObj = function() {
   
   OPromise.call(this);

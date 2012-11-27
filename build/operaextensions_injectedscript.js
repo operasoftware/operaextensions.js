@@ -595,6 +595,9 @@ var OStorageProxy = function () {
 
 };
 
+// Inherit the standard Storage prototype
+OStorageProxy.prototype = Storage.prototype;
+
 var OWidgetObjProxy = function() {
   
   this.properties = {};
