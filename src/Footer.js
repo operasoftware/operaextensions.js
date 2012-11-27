@@ -1,5 +1,7 @@
 
   if (window.opera) {
+    isReady = true;
+
     // Make scripts also work in Opera <= version 12
     opera.isReady = function(fn) {
       fn.call(opera);
@@ -91,15 +93,42 @@
 
           // Handle queued opera 'isReady' event functions
           for (var i = 0, len = fns['isready'].length; i < len; i++) {
-            fns['isready'][i].call(opera);
+            fns['isready'][i].call(window);
           }
           fns['isready'] = []; // clear
 
           // Synthesize and fire the document domcontentloaded event
           (function fireDOMContentLoaded() {
 
-            if (hasFired_DOMContentLoaded) {
+            // Check for hadFired_Load in case we missed DOMContentLoaded
+            // event, in which case, we syntesize DOMContentLoaded here
+            // (always synthesized in Chromium Content Scripts)
+            if (hasFired_DOMContentLoaded || hasFired_Load) {
+              
               fireEvent('domcontentloaded', document);
+              
+              // Synthesize and fire the window load event
+              // after the domcontentloaded event has been
+              // fired
+              (function fireLoad() {
+
+                if (hasFired_Load) {
+                  fireEvent('load', window);
+
+                  // Run delayed events (if any)
+                  for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
+                    var o = _delayedExecuteEvents[i];
+                    o.target[o.methodName].apply(o.target, o.args);
+                  }
+                  _delayedExecuteEvents = [];
+                } else {
+                  window.setTimeout(function() {
+                    fireLoad();
+                  }, 20);
+                }
+                
+              })();
+              
             } else {
               window.setTimeout(function() {
                 fireDOMContentLoaded();
@@ -108,26 +137,6 @@
 
           })();
 
-          // Synthesize and fire the window load event
-          (function fireLoad() {
-
-            if (hasFired_Load) {
-              fireEvent('load', window);
-              
-              // Run delayed events (if any)
-              for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
-                var o = _delayedExecuteEvents[i];
-                o.target[o.methodName].apply(o.target, o.args);
-              }
-              _delayedExecuteEvents = [];
-            } else {
-              window.setTimeout(function() {
-                fireLoad();
-              }, 20);
-            }
-
-          })();
-          
           isReady = true;
 
         }, 0);
@@ -168,7 +177,7 @@
         // execute the function immediately.
         // otherwise, queue it up until isReady
         if (isReady) {
-          fn.call(opera);
+          fn.call(window);
         } else {
           fns['isready'].push(fn);
         }
