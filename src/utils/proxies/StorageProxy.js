@@ -85,4 +85,4 @@ var OStorageProxy = function () {
 };
 
 // Inherit the standard Storage prototype
-OStorageProxy.prototype = Storage.prototype;
+OStorageProxy.prototype = Object.create( Storage.prototype );
