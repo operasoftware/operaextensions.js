@@ -1,7 +1,10 @@
 !(function( global ) {
 
   var opera = global.opera || { 
-    REVISION: '1', 
+    REVISION: '1',
+    version: function() {
+      return this.REVISION;
+    },
     postError: function( str ) { 
       console.log( str ); 
     } 
