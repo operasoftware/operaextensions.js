@@ -625,7 +625,7 @@ var OStorage = function () {
 };
 
 // Inherit the standard Storage prototype
-OStorage.prototype = Storage.prototype;
+OStorage.prototype = Object.create( Storage.prototype );
 
 var OWidgetObj = function() {
   
@@ -641,19 +641,20 @@ var OWidgetObj = function() {
   
   // Setup the widget interface
   var xhr = new XMLHttpRequest();
+  
+  xhr.open("GET", '/manifest.json', true);
 
   xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
           this.properties = JSON.parse(xhr.responseText);
           this.resolve();
+          
+          // Set WIDGET_API_LOADED feature to LOADED
+          deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
       }
   }.bind(this);
-  xhr.open("GET", '/manifest.json', false);
 
   xhr.send();
-  
-  // Set WIDGET_API_LOADED feature to LOADED
-  deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
   
   // Setup widget object proxy listener 
   // for injected scripts and popups to connect to
