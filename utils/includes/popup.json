@@ -8,12 +8,12 @@
 
   "../src/utils/MessagePort.js",
   "../src/popup/Root.js",
-
+  
+  "../src/utils/File.js",
+  
   "../src/utils/proxies/StorageProxy.js",
   "../src/utils/proxies/WidgetObjProxy.js",
   "../src/WidgetProxy.js",
-
-   "../src/utils/File.js",
-
+  
   "../src/Footer.js"
 ]
