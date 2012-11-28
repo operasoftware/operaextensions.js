@@ -9,6 +9,8 @@
   "../src/utils/MessagePort.js",
   "../src/background/messaging/BackgroundMessagePort.js",
   "../src/background/Root.js",
+  
+  "../src/utils/File.js",
 
   "../src/utils/Storage.js",
   "../src/utils/WidgetObj.js",
@@ -26,8 +28,6 @@
   "../src/background/contexts/toolbar/ToolbarPopup.js",
   "../src/background/contexts/toolbar/ToolbarUIItem.js",
   "../src/background/contexts/Toolbar.js",
-
-  "../src/utils/File.js",
 
   "../src/Footer.js"
 ]
