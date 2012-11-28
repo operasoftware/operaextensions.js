@@ -21,7 +21,7 @@ ext.onmessage = function(event) {
     }
   };
 
-  realImage.src = event.data + "resources/opera.png"
+  realImage.src = event.data + "oex/resources/opera.png"
 
   document.body.appendChild(realImage);
   
