@@ -1,11 +1,47 @@
 !(function( global ) {
 
   var opera = global.opera || { 
-    REVISION: '1', 
+    REVISION: '1',
+    version: function() {
+      return this.REVISION;
+    },
     postError: function( str ) { 
       console.log( str ); 
     } 
   };
+  
+  var isReady = false;
+  
+  var _delayedExecuteEvents = [
+    // Example:
+    // { 'target': opera.extension, 'methodName': 'message', 'args': event }
+  ];
+  
+  function addDelayedEvent(target, methodName, args) {
+    if(isReady) {
+      target[methodName].apply(target, args);
+    } else {
+      _delayedExecuteEvents.push({
+        "target": target,
+        "methodName": methodName,
+        "args": args
+      });
+    }
+  };
+
+// Used to trigger opera.isReady() functions
+var deferredComponentsLoadStatus = {
+  'WIDGET_API_LOADED': false,
+  'WIDGET_PREFERENCES_LOADED': false
+  // ...etc
+};
+
+// Events to delay until window 'load' event has been 
+// fired by opera.isReady() below
+var delayedExecuteEvents = [
+  // Example:
+  // { 'target': opera.extension, 'eventName': 'message', 'eventObj': event }
+];
 /**
  * rsvp.js
  *
@@ -349,33 +385,49 @@ var OMessagePort = function( isBackground ) {
     
     this._localPort.onMessage.addListener( function( _message, _sender, responseCallback ) {
 
-      var messageType = 'message';
+      var localPort = this._localPort;
+      
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
-        messageType = 'controlmessage';
+
+        // Fire controlmessage events *immediately*
+        this.fireEvent( new OEvent(
+          'controlmessage', 
+          { 
+            "data": _message,
+            "source": {
+              postMessage: function( data ) {
+                localPort.postMessage( data );
+              },
+              "tabId": _sender && _sender.tab ? _sender.tab.id : null
+            }
+          }
+        ) );
+        
+      } else {
+        
+        // Fire 'message' event once we have all the initial listeners setup on the page
+        // so we don't miss any .onconnect call from the extension page.
+        // Or immediately if the shim isReady
+        addDelayedEvent(this, 'fireEvent', [ new OEvent(
+          'message', 
+          { 
+            "data": _message,
+            "source": {
+              postMessage: function( data ) {
+                localPort.postMessage( data );
+              },
+              "tabId": _sender && _sender.tab ? _sender.tab.id : null
+            }
+          }
+        ) ]);
+        
       }
       
-      var localPort = this._localPort;
-
-      this.fireEvent( new OEvent(
-        messageType, 
-        { 
-          "data": _message,
-          "source": {
-            postMessage: function( data ) {
-              localPort.postMessage( data );
-            },
-            "tabId": _sender && _sender.tab ? _sender.tab.id : null
-          }
-        }
-      ) );
-
     }.bind(this) );
 
     // Fire 'connect' event once we have all the initial listeners setup on the page
     // so we don't miss any .onconnect call from the extension page
-    global.addEventListener('load', function() {
-      this.fireEvent( new OEvent('connect', { "source": this._localPort }) );
-    }.bind(this), false);
+    addDelayedEvent(this, 'fireEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
     
   }
   
@@ -416,7 +468,44 @@ OExtension.prototype.__defineGetter__('bgProcess', function() {
 var OEX = opera.extension = opera.extension || (function() { return new OExtension(); })();
 
 var OEC = opera.contexts = opera.contexts || {};
-
+OExtension.prototype.getFile = function(path) {
+	var response = null;
+	
+	if(typeof path != "string")return response;
+	
+  try{
+    var host = chrome.extension.getURL('');
+    
+    if(path.indexOf('widget:')==0)path = path.replace('widget:','chrome-extension:');
+    
+    path = (path.indexOf(host)==-1?host:'')+path;
+    var xhr = new XMLHttpRequest();
+    
+    xhr.onloadend = function(){
+        if (xhr.readyState==xhr.DONE && xhr.status==200){
+          result = xhr.response;
+          
+          result.name = path.substring(path.lastIndexOf('/')+1);
+          
+          result.lastModifiedDate = null;
+          result.toString = function(){
+            return "[object File]";
+          };
+          response = result;
+        };
+    };
+   
+    xhr.open('GET',path,false);
+    xhr.responseType = 'blob';
+  
+    xhr.send(null);
+	
+  } catch(e){
+    return response;
+  };
+  
+	return response;
+};
 var OStorageProxy = function () {
   
   // All attributes and methods defined in this class must be non-enumerable, 
@@ -502,6 +591,9 @@ var OStorageProxy = function () {
 
 };
 
+// Inherit the standard Storage prototype
+OStorageProxy.prototype = Object.create( Storage.prototype );
+
 var OWidgetObjProxy = function() {
   
   this.properties = {};
@@ -525,6 +617,9 @@ var OWidgetObjProxy = function() {
         for(var i in msg.data.attrs) {
           this.properties[ i ] = msg.data.attrs[ i ];
         }
+        
+        // Set WIDGET_API_LOADED feature to LOADED
+        deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
 
         // Copy initial _preferences items to storage proxy object
         if(msg.data._prefs) {
@@ -534,6 +629,9 @@ var OWidgetObjProxy = function() {
             this._preferences.length++;
           }
         }
+        
+        // Set WIDGET_PREFERENCES_LOADED feature to LOADED
+        deferredComponentsLoadStatus['WIDGET_PREFERENCES_LOADED'] = true;
       
         break;
         
@@ -614,6 +712,193 @@ OWidgetObjProxy.prototype.__defineGetter__('preferences', function() {
 global.widget = global.widget || (function() {
   return new OWidgetObjProxy();
 })();
+  if (window.opera) {
+    isReady = true;
+
+    // Make scripts also work in Opera <= version 12
+    opera.isReady = function(fn) {
+      fn.call(opera);
+      
+      // Run delayed events (if any)
+      for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
+        var o = _delayedExecuteEvents[i];
+        o.target[o.methodName].apply(o.target, o.args);
+      }
+      _delayedExecuteEvents = [];
+    };
+
+  } else {
+  
+    opera.isReady = (function() {
+
+      var fns = {
+            "isready": [],
+            "domcontentloaded": [],
+            "load": []
+          };
+
+      var hasFired_DOMContentLoaded = false,
+          hasFired_Load = false;
+
+      document.addEventListener("DOMContentLoaded", function handle_DomContentLoaded() {
+        hasFired_DOMContentLoaded = true;
+        document.removeEventListener("DOMContentLoaded", handle_DomContentLoaded, true);
+      }, true);
+    
+      window.addEventListener("load", function handle_Load() {
+        hasFired_Load = true;
+        window.removeEventListener("load", handle_Load, true);
+      }, true);
+
+      function interceptAddEventListener(target, _name) {
+
+        var _target = target.addEventListener;
+
+        // Replace addEventListener for given target
+        target.addEventListener = function(name, fn, usecapture) {
+          if (name.toLowerCase() === _name.toLowerCase()) {
+            if (fn === undefined || fn === null ||
+                  Object.prototype.toString.call(fn) !== "[object Function]") {
+              return;
+            }
+          
+            if (isReady) {
+              fn.call(window);
+            } else {
+              fns[_name.toLowerCase()].push(fn);
+            }
+          } else {
+            // call standard addEventListener method on target
+            _target.call(target, name, fn, usecapture);
+          }
+        };
+      
+        // Replace target.on[_name] with custom setter function
+        target.__defineSetter__("on" + _name.toLowerCase(), function( fn ) {
+          // call code block just created above...
+          target.addEventListener(_name.toLowerCase(), fn, false);
+        });
+
+      }
+
+      interceptAddEventListener(window, 'load');
+      interceptAddEventListener(document, 'domcontentloaded');
+      interceptAddEventListener(window, 'domcontentloaded'); // handled bubbled DOMContentLoaded
+
+      function fireEvent(name, target) {
+        var evtName = name.toLowerCase();
+
+        var evt = document.createEvent('Event');
+        evt.initEvent(evtName, true, true);
+
+        for (var i = 0, len = fns[evtName].length; i < len; i++) {
+          fns[evtName][i].call(target, evt);
+        }
+        fns[evtName] = [];
+      }
+
+      function ready() {
+        window.setTimeout(function() {
+
+          if (isReady) {
+            return;
+          }
+
+          // Handle queued opera 'isReady' event functions
+          for (var i = 0, len = fns['isready'].length; i < len; i++) {
+            fns['isready'][i].call(window);
+          }
+          fns['isready'] = []; // clear
+
+          // Synthesize and fire the document domcontentloaded event
+          (function fireDOMContentLoaded() {
+
+            // Check for hadFired_Load in case we missed DOMContentLoaded
+            // event, in which case, we syntesize DOMContentLoaded here
+            // (always synthesized in Chromium Content Scripts)
+            if (hasFired_DOMContentLoaded || hasFired_Load) {
+              
+              fireEvent('domcontentloaded', document);
+              
+              // Synthesize and fire the window load event
+              // after the domcontentloaded event has been
+              // fired
+              (function fireLoad() {
+
+                if (hasFired_Load) {
+                  fireEvent('load', window);
+
+                  // Run delayed events (if any)
+                  for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
+                    var o = _delayedExecuteEvents[i];
+                    o.target[o.methodName].apply(o.target, o.args);
+                  }
+                  _delayedExecuteEvents = [];
+                } else {
+                  window.setTimeout(function() {
+                    fireLoad();
+                  }, 20);
+                }
+                
+              })();
+              
+            } else {
+              window.setTimeout(function() {
+                fireDOMContentLoaded();
+              }, 20);
+            }
+
+          })();
+
+          isReady = true;
+
+        }, 0);
+      }
+
+      var holdTimeoutOverride = new Date().getTime() + 3000;
+    
+      (function holdReady() {
+
+        var currentTime = new Date().getTime();
+
+        if (currentTime >= holdTimeoutOverride) {
+          // All scripts now ready to be executed: TIMEOUT override
+          console.error('opera.isReady check timed out');
+          ready();
+          return;
+        }
+
+        for (var i in deferredComponentsLoadStatus) {
+          if (deferredComponentsLoadStatus[i] !== true) {
+            // spin the loop until everything is working
+            // or we receive a timeout override (handled
+            // in next loop, above)
+            window.setTimeout(function() {
+              holdReady();
+            }, 20);
+            return;
+          }
+        }
+
+        // All scripts now ready to be executed
+        ready();
+
+      })();
+
+      return function(fn) {
+        // if the Library is already ready,
+        // execute the function immediately.
+        // otherwise, queue it up until isReady
+        if (isReady) {
+          fn.call(window);
+        } else {
+          fns['isready'].push(fn);
+        }
+      }
+    })();
+
+  }
+
   // Make API available on the window DOM object
   global.opera = opera;
 
