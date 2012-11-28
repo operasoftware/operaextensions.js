@@ -1,6 +1,6 @@
 var test = async_test("Calling getFile with a widget URL pointing to a valid file should return a File");
 
-var file = getFile('widget://' + document.domain + '/resources/file.txt');
+var file = getFile('widget://' + document.domain + '/oex/resources/file.txt');
 
 verifyTextFile(file, "pass", function(cb) {
   test.step(function() {

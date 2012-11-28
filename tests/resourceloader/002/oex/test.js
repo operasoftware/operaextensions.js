@@ -1,4 +1,4 @@
-var file = getFile("/resources/foo.txt");
+var file = getFile("/oex/resources/foo.txt");
 
 test(function() {
   assert_true(file && file.toString() === "[object File]", "Object returned from getFile call is of type 'File'");

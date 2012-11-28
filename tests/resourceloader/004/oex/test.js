@@ -1,4 +1,4 @@
-var file = getFile("/resources/../resources/foo.txt");
+var file = getFile("/oex/resources/../resources/foo.txt");
 
 var test = async_test("Request for '/resources/../resources/foo.txt' should return a File");
 

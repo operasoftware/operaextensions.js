@@ -29,7 +29,7 @@ function verifyTextFile(fileObj, expectedResult, callback) {
 
 // Check for existence of getFile and post result back to background process
 if(typeof ext.getFile === "function") {
-  var file = ext.getFile("./../resources/file.txt");
+  var file = ext.getFile("./../oex/resources/file.txt");
   // verify the contents of file
   verifyTextFile(file, "pass", function(cb) {
     if(cb["result"] === "pass") {
