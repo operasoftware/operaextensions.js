@@ -1,0 +1,24 @@
+{
+  "name": "tc-OperaResourceLoader-015",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Interface check for the extension background process, popup process and injected script process",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js","/oex/includes/resourceloadtest.js"]
+      }
+  ],
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ],
+  "web_accessible_resources": [
+    "/oex/resources/file.txt"
+  ]
+}
