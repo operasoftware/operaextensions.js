@@ -7,9 +7,11 @@ OExtension.prototype.getFile = function(path) {
     var host = chrome.extension.getURL('');
     
     if(path.indexOf('widget:')==0)path = path.replace('widget:','chrome-extension:');
+    if(path.indexOf('/')==0)path = path.substring(1);
     
-    path = (path.indexOf(host)==-1?host:'')+path;
-    var xhr = new XMLHttpRequest();
+		path = (path.indexOf(host)==-1?host:'')+path;
+    
+		var xhr = new XMLHttpRequest();
     
     xhr.onloadend = function(){
         if (xhr.readyState==xhr.DONE && xhr.status==200){
