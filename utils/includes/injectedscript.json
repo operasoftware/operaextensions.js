@@ -3,8 +3,10 @@
   "../src/injectedscript/Require.js",
 
   "../src/utils/third_party/rsvp.js",
-  "../src/utils/Promise.js",
+
   "../src/utils/Event.js",
+  "../src/utils/EventTarget.js",
+  "../src/utils/Promise.js",
 
   "../src/utils/MessagePort.js",
   "../src/injectedscript/Root.js",

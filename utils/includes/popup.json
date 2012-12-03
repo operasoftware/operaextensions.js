@@ -3,17 +3,19 @@
   "../src/popup/Require.js",
 
   "../src/utils/third_party/rsvp.js",
-  "../src/utils/Promise.js",
+
   "../src/utils/Event.js",
+  "../src/utils/EventTarget.js",
+  "../src/utils/Promise.js",
 
   "../src/utils/MessagePort.js",
   "../src/popup/Root.js",
-  
+
   "../src/utils/File.js",
-  
+
   "../src/utils/proxies/StorageProxy.js",
   "../src/utils/proxies/WidgetObjProxy.js",
   "../src/WidgetProxy.js",
-  
+
   "../src/Footer.js"
 ]

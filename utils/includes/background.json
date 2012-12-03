@@ -3,13 +3,15 @@
   "../src/background/Require.js",
 
   "../src/utils/third_party/rsvp.js",
-  "../src/utils/Promise.js",
+
   "../src/utils/Event.js",
+  "../src/utils/EventTarget.js",
+  "../src/utils/Promise.js",
 
   "../src/utils/MessagePort.js",
   "../src/background/messaging/BackgroundMessagePort.js",
   "../src/background/Root.js",
-  
+
   "../src/utils/File.js",
 
   "../src/utils/Storage.js",

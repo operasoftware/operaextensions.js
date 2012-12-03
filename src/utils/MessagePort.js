@@ -1,7 +1,7 @@
 
 var OMessagePort = function( isBackground ) {
 
-  OPromise.call( this );
+  OEventTarget.call( this );
   
   this._isBackground = isBackground || false;
   
@@ -70,7 +70,7 @@ var OMessagePort = function( isBackground ) {
   
 };
 
-OMessagePort.prototype = Object.create( OPromise.prototype );
+OMessagePort.prototype = Object.create( OEventTarget.prototype );
 
 OMessagePort.prototype.postMessage = function( data ) {
   
