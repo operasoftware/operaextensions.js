@@ -1,6 +1,8 @@
 
 var OWidgetObjProxy = function() {
   
+  OEventTarget.call(this);
+  
   this.properties = {};
   
   // LocalStorage shim
@@ -74,7 +76,7 @@ var OWidgetObjProxy = function() {
   
 };
 
-OWidgetObjProxy.prototype = Object.create( OPromise.prototype );
+OWidgetObjProxy.prototype = Object.create( OEventTarget.prototype );
 
 OWidgetObjProxy.prototype.__defineGetter__('name', function() {
   return this.properties.name || "";

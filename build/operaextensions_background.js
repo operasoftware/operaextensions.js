@@ -265,10 +265,54 @@ var deferredComponentsLoadStatus = {
 
  EventTarget.mixin(Promise.prototype);
 
+var OEvent = function(eventType, eventProperties) {
+
+  var evt = document.createEvent("Event");
+
+  evt.initEvent(eventType, true, true);
+
+  // Add custom properties or override standard event properties
+  for (var i in eventProperties) {
+    evt[i] = eventProperties[i];
+  }
+
+  return evt;
+
+};
+
+var OEventTarget = function() {
+  
+  EventTarget.mixin( this );
+  
+};
+
+OEventTarget.prototype.constructor = OEventTarget;
+
+OEventTarget.prototype.addEventListener = function(eventName, callback, useCapture) {
+  this.on(eventName, callback); // no useCapture
+};
+
+OEventTarget.prototype.removeEventListener = function(eventName, callback, useCapture) {
+  this.off(eventName, callback); // no useCapture
+}
+
+OEventTarget.prototype.fireEvent = function( oexEventObj ) {
+
+  var eventName = oexEventObj.type;
+
+  // Register an onX functions registered for this event, if any
+  if(typeof this[ 'on' + eventName.toLowerCase() ] === 'function') {
+    this.on( eventName, this[ 'on' + eventName.toLowerCase() ] );
+  }
+
+  this.trigger( eventName, oexEventObj );
+
+};
+
 var OPromise = function() {
 
   Promise.call( this );
-
+  
   // General enqueue/dequeue infrastructure
 
   this._queue = [];
@@ -287,6 +331,12 @@ var OPromise = function() {
 
 OPromise.prototype = Object.create( Promise.prototype );
 
+// Add OEventTarget helper functions to OPromise prototype
+for(var i in OEventTarget.prototype) {
+  OPromise.prototype[i] = OEventTarget.prototype[i];
+}
+
+/*
 OPromise.prototype.addEventListener = OPromise.prototype.on;
 
 OPromise.prototype.removeEventListener = OPromise.prototype.off;
@@ -302,7 +352,7 @@ OPromise.prototype.fireEvent = function( oexEventObj ) {
 
   this.trigger( eventName, oexEventObj );
 
-}
+}*/
 
 OPromise.prototype.enqueue = function() {
 
@@ -345,24 +395,9 @@ OPromise.prototype.dequeue = function() {
   //console.log("Dequeue on obj[" + this._operaId + "] queue length = " + this._queue.length);
 };
 
-var OEvent = function(eventType, eventProperties) {
-
-  var evt = document.createEvent("Event");
-
-  evt.initEvent(eventType, true, true);
-
-  // Add custom properties or override standard event properties
-  for (var i in eventProperties) {
-    evt[i] = eventProperties[i];
-  }
-
-  return evt;
-
-};
-
 var OMessagePort = function( isBackground ) {
 
-  OPromise.call( this );
+  OEventTarget.call( this );
   
   this._isBackground = isBackground || false;
   
@@ -431,7 +466,7 @@ var OMessagePort = function( isBackground ) {
   
 };
 
-OMessagePort.prototype = Object.create( OPromise.prototype );
+OMessagePort.prototype = Object.create( OEventTarget.prototype );
 
 OMessagePort.prototype.postMessage = function( data ) {
   
@@ -674,7 +709,7 @@ OStorage.prototype = Object.create( Storage.prototype );
 
 var OWidgetObj = function() {
 
-  OPromise.call(this);
+  OEventTarget.call(this);
 
   this.properties = {};
 
@@ -692,7 +727,6 @@ var OWidgetObj = function() {
   xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
           this.properties = JSON.parse(xhr.responseText);
-          this.resolve();
 
           // Set WIDGET_API_LOADED feature to LOADED
           deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
@@ -757,7 +791,7 @@ var OWidgetObj = function() {
 
 };
 
-OWidgetObj.prototype = Object.create( OPromise.prototype );
+OWidgetObj.prototype = Object.create( OEventTarget.prototype );
 
 OWidgetObj.prototype.__defineGetter__('name', function() {
   return this.properties.name || "";

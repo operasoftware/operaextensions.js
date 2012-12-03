@@ -1,7 +1,7 @@
 
 var OWidgetObj = function() {
 
-  OPromise.call(this);
+  OEventTarget.call(this);
 
   this.properties = {};
 
@@ -19,7 +19,6 @@ var OWidgetObj = function() {
   xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
           this.properties = JSON.parse(xhr.responseText);
-          this.resolve();
 
           // Set WIDGET_API_LOADED feature to LOADED
           deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
@@ -84,7 +83,7 @@ var OWidgetObj = function() {
 
 };
 
-OWidgetObj.prototype = Object.create( OPromise.prototype );
+OWidgetObj.prototype = Object.create( OEventTarget.prototype );
 
 OWidgetObj.prototype.__defineGetter__('name', function() {
   return this.properties.name || "";

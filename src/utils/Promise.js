@@ -2,7 +2,7 @@
 var OPromise = function() {
 
   Promise.call( this );
-
+  
   // General enqueue/dequeue infrastructure
 
   this._queue = [];
@@ -21,6 +21,12 @@ var OPromise = function() {
 
 OPromise.prototype = Object.create( Promise.prototype );
 
+// Add OEventTarget helper functions to OPromise prototype
+for(var i in OEventTarget.prototype) {
+  OPromise.prototype[i] = OEventTarget.prototype[i];
+}
+
+/*
 OPromise.prototype.addEventListener = OPromise.prototype.on;
 
 OPromise.prototype.removeEventListener = OPromise.prototype.off;
@@ -36,7 +42,7 @@ OPromise.prototype.fireEvent = function( oexEventObj ) {
 
   this.trigger( eventName, oexEventObj );
 
-}
+}*/
 
 OPromise.prototype.enqueue = function() {
 
