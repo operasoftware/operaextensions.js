@@ -1,5 +1,5 @@
 
-OEX.BrowserTabsManager = function( parentObj ) {
+BrowserTabsManager = function( parentObj ) {
 
   OPromise.call( this );
 
@@ -98,13 +98,13 @@ OEX.BrowserTabsManager = function( parentObj ) {
 
 };
 
-OEX.BrowserTabsManager.prototype = Object.create( OPromise.prototype );
+BrowserTabsManager.prototype = Object.create( OPromise.prototype );
 
-OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before, obj ) {
+BrowserTabsManager.prototype.create = function( browserTabProperties, before, obj ) {
 
   browserTabProperties = browserTabProperties || {};
 
-  var shadowBrowserTab = obj || new OEX.BrowserTab();
+  var shadowBrowserTab = obj || new BrowserTab();
 
   // If current object is not resolved, then enqueue this action
   if( !this.resolved || (this._parent && !this._parent.resolved) ) {
@@ -135,7 +135,7 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
   browserTabProperties.windowId = this._parent ? this._parent.properties.id : undefined;
 
   // Set insert position for the new tab from 'before' attribute, if any
-  if( before && before instanceof OEX.BrowserTab ) {
+  if( before && before instanceof BrowserTab ) {
 
     if( before.closed === true ) {
       throw {
@@ -213,7 +213,7 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
 
 };
 
-OEX.BrowserTabsManager.prototype.getAll = function() {
+BrowserTabsManager.prototype.getAll = function() {
 
   var allTabs = [];
 
@@ -225,15 +225,15 @@ OEX.BrowserTabsManager.prototype.getAll = function() {
 
 };
 
-OEX.BrowserTabsManager.prototype.getSelected = function() {
+BrowserTabsManager.prototype.getSelected = function() {
 
   return this._lastFocusedTab || this[ 0 ];
 
 };
 // Alias of .getSelected()
-OEX.BrowserTabsManager.prototype.getFocused = OEX.BrowserTabsManager.prototype.getSelected;
+BrowserTabsManager.prototype.getFocused = BrowserTabsManager.prototype.getSelected;
 
-OEX.BrowserTabsManager.prototype.close = function( browserTab ) {
+BrowserTabsManager.prototype.close = function( browserTab ) {
 
   if( !browserTab ) {
     return;

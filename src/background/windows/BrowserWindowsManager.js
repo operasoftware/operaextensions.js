@@ -1,10 +1,10 @@
 
-OEX.BrowserWindowsManager = function() {
+BrowserWindowsManager = function() {
 
   OPromise.call(this);
 
   // Set up 1 mock BrowserWindow at startup
-  this[0] = new OEX.BrowserWindow();
+  this[0] = new BrowserWindow();
   this.length = 1;
 
   this._lastFocusedWindow = this[0];
@@ -25,7 +25,7 @@ OEX.BrowserWindowsManager = function() {
       // Replace tab properties belonging to this window with real properties
       var _tabs = [];
       for (var j = 0, k = _windows[0].tabs.length; j < k; j++) {
-        _tabs[j] = new OEX.BrowserTab(_windows[0].tabs[j], this[0]);
+        _tabs[j] = new BrowserTab(_windows[0].tabs[j], this[0]);
         
         // Set as the currently focused tab?
         if(_tabs[j].properties.active == true && this[0].properties.focused == true) {
@@ -40,13 +40,13 @@ OEX.BrowserWindowsManager = function() {
     }
 
     for (var i = 1, l = _windows.length; i < l; i++) {
-      this[i] = new OEX.BrowserWindow(_windows[i]);
+      this[i] = new BrowserWindow(_windows[i]);
       this.length = i + 1;
 
       // Replace tab properties belonging to this window with real properties
       var _tabs = [];
       for (var j = 0, k = _windows[i].tabs.length; j < k; j++) {
-        _tabs[j] = new OEX.BrowserTab(_windows[i].tabs[j], this[i]);
+        _tabs[j] = new BrowserTab(_windows[i].tabs[j], this[i]);
         
         // Set as the currently focused tab?
         if(_tabs[j].properties.active == true && this[i].properties.focused == true) {
@@ -119,18 +119,18 @@ OEX.BrowserWindowsManager = function() {
 
       // If window was created outside of this framework, add it in and initialize
       if (!windowFound) {
-        var newBrowserWindow = new OEX.BrowserWindow(_window);
+        var newBrowserWindow = new BrowserWindow(_window);
 
-        // Convert tab objects to OEX.BrowserTab objects
+        // Convert tab objects to BrowserTab objects
         var newBrowserTabs = [];
         for (var i in _window.tabs) {
 
-          var newBrowserTab = new OEX.BrowserTab(_window.tabs[i], newBrowserWindow);
+          var newBrowserTab = new BrowserTab(_window.tabs[i], newBrowserWindow);
 
           newBrowserTabs.push(newBrowserTab);
 
         }
-        // Add OEX.BrowserTab objects to new OEX.BrowserWindow object
+        // Add BrowserTab objects to new BrowserWindow object
         newBrowserWindow.tabs.replaceTabs(newBrowserTabs);
 
         this[this.length] = newBrowserWindow;
@@ -210,13 +210,13 @@ OEX.BrowserWindowsManager = function() {
 
 };
 
-OEX.BrowserWindowsManager.prototype = Object.create(OPromise.prototype);
+BrowserWindowsManager.prototype = Object.create(OPromise.prototype);
 
-OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowProperties, obj) {
+BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowProperties, obj) {
 
   browserWindowProperties = browserWindowProperties || {};
 
-  var shadowBrowserWindow = obj || new OEX.BrowserWindow(browserWindowProperties);
+  var shadowBrowserWindow = obj || new BrowserWindow(browserWindowProperties);
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved) {
@@ -234,14 +234,14 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
         shadowBrowserWindow.properties[i] = _window[i];
       }
 
-      // Convert tab objects to OEX.BrowserTab objects
+      // Convert tab objects to BrowserTab objects
       var browserTabs = [];
 
       if (_window.tabs) {
 
         for (var i = 0, l = _window.tabs.length; i < l; i++) {
 
-          var shadowBrowserTab = new OEX.BrowserTab(_window.tabs[i], shadowBrowserWindow);
+          var shadowBrowserTab = new BrowserTab(_window.tabs[i], shadowBrowserWindow);
 
           browserTabs.push(shadowBrowserTab);
 
@@ -269,7 +269,7 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
       if (tabsToInject) {
         for (var i in tabsToInject) {
 
-          if (tabsToInject[i] instanceof OEX.BrowserTab) {
+          if (tabsToInject[i] instanceof BrowserTab) {
 
             (function(tab) {
               chrome.tabs.move(
@@ -287,14 +287,14 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
               );
             })(tabsToInject[i]);
 
-          } else if (tabsToInject[i] instanceof OEX.BrowserTabGroup) {
+          } else if (tabsToInject[i] instanceof BrowserTabGroup) {
 
             // TODO Implement BrowserTabGroup object handling here
             
           } else { // Treat as a BrowserTabProperties object by default
             (function(browserTabProperties) {
 
-              var shadowBrowserTab = new OEX.BrowserTab(browserTabProperties, shadowBrowserWindow);
+              var shadowBrowserTab = new BrowserTab(browserTabProperties, shadowBrowserWindow);
 
               chrome.tabs.create(
                 shadowBrowserTab.properties, 
@@ -335,7 +335,7 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
   return shadowBrowserWindow;
 };
 
-OEX.BrowserWindowsManager.prototype.getAll = function() {
+BrowserWindowsManager.prototype.getAll = function() {
 
   var allWindows = [];
 
@@ -347,13 +347,13 @@ OEX.BrowserWindowsManager.prototype.getAll = function() {
 
 };
 
-OEX.BrowserWindowsManager.prototype.getLastFocused = function() {
+BrowserWindowsManager.prototype.getLastFocused = function() {
 
   return this._lastFocusedWindow;
 
 };
 
-OEX.BrowserWindowsManager.prototype.close = function(browserWindow) {
+BrowserWindowsManager.prototype.close = function(browserWindow) {
 
   chrome.windows.remove(browserWindow.properties.id, function() {
 

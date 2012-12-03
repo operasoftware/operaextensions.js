@@ -1,5 +1,5 @@
 
-OEX.BrowserTab = function(browserTabProperties, windowParent) {
+BrowserTab = function(browserTabProperties, windowParent) {
 
   OPromise.call(this);
 
@@ -12,79 +12,79 @@ OEX.BrowserTab = function(browserTabProperties, windowParent) {
 
 };
 
-OEX.BrowserTab.prototype = Object.create(OPromise.prototype);
+BrowserTab.prototype = Object.create(OPromise.prototype);
 
 // API
-OEX.BrowserTab.prototype.__defineGetter__("id", function() {
+BrowserTab.prototype.__defineGetter__("id", function() {
   return this._operaId;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("closed", function() {
+BrowserTab.prototype.__defineGetter__("closed", function() {
   return this.properties.closed || false;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("locked", function() {
+BrowserTab.prototype.__defineGetter__("locked", function() {
   return this.properties.pinned || false;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("focused", function() {
+BrowserTab.prototype.__defineGetter__("focused", function() {
   return this.properties.active || false;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("selected", function() {
+BrowserTab.prototype.__defineGetter__("selected", function() {
   return this.properties.active || false;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("private", function() {
+BrowserTab.prototype.__defineGetter__("private", function() {
   return this.properties.incognito || false;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("faviconUrl", function() {
+BrowserTab.prototype.__defineGetter__("faviconUrl", function() {
   if (this.properties.closed) {
     return "";
   }
   return this.properties.favIconUrl || "";
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("title", function() {
+BrowserTab.prototype.__defineGetter__("title", function() {
   if (this.properties.closed) {
     return "";
   }
   return this.properties.title || "";
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("url", function() {
+BrowserTab.prototype.__defineGetter__("url", function() {
   if (this.properties.closed) {
     return "";
   }
   return this.properties.url || "";
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("readyState", function() {
+BrowserTab.prototype.__defineGetter__("readyState", function() {
   return this.properties.status || "loading";
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("browserWindow", function() {
+BrowserTab.prototype.__defineGetter__("browserWindow", function() {
   return this._windowParent;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("tabGroup", function() {
+BrowserTab.prototype.__defineGetter__("tabGroup", function() {
   // not implemented
   return null;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("position", function() {
+BrowserTab.prototype.__defineGetter__("position", function() {
   return this.properties.index || NaN;
 });
 
 // Methods
-OEX.BrowserTab.prototype.close = function() {
+BrowserTab.prototype.close = function() {
 
   OEX.tabs.close(this);
 
 };
 
-OEX.BrowserTab.prototype.focus = function() {
+BrowserTab.prototype.focus = function() {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved) {
@@ -100,7 +100,7 @@ OEX.BrowserTab.prototype.focus = function() {
 
 };
 
-OEX.BrowserTab.prototype.update = function(browserTabProperties) {
+BrowserTab.prototype.update = function(browserTabProperties) {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved) {
@@ -131,12 +131,12 @@ OEX.BrowserTab.prototype.update = function(browserTabProperties) {
 
 };
 
-OEX.BrowserTab.prototype.refresh = function() {
+BrowserTab.prototype.refresh = function() {
   // not implemented
 };
 
 // Web Messaging support for BrowserTab objects
-OEX.BrowserTab.prototype.postMessage = function( postData ) {
+BrowserTab.prototype.postMessage = function( postData ) {
   
   // If current object is not resolved, then enqueue this action
   if (!this.resolved ||
@@ -153,7 +153,7 @@ OEX.BrowserTab.prototype.postMessage = function( postData ) {
 };
 
 // Screenshot API support for BrowserTab objects
-OEX.BrowserTab.prototype.getScreenshot = function( callback ) {
+BrowserTab.prototype.getScreenshot = function( callback ) {
   
   // If current object is not resolved, then enqueue this action
   if (!this.resolved ||

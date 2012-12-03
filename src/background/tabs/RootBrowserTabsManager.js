@@ -1,7 +1,7 @@
 
-OEX.RootBrowserTabsManager = function() {
+RootBrowserTabsManager = function() {
 
-  OEX.BrowserTabsManager.call(this);
+  BrowserTabsManager.call(this);
 
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
@@ -19,7 +19,7 @@ OEX.RootBrowserTabsManager = function() {
 
       if (!tabFound) {
         // Create and register a new BrowserTab object
-        var newTab = new OEX.BrowserTab(_tab);
+        var newTab = new BrowserTab(_tab);
 
         var noParentFound = true;
 
@@ -332,4 +332,4 @@ OEX.RootBrowserTabsManager = function() {
 
 };
 
-OEX.RootBrowserTabsManager.prototype = Object.create(OEX.BrowserTabsManager.prototype);
+RootBrowserTabsManager.prototype = Object.create( BrowserTabsManager.prototype );

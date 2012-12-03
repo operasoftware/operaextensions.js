@@ -1,5 +1,5 @@
 
-OEX.BrowserWindow = function(browserWindowProperties) {
+BrowserWindow = function(browserWindowProperties) {
 
   OPromise.call(this);
 
@@ -12,35 +12,35 @@ OEX.BrowserWindow = function(browserWindowProperties) {
   // Create a unique browserWindow id
   this._operaId = Math.floor(Math.random() * 1e16);
 
-  this.tabs = new OEX.BrowserTabsManager(this);
+  this.tabs = new BrowserTabsManager(this);
   // TODO Implement BrowserTabGroupsManager interface
-  //this.tabGroups = new OEX.BrowserTabGroupsManager( this );
+  //this.tabGroups = new BrowserTabGroupsManager( this );
 };
 
-OEX.BrowserWindow.prototype = Object.create(OPromise.prototype);
+BrowserWindow.prototype = Object.create(OPromise.prototype);
 
 // API
-OEX.BrowserWindow.prototype.__defineGetter__("id", function() {
+BrowserWindow.prototype.__defineGetter__("id", function() {
   return this._operaId;
 });
 
-OEX.BrowserWindow.prototype.__defineGetter__("closed", function() {
+BrowserWindow.prototype.__defineGetter__("closed", function() {
   return this.properties.closed || false;
 });
 
-OEX.BrowserWindow.prototype.__defineGetter__("focused", function() {
+BrowserWindow.prototype.__defineGetter__("focused", function() {
   return this.properties.focused || false;
 });
 
-OEX.BrowserWindow.prototype.__defineGetter__("private", function() {
+BrowserWindow.prototype.__defineGetter__("private", function() {
   return this.properties.incognito || false;
 });
 
-OEX.BrowserWindow.prototype.__defineGetter__("parent", function() {
+BrowserWindow.prototype.__defineGetter__("parent", function() {
   return this._parent;
 });
 
-OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
+BrowserWindow.prototype.insert = function(browserTab, child) {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved ||
@@ -63,7 +63,7 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
   };
 
   // Set insert position for the new tab from 'before' attribute, if any
-  if (child && child instanceof OEX.BrowserTab) {
+  if (child && child instanceof BrowserTab) {
 
     if (child.closed === true) {
       throw {
@@ -86,7 +86,7 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
 
   }
 
-  if (browserTab instanceof OEX.BrowserTab) {
+  if (browserTab instanceof BrowserTab) {
 
     // Fulfill this action against the current object
     chrome.tabs.move(
@@ -99,7 +99,7 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
     );
 
   }
-/* else if( browserTab instanceof OEX.BrowserTabGroup ) {
+/* else if( browserTab instanceof BrowserTabGroup ) {
 
     // TODO implement BrowserTabGroup interface
 
@@ -107,7 +107,7 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
 
 };
 
-OEX.BrowserWindow.prototype.focus = function() {
+BrowserWindow.prototype.focus = function() {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved || (this._parent && !this._parent.resolved)) {
@@ -126,7 +126,7 @@ OEX.BrowserWindow.prototype.focus = function() {
 
 };
 
-OEX.BrowserWindow.prototype.update = function(browserWindowProperties) {
+BrowserWindow.prototype.update = function(browserWindowProperties) {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved || (this._parent && !this._parent.resolved)) {
@@ -152,7 +152,7 @@ OEX.BrowserWindow.prototype.update = function(browserWindowProperties) {
 
 }
 
-OEX.BrowserWindow.prototype.close = function() {
+BrowserWindow.prototype.close = function() {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved || (this._parent && !this._parent.resolved)) {
