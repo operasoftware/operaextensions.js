@@ -1,18 +1,18 @@
 
-var OExtension = function() {
+var OperaExtension = function() {
   
   OMessagePort.call( this, false );
   
 };
 
-OExtension.prototype = Object.create( OMessagePort.prototype );
+OperaExtension.prototype = Object.create( OMessagePort.prototype );
 
-OExtension.prototype.__defineGetter__('bgProcess', function() {
+OperaExtension.prototype.__defineGetter__('bgProcess', function() {
   return chrome.extension.getBackgroundPage();
 });
 
 // Add Screenshot API to Injected Script processes only 
-OExtension.prototype.getScreenshot = function( callback ) {
+OperaExtension.prototype.getScreenshot = function( callback ) {
   
   var screenshotCallback = function( msg ) {
 
@@ -54,6 +54,6 @@ OExtension.prototype.getScreenshot = function( callback ) {
 
 // Generate API stubs
 
-var OEX = opera.extension = opera.extension || (function() { return new OExtension(); })();
+var OEX = opera.extension = opera.extension || (function() { return new OperaExtension(); })();
 
 var OEC = opera.contexts = opera.contexts || {};

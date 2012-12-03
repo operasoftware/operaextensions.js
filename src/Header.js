@@ -1,14 +1,18 @@
 !(function( global ) {
-
-  var opera = global.opera || { 
-    REVISION: '1',
-    version: function() {
-      return this.REVISION;
-    },
-    postError: function( str ) { 
-      console.log( str ); 
-    } 
+  
+  var Opera = function() {};
+  
+  Opera.prototype.REVISION = '1';
+  
+  Opera.prototype.version = function() {
+    return this.REVISION;
   };
+  
+  Opera.prototype.postError = function( str ) {
+    console.log( str );
+  };
+
+  var opera = global.opera || new Opera();
   
   var isReady = false;
   

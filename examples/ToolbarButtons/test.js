@@ -1,5 +1,5 @@
 opera.isReady(function() {
-  
+ 
   /**
    * Opera API shim test - Toolbar Button API 
    *
