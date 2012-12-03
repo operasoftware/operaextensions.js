@@ -808,13 +808,11 @@ Opera.prototype.defineMagicFunction = function(name, implementation) {
 Opera.prototype.addEventListener = function(name, fn, useCapture) {
   // TODO
   // ... this.on(name, function)
-  return true;
 };
 
 Opera.prototype.removeEventListener = function(name, fn, useCapture) {
   // TODO
   // ... this.off(name, function)
-  return true;
 };
 
 // Same backend implementation as widget.preferences
@@ -829,10 +827,6 @@ Opera.prototype.setOverrideHistoryNavigationMode = function(mode) {
 Opera.prototype.__defineGetter__('getOverrideHistoryNavigationMode', function() {
   return "automatic"; // default
 });
-
-console.debug(opera);
-console.log(opera.addEventListener);
-
 
   if (window.opera) {
     isReady = true;
