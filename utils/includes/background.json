@@ -2,20 +2,20 @@
   "../src/Header.js",
   "../src/background/Require.js",
 
-  "../src/utils/third_party/rsvp.js",
+  "../src/common/third_party/rsvp.js",
 
-  "../src/utils/Event.js",
-  "../src/utils/EventTarget.js",
-  "../src/utils/Promise.js",
+  "../src/common/Event.js",
+  "../src/common/EventTarget.js",
+  "../src/common/Promise.js",
 
-  "../src/utils/MessagePort.js",
+  "../src/common/MessagePort.js",
   "../src/background/messaging/BackgroundMessagePort.js",
   "../src/background/Root.js",
 
-  "../src/utils/File.js",
+  "../src/common/File.js",
 
-  "../src/utils/Storage.js",
-  "../src/utils/WidgetObj.js",
+  "../src/common/Storage.js",
+  "../src/common/WidgetObj.js",
   "../src/Widget.js",
 
   "../src/background/windows/BrowserWindowsManager.js",

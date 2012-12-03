@@ -2,19 +2,19 @@
   "../src/Header.js",
   "../src/injectedscript/Require.js",
 
-  "../src/utils/third_party/rsvp.js",
+  "../src/common/third_party/rsvp.js",
 
-  "../src/utils/Event.js",
-  "../src/utils/EventTarget.js",
-  "../src/utils/Promise.js",
+  "../src/common/Event.js",
+  "../src/common/EventTarget.js",
+  "../src/common/Promise.js",
 
-  "../src/utils/MessagePort.js",
+  "../src/common/MessagePort.js",
   "../src/injectedscript/Root.js",
 
-  "../src/utils/File.js",
+  "../src/common/File.js",
 
-  "../src/utils/proxies/StorageProxy.js",
-  "../src/utils/proxies/WidgetObjProxy.js",
+  "../src/common/proxies/StorageProxy.js",
+  "../src/common/proxies/WidgetObjProxy.js",
   "../src/WidgetProxy.js",
 
   "../src/injectedscript/UserJS.js",
