@@ -8,6 +8,10 @@
     return this.REVISION;
   };
   
+  Opera.prototype.buildNumber = function() {
+    return this.REVISION;
+  };
+  
   Opera.prototype.postError = function( str ) {
     console.log( str );
   };
@@ -575,7 +579,7 @@ var OEX = opera.extension = opera.extension || new OperaExtension();
 
 var OEC = opera.contexts = opera.contexts || {};
 
-OperaExtension.prototype.getFile = function(path) {
+OperaExtension.prototype.getFile = opera.extension.getFile || function(path) {
   var response = null;
 
   if(typeof path != "string")return response;
@@ -627,12 +631,7 @@ var OStorage = function () {
   
   Object.defineProperty(OStorage.prototype, "getItem", { 
     value: function( key ) {
-      var value = this._storage.getItem(key);
-      // We return 'undefined' rather than 'null' if the key
-      // does not exist in the Opera implementation according to
-      // http://dev.opera.com/articles/view/extensions-api-widget-preferences/
-      // so hack that return value here instead of returning null.
-      return value === null ? undefined : value;
+      return this._storage.getItem(key);
     }.bind(this)
   });
   

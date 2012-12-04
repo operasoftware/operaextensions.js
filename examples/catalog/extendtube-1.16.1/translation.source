@@ -1,0 +1,73 @@
+// Save this file to disk, open with your favourite text editor and translate
+// quoted text to your language. Then send file back to me (pdarko@myopera.com).
+
+// Do not translate strings beginning with % (percent).
+// \ (backslash) is escape character.
+
+// Translated by: your name <your email> (if you want to be includes in credits)
+// English
+"en": {
+// Tool-tip for preferences button.
+PREFERENCES:                "Preferences...",
+// Tool-tip for download button.
+DOWNLOAD_VIDEO:             "Download video",
+// Indicate that there is no download options.
+DOWNLOAD_EMPTY:             "(empty)",
+// Tool-tip for empty download menu.
+DOWNLOAD_EMPTY_TIP:         "Data for download not found",
+// Tool-tip for unknown video.
+DOWNLOAD_UNKNOWN_TIP:       "unknown video format",
+// Tool-tip for frame step button.
+STEP_FRAME_FORWARD:         "Step one frame forward",
+// Tool-tip for seek forward button.
+SEEK_FORWARD:               "Seek forward",
+// Tool-tip for seek back button.
+SEEK_BACK:                  "Seek back",
+// Tool-tip for pop out player button. This button will take video from normal
+// page flow and dim background so it looks like it’s popped out of page.
+// (can be translated as “focus video” or “show video only”)
+POPOUT_PLAYER:              "Pop out video player",
+// Tool-tips for loop button.
+LOOP_DISABLE:               "Disable loop",
+LOOP_ENABLE:                "Enable loop",
+LOOP_SECTION_DISABLE:       "Disable section loop",
+LOOP_SECTION_ENABLE:        "Enable section loop",
+// Tool-tip for button that marks beginning of loop section.
+LOOP_MARK_START:            "Mark section start",
+// Tool-tip for button that marks end of loop section.
+LOOP_MARK_END:              "Mark section end",
+// Tool-tips for start and end of video preview.
+PREVIEW_START:              "Click to start video preview.",
+PREVIEW_END:                "Click to end video preview.",
+// Content of buttons for showing/hiding lyrics.
+LYRICS_BUTTON_HIDE:         "Hide lyrics",
+LYRICS_BUTTON_SHOW:         "Show lyrics",
+// Content of button for starting lyrics search after manually
+// entered artist and title.
+LYRICS_BUTTON_LOAD:         "Load",
+// Content of button for manually entering artist and title.
+LYRICS_BUTTON_TRY:          "Try manually...",
+// Lyrics headings.
+LYRICS_LYRICS:              "Lyrics",
+// %song will be replaced with artist and song title. Do not translate.
+LYRICS_LYRICS_FOR:          "Lyrics for: %song",
+// Info messages shown during search for lyrics.
+LYRICS_TITLE_INFO:          "Insert artist and title of song to search for.",
+LYRICS_TITLE_INFO_EX:       "Separate by hyphen (like so: Artist - Title).",
+// %song will be replaced with artist and song title. Do not translate.
+LYRICS_SEARCH_START:        "Searching for “%song”...",
+LYRICS_SEARCH_NO_RESULT:    "No results for “%song”.",
+LYRICS_SEARCH_FOUND:        "Lyrics found. Loading...",
+LYRICS_SEARCH_NOT_FOUND:    "Lyrics are not found and no more combinations to try.",
+LYRICS_PARSE_SEARCH:        "Parsing search results...",
+LYRICS_PARSE_LYRICS:        "Parsing lyrics data...",
+LYRICS_PARSE_SUCCESS:       "Lyrics successfully parsed.",
+LYRICS_PARSE_ERROR:         "Lyrics are found but cannot be parsed. Sorry.",
+LYRICS_TITLE_INVALID:       "Video title doesn’t match “Artist - Title” pattern!",
+// Used in tool-tips for video rating. Translation for this string is taken
+// from YouTube page so you don’t need to translate it.
+// %pcent will be replaced with percentage of people who like video.
+RATING_LIKE:                "%pcent% like",
+// Tool-tip if video ratings are not available.
+RATING_NO_DATA:             "Rating not available."
+}

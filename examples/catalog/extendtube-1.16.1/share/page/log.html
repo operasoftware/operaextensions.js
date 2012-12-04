@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ExtendTube: Log viewer</title>
+		<link rel="shortcut icon"
+			  type="image/png"
+			  href="../image/fav.png">
+		<link rel="stylesheet"
+			  type="text/css"
+			  href="../style/general.css">
+		<link rel="stylesheet"
+			  type="text/css"
+			  href="../style/log.css">
+		<script type="application/javascript"
+				src="../../lib/ext/Date.js">
+		</script>
+		<script type="application/javascript"
+				src="../../lib/ext/Element.js">
+		</script>
+		<script type="application/javascript"
+				src="../../lib/ext/Node.js">
+		</script>
+		<script type="application/javascript"
+				src="../../lib/ext/Number.js">
+		</script>
+		<script type="application/javascript"
+				src="../../lib/init.js">
+		</script>
+		<script type="application/javascript"
+				src="../../lib/log.js">
+		</script>
+	</head>
+	<body>
+		<div>
+			<header>
+				<h1>
+					<span class="logo">
+						<img src="../image/logo.png" alt="logo">
+						<img src="../image/logo-overlay-log.png" alt="overlay">
+					</span>
+					<br>
+					ExtendTube: Log viewer
+				</h1>
+			</header>
+			<section>
+				<p>
+					Click <em>Refresh</em> button to refresh message log from selected source. At the same time list of possible sources (opened pages) will be updated. If you leave this page opened it will collect debug logs from every page every 10 seconds. <span class="note">Please, include this log(s) when you <a href="bug-report.html">report a bug</a>.</span>
+				</p>
+				<p>
+					<span class="controls">
+						Showing log from
+						<select>
+							<option value="bgProcess">Background process</option>
+							<optgroup label="Opened pages">
+							</optgroup>
+						</select>
+						with
+						<label><input type="radio" name="time" value="1">absolute</label> /
+						<label><input type="radio" name="time" value="0" checked>relative</label> time.
+						<button id="refresh">Refresh</button>
+						<button id="export" class="float-right">Export logs</button>
+					</span>
+				</p>
+				<p id="note"></p>
+				<pre></pre>
+			</section>
+			<footer>
+				<address>Copyright © 2011-2012 <a href="mailto:pdarko@myopera.com">Darko Pantić</a></address>
+			</footer>
+		</div>
+	</body>
+</html>

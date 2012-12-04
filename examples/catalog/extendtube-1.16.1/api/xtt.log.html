@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: log</title>
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+<div id="main">
+    <h1 class="page-title">Namespace: log</h1>
+<section>
+<header>
+    <h2>
+        <span class="ancestors"><a href="xtt.html">xtt</a>.</span>
+    log
+    </h2>
+</header>  
+<article>
+    <div class="container-overview">
+            <div class="description">Contains methods that can be used to log debug messages.</div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4765</li></ul></dd>
+</dl>
+    </div>
+        <h3 class="subsection-title">Methods</h3>
+        <dl>
+<dt>
+    <h4 class="name" id="error"><span class="type-signature">&lt;static> </span>error</h4>
+</dt>
+<dd>
+    <div class="description">
+        Log error message. All passed arguments will be separated by space.
+Acyclic objects will be converted to JSON format and then printed.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>arg1[,arg2[,...]]</code></td>
+            <td class="type">
+                        Any
+            </td>
+            <td class="description last">Arguments of any type.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4781</li></ul></dd>
+</dl>
+    <h5>Throws:</h5>
+<div class="param-desc">
+    If some of the arguments is cyclic object.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">TypeError</span> 
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="Error"><span class="type-signature">&lt;static> </span>Error</h4>
+</dt>
+<dd>
+    <div class="description">
+        Same as <a href="xtt.log.html#error">xtt.log.error</a> but also logs message to Error console
+regardless of <cite>loglevel</cite> option in preferences.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4788</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="info"><span class="type-signature">&lt;static> </span>info</h4>
+</dt>
+<dd>
+    <div class="description">
+        Log info message. All passed arguments will be separated by space.
+Acyclic objects will be converted to JSON format and then printed.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>arg1[,arg2[,...]]</code></td>
+            <td class="type">
+                        Any
+            </td>
+            <td class="description last">Arguments of any type.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4801</li></ul></dd>
+</dl>
+    <h5>Throws:</h5>
+<div class="param-desc">
+    If some of the arguments is cyclic object.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">TypeError</span> 
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="Info"><span class="type-signature">&lt;static> </span>Info</h4>
+</dt>
+<dd>
+    <div class="description">
+        Same as <a href="xtt.log.html#info">xtt.log.info</a> but also logs message to Error console
+regardless of <cite>loglevel</cite> option in preferences.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4808</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="warn"><span class="type-signature">&lt;static> </span>warn</h4>
+</dt>
+<dd>
+    <div class="description">
+        Log warning message. All passed arguments will be separated by space.
+Acyclic objects will be converted to JSON format and then printed.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>arg1[,arg2[,...]]</code></td>
+            <td class="type">
+                        Any
+            </td>
+            <td class="description last">Arguments of any type.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4821</li></ul></dd>
+</dl>
+    <h5>Throws:</h5>
+<div class="param-desc">
+    If some of the arguments is cyclic object.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">TypeError</span> 
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="Warn"><span class="type-signature">&lt;static> </span>Warn</h4>
+</dt>
+<dd>
+    <div class="description">
+        Same as <a href="xtt.log.html#warn">xtt.log.warn</a> but also logs message to Error console
+regardless of <cite>loglevel</cite> option in preferences.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4828</li></ul></dd>
+</dl>
+</dd>
+        </dl>
+</article>
+</section>  
+</div>
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Namespaces</h3><ul><li><a href="Element.html">Element</a></li><li><a href="Node.html">Node</a></li><li><a href="xtt.ui.add.html">add</a></li><li><a href="xtt.ui.apply.html">apply</a></li><li><a href="xtt.ll.html">ll</a></li><li><a href="xtt.log.html">log</a></li><li><a href="xtt.player.loopSection.html">loopSection</a></li><li><a href="xtt.lyrics.html">lyrics</a></li><li><a href="xtt.player.html">player</a></li><li><a href="xtt.ui.remove.html">remove</a></li><li><a href="xtt.shortcut.html">shortcut</a></li><li><a href="xtt.ui.html">ui</a></li><li><a href="xtt.video.html">video</a></li><li><a href="xtt.html">xtt</a></li></ul>
+</nav>
+<br clear="both">
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3</a> on Tue Sep 25 2012 23:36:10 GMT+0200 (CEST)
+</footer>
+</body>
+</html>

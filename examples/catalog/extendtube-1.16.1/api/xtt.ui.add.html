@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: add</title>
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+<div id="main">
+    <h1 class="page-title">Namespace: add</h1>
+<section>
+<header>
+    <h2>
+        <span class="ancestors"><a href="xtt.html">xtt</a><a href="xtt.ui.html">.ui</a>.</span>
+    add
+    </h2>
+</header>  
+<article>
+    <div class="container-overview">
+            <div class="description">Methods used to add buttons, menus and other elements.</div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5808</li></ul></dd>
+</dl>
+    </div>
+        <h3 class="subsection-title">Methods</h3>
+        <dl>
+<dt>
+    <h4 class="name" id="downloadButton"><span class="type-signature">&lt;static> </span>downloadButton</h4>
+</dt>
+<dd>
+    <div class="description">
+        Adds button to page that can be used to download currently playing video.
+This button will contain empty menu that can later be updated using
+<a href="xtt.ui.add.html#downloadMenuItem">xtt.ui.add.downloadMenuItem</a>.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>node</code></td>
+            <td class="type">
+                        HTMLElement
+            </td>
+            <td class="description last">Parent element for new button.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5826</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    Reference to created button or <code>null</code> if <cite>node</cite>
+parameter is missing.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">HTMLButtonElement</span> 
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="downloadMenuItem"><span class="type-signature">&lt;static> </span>downloadMenuItem</h4>
+</dt>
+<dd>
+    <div class="description">
+        Adds an item to download menu created by <a href="xtt.ui.add.html#downloadButton">xtt.ui.add.downloadButton</a>.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>item</code></td>
+            <td class="type">
+                        Object
+            </td>
+                <td class="attributes">
+                </td>
+            <td class="description last">Object containing required properties to create menu item.
+                <h6>Properties</h6>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>clickListener</code></td>
+            <td class="type">
+                        Function
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+            <td class="description last">Reference to function that will be called when user clicks
+on created menu item.</td>
+        </tr>
+        <tr>
+                <td class="name"><code>uri</code></td>
+            <td class="type">
+                        String
+            </td>
+                <td class="attributes">
+                </td>
+            <td class="description last"><a href="http://en.wikipedia.org/wiki/URI" title="Uniform Resource Identifier">URI</a>
+that will be set as target of menu item.</td>
+        </tr>
+        <tr>
+                <td class="name"><code>text</code></td>
+            <td class="type">
+                        String
+            </td>
+                <td class="attributes">
+                </td>
+            <td class="description last">Text that will be displayed as menu item.</td>
+        </tr>
+        <tr>
+                <td class="name"><code>tooltip</code></td>
+            <td class="type">
+                        String
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+            <td class="description last">Text tat will be used as tool-tip for menu item.</td>
+        </tr>
+	</tbody>
+</table>
+            </td>
+        </tr>
+        <tr>
+                <td class="name"><code>before</code></td>
+            <td class="type">
+                        HTMLLIElement
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+            <td class="description last">Reference to menu item before which should new item be added. If this
+parameter is missing menu item will be added at the end of the menu.</td>
+        </tr>
+        <tr>
+                <td class="name"><code>internal</code></td>
+            <td class="type">
+                        Boolean
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+            <td class="description last">Mark menu items that are added by internal methods. Those menu items
+will be removed when menu is updated, so don’t use it.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5887</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    Reference to created menu item or <code>null</code> on error.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">Boolean</span> 
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="extraButtons"><span class="type-signature">&lt;static> </span>extraButtons</h4>
+</dt>
+<dd>
+    <div class="description">
+        Adds seek and frame step buttons. Seek buttons will allow you to seek
+video back or forward, while frame step button can be used to play
+approximately one frame at a time.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>node</code></td>
+            <td class="type">
+                        HTMLElement
+            </td>
+            <td class="description last">Parent element for new buttons.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5938</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    Reference to container of created buttons or <code>null</code> if
+<cite>node</cite> parameter is missing.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">HTMLElement</span> 
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="loopButtons"><span class="type-signature">&lt;static> </span>loopButtons</h4>
+</dt>
+<dd>
+    <div class="description">
+        Adds loop and mark buttons. Loop button is for enabling/disabling video
+looping (whole or just a part of it). Mark buttons are for marking
+section of video to be looped.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>node</code></td>
+            <td class="type">
+                        HTMLElement
+            </td>
+            <td class="description last">Parent element for new buttons container.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6000</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    Reference to container of created buttons or <code>null</code> if
+<cite>node</cite> parameter is missing.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">HTMLElement</span> 
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="lyricsContainer"><span class="type-signature">&lt;static> </span>lyricsContainer</h4>
+</dt>
+<dd>
+    <div class="description">
+        Adds container to page that will be used to hold lyrics.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>where</code></td>
+            <td class="type">
+                        String
+            </td>
+            <td class="description last">Where to insert container relative to <code>node</code> element. Possible
+options are: <cite>beforebegin</cite>, <cite>afretbegin</cite>,
+<cite>beforeend</cite> or <cite>afterend</cite>.
+<a href="http://help.dottoro.com/ljbreokf.php">More</a> about this.</td>
+        </tr>
+        <tr>
+                <td class="name"><code>node</code></td>
+            <td class="type">
+                        HTMLElement
+            </td>
+            <td class="description last">Parent element for new button.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6080</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    Reference to created container or <code>null</code> if <cite>node</cite>
+parameter is missing.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">HTMLDivElement</span> 
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="popoutButton"><span class="type-signature">&lt;static> </span>popoutButton</h4>
+</dt>
+<dd>
+    <div class="description">
+        Adds button to page that can be used to pop player out of page content.
+The player will then be centred on view-port and background will become
+dark.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>node</code></td>
+            <td class="type">
+                        HTMLElement
+            </td>
+            <td class="description last">Parent element for new button.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6170</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    Reference to created button or <code>null</code> if <cite>node</cite>
+parameter is missing.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">HTMLButtonElement</span> 
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="preferencesButton"><span class="type-signature">&lt;static> </span>preferencesButton</h4>
+</dt>
+<dd>
+    <div class="description">
+        Adds button to page which will be used to open ExtendTube preferences.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>node</code></td>
+            <td class="type">
+                        HTMLElement
+            </td>
+            <td class="description last">Parent element for new button.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6202</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    Reference to created button or <code>null</code> if <cite>node</cite>
+parameter is missing.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">HTMLButtonElement</span> 
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="thumbPreview"><span class="type-signature">&lt;static> </span>thumbPreview</h4>
+</dt>
+<dd>
+    <div class="description">
+        Add interface to preview video thumbnails.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6227</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="videoRatings"><span class="type-signature">&lt;static> </span>videoRatings</h4>
+</dt>
+<dd>
+    <div class="description">
+        Get list of videos on page and send request for more informations about
+videos. When response to request comes, it will be used to add rating bar
+at the top of video thumbnails.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6280</li></ul></dd>
+</dl>
+</dd>
+        </dl>
+</article>
+</section>  
+</div>
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Namespaces</h3><ul><li><a href="Element.html">Element</a></li><li><a href="Node.html">Node</a></li><li><a href="xtt.ui.add.html">add</a></li><li><a href="xtt.ui.apply.html">apply</a></li><li><a href="xtt.ll.html">ll</a></li><li><a href="xtt.log.html">log</a></li><li><a href="xtt.player.loopSection.html">loopSection</a></li><li><a href="xtt.lyrics.html">lyrics</a></li><li><a href="xtt.player.html">player</a></li><li><a href="xtt.ui.remove.html">remove</a></li><li><a href="xtt.shortcut.html">shortcut</a></li><li><a href="xtt.ui.html">ui</a></li><li><a href="xtt.video.html">video</a></li><li><a href="xtt.html">xtt</a></li></ul>
+</nav>
+<br clear="both">
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3</a> on Tue Sep 25 2012 23:36:11 GMT+0200 (CEST)
+</footer>
+</body>
+</html>

@@ -1,5 +1,5 @@
 
-OperaExtension.prototype.getFile = function(path) {
+OperaExtension.prototype.getFile = opera.extension.getFile || function(path) {
   var response = null;
 
   if(typeof path != "string")return response;

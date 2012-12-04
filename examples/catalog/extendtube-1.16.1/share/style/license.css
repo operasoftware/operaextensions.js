@@ -1,0 +1,31 @@
+body {
+	padding: 1em 7%;
+}
+strong {
+	color: #3e4f90;
+}
+body > div {
+	background-color: #fcfdfe;
+	border: solid 1px #cacbcc;
+	border-top: solid 2px #4d4d4d;
+	border-radius: 5px;
+	box-shadow: 0 0 5px hsla(0, 0%, 100%, .7);
+	padding: 0 1em;
+}
+li,
+body > div > p {
+	text-align: justify;
+}
+div > div {
+	font-family: monospace;
+	background-color: #fffffa;
+	padding: 0 1em;
+	border-radius: 5px;
+	box-shadow: 0 0 2px hsla(0, 100%, 10%, .7);
+}
+li {
+	background-color: transparent !important;
+	line-height: 1.2em;
+	padding: 0;
+	border-radius: 0;
+}

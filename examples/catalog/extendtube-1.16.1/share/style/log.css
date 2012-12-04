@@ -1,0 +1,67 @@
+body > div {
+	width: 950px;
+	overflow: auto;
+}
+header h1 {
+	text-align: center;
+	margin-top: 0;
+	line-height: 1em;
+}
+header .logo {
+	position: absolute;
+	margin-top: .5em;
+}
+header .logo img[alt="logo"] {
+	position: absolute;
+	left: 175px;
+	width: 112.5px;
+	height: 52.5px;
+}
+header .logo img[alt="overlay"] {
+	left: 167px;
+	width: 48px;
+	height: 52.5px;
+}
+section {
+	clear: left;
+}
+pre {
+	white-space: pre-wrap;
+	margin: auto 1em;
+	line-height: 1.2em;
+}
+select {
+	max-width: 200px;
+}
+#export {
+	margin-right: 1em;
+}
+.info,
+.warn,
+.error {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	margin: 0 .3em;
+	position: relative;
+	top: 2px;
+}
+.info {
+	background-image: url("../image/log-info.png");
+}
+.warn {
+	background-image: url("../image/log-warn.png");
+}
+.error {
+	background-image: url("../image/log-error.png");
+}
+.fixed {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	background-color: #fbfcfe;
+	box-shadow: 0 0 5px #000;
+	z-index: 2;
+	padding: .5em;
+}

@@ -8,6 +8,10 @@
     return this.REVISION;
   };
   
+  Opera.prototype.buildNumber = function() {
+    return this.REVISION;
+  };
+  
   Opera.prototype.postError = function( str ) {
     console.log( str );
   };
@@ -545,11 +549,11 @@ OperaExtension.prototype.getScreenshot = function( callback ) {
 
 // Generate API stubs
 
-var OEX = opera.extension = opera.extension || (function() { return new OperaExtension(); })();
+var OEX = opera.extension = opera.extension || new OperaExtension();
 
 var OEC = opera.contexts = opera.contexts || {};
 
-OperaExtension.prototype.getFile = function(path) {
+OperaExtension.prototype.getFile = opera.extension.getFile || function(path) {
   var response = null;
 
   if(typeof path != "string")return response;
@@ -599,7 +603,8 @@ var OStorageProxy = function () {
   
   Object.defineProperty(OStorageProxy.prototype, "getItem", { 
     value: function( key ) {
-      return this[key];
+      var val = this[key];
+      return val === undefined ? null : val;
     }
   });
   
@@ -843,12 +848,12 @@ Opera.prototype.defineMagicFunction = function(name, implementation) {
 };
 
 Opera.prototype.addEventListener = function(name, fn, useCapture) {
-  // TODO
+  // TODO Implement http://www.opera.com/docs/userjs/specs/#evlistener
   // ... this.on(name, function)
 };
 
 Opera.prototype.removeEventListener = function(name, fn, useCapture) {
-  // TODO
+  // TODO Implement http://www.opera.com/docs/userjs/specs/#evlistener
   // ... this.off(name, function)
 };
 

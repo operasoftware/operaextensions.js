@@ -1,0 +1,35 @@
+.code {
+	padding: .5em;
+	background-color: #eef1f3;
+	color: #3e1616;
+}
+.word {
+	color: #0037bf;
+	font-style: italic;
+	font-weight: bold;
+}
+.class {
+	color: #28912f;
+	font-style: italic;
+	font-weight: bold;
+}
+.operator {
+	color: #0379a3;
+}
+.string {
+	color: #e87a0e;
+	font-style: italic;
+}
+.character {
+	color: #b58801;
+}
+.number {
+	color: #ee2b2d;
+}
+.comment {
+	color: #858585;
+}
+.regex {
+	color: #49b1af;
+	font-weight: bold;
+}

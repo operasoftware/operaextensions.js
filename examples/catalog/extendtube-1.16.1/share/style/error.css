@@ -1,0 +1,12 @@
+h1 {
+	color: #dd1d1d;
+}
+section {
+	font-weight: bold;
+}
+p#message {
+	background-color: #fffafa;
+	padding: 1em;
+	border-radius: 5px;
+	box-shadow: 0 0 5px #f00 inset;
+}

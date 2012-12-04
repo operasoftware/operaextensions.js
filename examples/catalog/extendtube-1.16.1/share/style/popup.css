@@ -1,0 +1,101 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #fff;
+	font-family: sans-serif;
+	color: #2a3335;
+	max-width: 350px;
+	background-image: -o-linear-gradient(top, #fff, transparent 5px), -o-linear-gradient(right, #fff, transparent 5px), -o-linear-gradient(bottom, #fff, transparent 5px), -o-linear-gradient(left, #fff, transparent 5px);
+	background-image: linear-gradient(to bottom, #fff, transparent 5px), linear-gradient(to left, #fff, transparent 5px), linear-gradient(to top, #fff, transparent 5px), linear-gradient(to right, #fff, transparent 5px);
+}
+h1 {
+	font-size: 1em;
+	margin-top: 0;
+	padding-top: .3em;
+	text-shadow: 1px 1px 1px #e7f2f5, 1px 1px 3px #2a3335;
+	text-align: center;
+}
+ul {
+	width: 100%;
+	padding: 0;
+	list-style-type: none;
+	margin-bottom: 0;
+}
+li {
+	position: relative;
+	padding: 5px 3px;
+	background-image: -o-linear-gradient(top, hsla(0, 0%, 0%, .1), transparent 25%, transparent 75%, hsla(0, 0%, 100%, .1)), -o-linear-gradient(right, #fff, transparent 5px), -o-linear-gradient(left, #fff, transparent 5px);
+	background-image: linear-gradient(to bottom, hsla(0, 0%, 0%, .1), transparent 25%, transparent 75%, hsla(0, 0%, 100%, .1)), linear-gradient(to left, #fff, transparent 5px), linear-gradient(to right, #fff, transparent 5px);
+}
+li:last-of-type {
+	background-image: -o-linear-gradient(top, hsla(0, 0%, 0%, .1), transparent 25%, transparent 75%, hsla(0, 0%, 100%, .1)), -o-linear-gradient(right, #fff, transparent 5px), -o-linear-gradient(bottom, #fff, transparent 5px), -o-linear-gradient(left, #fff, transparent 5px);
+	background-image: linear-gradient(to bottom, hsla(0, 0%, 0%, .1), transparent 25%, transparent 75%, hsla(0, 0%, 100%, .1)), linear-gradient(to left, #fff, transparent 5px), linear-gradient(bottom, #fff, transparent 5px), linear-gradient(left, #fff, transparent 5px);
+}
+li:nth-child(odd) {
+	background-color: #f3f9ff;
+}
+li div {
+	position: relative;
+}
+li img.ctrl {
+	position: absolute;
+	right: 0;
+	cursor: pointer;
+}
+span.title {
+	max-width: 330px;
+	display: inline-block;
+	overflow: hidden;
+	text-shadow: 0 0 2px #2a3335;
+	cursor: pointer;
+}
+span.title.link {
+	color: #0a64bf;
+	text-shadow: none;
+}
+span.title.link:hover {
+	text-shadow: 0 0 3px #0a64bf;
+}
+span.title img {
+	margin-right: 3px;
+}
+meter {
+	width: 230px;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+span.current-time {
+	font-size: .8em;
+}
+.tool-tip {
+	color: #fff;
+	font-size: .7em;
+	padding: 0 .2em;
+	border-radius: 2px;
+	background-color: #2a3335;
+	box-shadow: 0 0 5px #2a3335;
+	display: inline-block;
+	position: absolute;
+	bottom: 18px;
+	left: 0;
+	opacity: 0;
+	-o-transition: opacity .5s;
+	transition: opacity .5s;
+}
+meter:hover ~ .tool-tip {
+	opacity: 1;
+}
+span.close {
+	position: absolute;
+	right: 4px;
+	top: 4px;
+	cursor: pointer;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-image: url("../image/close.png");
+}
+span.close:hover {
+	background-position: 0 16px;
+}

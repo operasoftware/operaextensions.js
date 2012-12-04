@@ -1,0 +1,28 @@
+header .logo img[alt="overlay"] {
+	left: 2px;
+	top: 7px;
+}
+h1 {
+	color: #9c5c00;
+}
+p {
+	font-style: italic;
+	position: relative;
+}
+pre {
+	background-color: #fffffa;
+	padding: 1em;
+	border-radius: 5px;
+	box-shadow: 0 0 5px #ffba1e inset;
+	font-weight: normal;
+	word-wrap: break-word;
+	margin-bottom: 0;
+}
+button:only-child {
+	position: absolute !important;
+}
+button:only-child {
+	position: absolute;
+	right: 0;
+	top: -2.5em;
+}

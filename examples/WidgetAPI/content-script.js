@@ -1,5 +1,8 @@
 opera.isReady(function() {
   
+  document.addEventListener('domcontentloaded', function() { console.log('dom content loaded'); }, false);
+  //window.addEventListener('load', function() { console.log('page loaded'); }, false);
+  
   // Test widget.* attributes and widget.preferences
 
   var oex = opera.extension;

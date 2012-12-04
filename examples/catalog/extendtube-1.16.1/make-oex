@@ -1,0 +1,55 @@
+#!/bin/bash
+
+NOCOLOUR="[0m"
+RED="[1;31m"
+GREEN="[1;32m"
+YELLOW="[1;33m"
+BLUE="[1;34m"
+CYAN="[1;36m"
+
+export PATH="$PATH:$HOME/bin"
+
+echo -e "${YELLOW}Making extension...${NOCOLOUR}"
+VERSION=$(cat config.xml | grep version | tail -n 1 | sed -r "s/.*\"([^\"]+).*/\1/")
+echo -e "${GREEN}Extension version is: ${CYAN}${VERSION}${NOCOLOUR}${GREEN}.${NOCOLOUR}"
+
+if [ -e "extendtube-$VERSION.oex" ]; then
+	echo -e "${BLUE}File ${CYAN}extendtube-${VERSION}.oex${NOCOLOUR} ${BLUE}already exist.${NOCOLOUR}"
+	REV=$(date +%s)
+
+	for I in {2..9}; do
+		if [ ! -e "extendtube-$VERSION-$I.oex" ]; then
+			REV=$I
+			break
+		fi
+	done
+
+	NAME="extendtube-$VERSION-$REV.oex"
+	echo -e "${BLUE}Using alternate name: ${CYAN}${NAME}${NOCOLOUR}${BLUE}.${NOCOLOUR}"
+else
+	NAME="extendtube-$VERSION.oex"
+fi
+
+rm xtt-Change.log
+
+echo -e "${YELLOW}Generating checksums of files.${NOCOLOUR}"
+sha1sum $(find . -not -name "*.oex" -not -name "*.txt" -not -name "*SHA1SUM" -type f | sort) > SHA1SUM
+echo -e "${GREEN}Checksum generated.${NOCOLOUR}"
+
+echo -e "${YELLOW}Building ${GREEN}${NAME}${NOCOLOUR}${YELLOW}...${NOCOLOUR}"
+7z a -tzip -mx=9 $NAME -- api includes lib share Change.log config.xml COPYING index.html make-oex options.html README SHA1SUM translation.source xtt.hack
+
+if [ $? -eq 0 ]; then
+	echo -e "${YELLOW}Generating checksum of built extension.${NOCOLOUR}"
+	sha1sum $NAME > $NAME.SHA1SUM
+	echo -e "${GREEN}Checksum generated.${NOCOLOUR}"
+else
+	echo -e "${RED}An error occurred.${NOCOLOUR}"
+	rm $NAME >/dev/null 2>&1
+	exit 1
+fi
+
+cp Change.log xtt-Change.log
+
+echo -e "${GREEN}Building complete.${NOCOLOUR}"
+exit 0

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: player</title>
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+<div id="main">
+    <h1 class="page-title">Namespace: player</h1>
+<section>
+<header>
+    <h2>
+        <span class="ancestors"><a href="xtt.html">xtt</a>.</span>
+    player
+    </h2>
+</header>  
+<article>
+    <div class="container-overview">
+            <div class="description">Holds information about player and methods to control it.</div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4903</li></ul></dd>
+</dl>
+    </div>
+        <h3 class="subsection-title">Namespaces</h3>
+        <dl>
+            <dt><a href="namespaces.html#xtt.player.loopSection"><a href="xtt.player.loopSection.html">loopSection</a></a></dt>
+            <dd></dd>
+        </dl>
+        <h3 class="subsection-title">Members</h3>
+        <dl>
+<dt>
+    <h4 class="name" id="playcount"><span class="type-signature">&lt;static, readonly> </span>playcount<span class="type-signature"> :Number</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        How many times playback started. This value is re-setted when flash
+player is reloaded.
+    </div>
+<dl class="details">
+	<dt class="tag-default">Default Value:</dt>
+	<dd class="tag-default"><ul class="dummy"><li>0</li></ul></dd>
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4929</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="playerElement"><span class="type-signature">&lt;static, readonly> </span>playerElement<span class="type-signature"></span></h4>
+</dt>
+<dd>
+    <div class="description">
+        Reference to player element. You can call YouTube player API methods on
+this element.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4937</li></ul></dd>
+	<dt class="tag-see">See:</dt>
+	<dd class="tag-see">
+        <ul>
+            <li>http://code.google.com/apis/youtube/js_api_reference.html</li>
+        </ul>
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="state"><span class="type-signature">&lt;static, readonly> </span>state<span class="type-signature"> :Number</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        Current state of video playback. It may be one of:
+-1 - not started
+0 - ended
+1 - playing
+2 - paused
+3 - buffering
+5 - cued
+    </div>
+<dl class="details">
+	<dt class="tag-default">Default Value:</dt>
+	<dd class="tag-default"><ul class="dummy"><li>-1</li></ul></dd>
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4963</li></ul></dd>
+	<dt class="tag-see">See:</dt>
+	<dd class="tag-see">
+        <ul>
+            <li>http://code.google.com/apis/youtube/js_api_reference.html#getPlayerState</li>
+        </ul>
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="suggestedAutoplay"><span class="type-signature">&lt;static, readonly> </span>suggestedAutoplay<span class="type-signature"> :String</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        What should player do when becomes ready to play video. This is
+suggestion from YouTube and it affects only videos on channels.
+It can be one of:
+'1' - autoplay is enabled
+'0' - autoplay is disabled
+    </div>
+<dl class="details">
+	<dt class="tag-default">Default Value:</dt>
+	<dd class="tag-default"><ul class="dummy"><li>'0'</li></ul></dd>
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4975</li></ul></dd>
+</dl>
+</dd>
+        </dl>
+        <h3 class="subsection-title">Methods</h3>
+        <dl>
+<dt>
+    <h4 class="name" id="adjustVideoQuality"><span class="type-signature">&lt;static> </span>adjustVideoQuality</h4>
+</dt>
+<dd>
+    <div class="description">
+        Change video quality. If quality passed by argument is not available
+first lower quality will be set.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>quality</code></td>
+            <td class="type">
+                        String
+            </td>
+            <td class="description last">Possible options for this argument are: <cite>small</cite>,
+<cite>medium</cite>, <cite>large</cite>, <cite>hd720</cite>,
+<cite>hd1080</cite>, <cite>highres</cite> or <cite>default</cite>.
+Value <cite>default</cite> will be ignored.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 4988</li></ul></dd>
+	<dt class="tag-see">See:</dt>
+	<dd class="tag-see">
+        <ul>
+            <li>http://code.google.com/apis/youtube/js_api_reference.html#setPlaybackQuality</li>
+        </ul>
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="changeProgressColour"><span class="type-signature">&lt;static> </span>changeProgressColour</h4>
+</dt>
+<dd>
+    <div class="description">
+        Change colour of video player’s progress bar.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th>Default</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>colour</code></td>
+            <td class="type">
+                        String
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+                <td class="default">
+                    "red"
+                </td>
+            <td class="description last">Can be <cite>red</cite> or <cite>white</cite>.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5029</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="changeTheme"><span class="type-signature">&lt;static> </span>changeTheme</h4>
+</dt>
+<dd>
+    <div class="description">
+        Change theme of video player.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th>Default</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>theme</code></td>
+            <td class="type">
+                        String
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+                <td class="default">
+                    "dark"
+                </td>
+            <td class="description last">Can be <cite>dark</cite> or <cite>light</cite>.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5075</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="control"><span class="type-signature">&lt;static> </span>control</h4>
+</dt>
+<dd>
+    <div class="description">
+        Issue a command to video player.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>command</code></td>
+            <td class="type">
+                        String
+            </td>
+                <td class="attributes">
+                </td>
+            <td class="description last">Tell player what to do. This argument is enumerated and can be:
+<cite>play/pause</cite>, <cite>pause</cite>, <cite>play</cite>,
+<cite>stop</cite>, <cite>seek</cite> or <cite>volume</cite>.
+Command <cite>play/pause</cite> will play or pause video depending on
+current state. Command <cite>stop</cite> will pause video and stop
+buffering it. Commands <cite>seek</cite and<cite>volume</cite> will seek
+or change volume for value given by second argument.</td>
+        </tr>
+        <tr>
+                <td class="name"><code>data</code></td>
+            <td class="type">
+                        String
+                         | 
+                        Number
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+            <td class="description last">This argument is needed when issuing commands <cite>seek</cite> and
+<cite>volume</cite>. If this argument is number or string written as
+&lt;number&gt;% (ex. 73%) change will be absolute regardless of current
+state. If argument is string written as +&lt;number&gt;% or
+-&lt;number&gt;% (ex. +38% or -49%) change will be relative to current
+state.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5139</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="enableWide"><span class="type-signature">&lt;static> </span>enableWide</h4>
+</dt>
+<dd>
+    <div class="description">
+        Expand or shrink video player.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th>Default</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>wide</code></td>
+            <td class="type">
+                        Boolean
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+                <td class="default">
+                    undefined
+                </td>
+            <td class="description last">Should player be expanded (<code>true</code>) or shrinked
+(<code>false</code>). If this parameter is missing player size will be
+alternated (if it was wide it will become normal and vice versa).</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5208</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="frameStep"><span class="type-signature">&lt;static> </span>frameStep</h4>
+</dt>
+<dd>
+    <div class="description">
+        This method will play only one frame of video. This is usually emulated
+using time-out, but since Opera 11.60 for HTML 5 videos it will
+accurately play one frame (it will advance video for 40ms).
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5252</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="hideAnnotations"><span class="type-signature">&lt;static> </span>hideAnnotations</h4>
+</dt>
+<dd>
+    <div class="description">
+        Hide annotations in video.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th>Default</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>hide</code></td>
+            <td class="type">
+                        Boolean
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+                <td class="default">
+                    true
+                </td>
+            <td class="description last">Whether annotations should be visible (<code>false</code>) or hidden
+(<code>true</code>).</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5272</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="hideControls"><span class="type-signature">&lt;static> </span>hideControls</h4>
+</dt>
+<dd>
+    <div class="description">
+        Change auto-hide option for player controls.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th>Default</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>hide</code></td>
+            <td class="type">
+                        Number
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+                <td class="default">
+                    3
+                </td>
+            <td class="description last">New value for auto-hide option. Possible options are:
+0 = controls and progress bar always visible,
+1 = controls and progress bar will be hidden after few seconds,
+2 = controls will be visible; progress bar will be minimised
+	   after few seconds,
+3 = controls will be hidden; progress bar will be minimised
+    after few seconds.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5347</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="isLoopForced"><span class="type-signature">&lt;static> </span>isLoopForced</h4>
+</dt>
+<dd>
+    <div class="description">
+        Test to see if loop is forced or loop section is enabled.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5397</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    <code>true</code> if loop is forced or looping section;
+<code>false</code> otherwise.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">Boolean</span> 
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="seekVideo"><span class="type-signature">&lt;static> </span>seekVideo</h4>
+</dt>
+<dd>
+    <div class="description">
+        Seek video back/forward for time defined in preferences.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>forward</code></td>
+            <td class="type">
+                        Boolean
+            </td>
+            <td class="description last">Whether to seek forward (<code>true</code>)
+or backwards (<code>false</code>).</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 5472</li></ul></dd>
+</dl>
+</dd>
+        </dl>
+</article>
+</section>  
+</div>
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Namespaces</h3><ul><li><a href="Element.html">Element</a></li><li><a href="Node.html">Node</a></li><li><a href="xtt.ui.add.html">add</a></li><li><a href="xtt.ui.apply.html">apply</a></li><li><a href="xtt.ll.html">ll</a></li><li><a href="xtt.log.html">log</a></li><li><a href="xtt.player.loopSection.html">loopSection</a></li><li><a href="xtt.lyrics.html">lyrics</a></li><li><a href="xtt.player.html">player</a></li><li><a href="xtt.ui.remove.html">remove</a></li><li><a href="xtt.shortcut.html">shortcut</a></li><li><a href="xtt.ui.html">ui</a></li><li><a href="xtt.video.html">video</a></li><li><a href="xtt.html">xtt</a></li></ul>
+</nav>
+<br clear="both">
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3</a> on Tue Sep 25 2012 23:36:10 GMT+0200 (CEST)
+</footer>
+</body>
+</html>

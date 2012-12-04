@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: apply</title>
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+<div id="main">
+    <h1 class="page-title">Namespace: apply</h1>
+<section>
+<header>
+    <h2>
+        <span class="ancestors"><a href="xtt.html">xtt</a><a href="xtt.ui.html">.ui</a>.</span>
+    apply
+    </h2>
+</header>  
+<article>
+    <div class="container-overview">
+            <div class="description">Methods used to change page colours, icons of elements...</div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6333</li></ul></dd>
+</dl>
+    </div>
+        <h3 class="subsection-title">Methods</h3>
+        <dl>
+<dt>
+    <h4 class="name" id="cleanPage"><span class="type-signature">&lt;static> </span>cleanPage</h4>
+</dt>
+<dd>
+    <div class="description">
+        Hide various elements on page.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>data</code></td>
+            <td class="type">
+                        Object
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+            <td class="description last">Object containing information of which elements should be hidden  and
+which not. If this argument is missing or not an object, information
+defined in <a href="/options.html#preferences/cleanup">Page Clean-up</a>
+will be used. For object structure see
+<a href="/lib/preferences.js">preferences.js</a>.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6349</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="customColors"><span class="type-signature">&lt;static> </span>customColors</h4>
+</dt>
+<dd>
+    <div class="description">
+        Replace colours on page with user defined colours.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>data</code></td>
+            <td class="type">
+                        Object
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+            <td class="description last">Object containing colours to be applied to page. If this argument is
+missing or not an object, colours defined in
+<a href="/options.html#preferences/colors">Custom colours</a> will be
+applied. For object structure see
+<a href="/lib/preferences.js">preferences.js</a>.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6389</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="customLogo"><span class="type-signature">&lt;static> </span>customLogo</h4>
+</dt>
+<dd>
+    <div class="description">
+        Replace logo on page with transparent one.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6418</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="customStyle"><span class="type-signature">&lt;static> </span>customStyle</h4>
+</dt>
+<dd>
+    <div class="description">
+        Add user defined style to page.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>data</code></td>
+            <td class="type">
+                        string
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+            <td class="description last">Style to be added to page. If this argument is missing or is not string,
+style defined in <a href="/options.html#preferences/css">Custom CSS</a>
+will be added.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6439</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="fullScreenStyle"><span class="type-signature">&lt;static> </span>fullScreenStyle</h4>
+</dt>
+<dd>
+    <div class="description">
+        Add user defined style to page. This style will be applied only when
+Opera is in full screen mode.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>data</code></td>
+            <td class="type">
+                        string
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+            <td class="description last">Style to be added to page. If this argument is missing or is not string,
+predefined style will be added.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6466</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="lightIcons"><span class="type-signature">&lt;static> </span>lightIcons</h4>
+</dt>
+<dd>
+    <div class="description">
+        Enable/disable light icons on buttons added by <a href="xtt.ui.add.html">xtt.ui.add</a> methods.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th>Default</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>enable</code></td>
+            <td class="type">
+                        Boolean
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+                <td class="default">
+                    false
+                </td>
+            <td class="description last"><code>true</code> - enable; <code>false</code> - disable.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6493</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="popoutPlayer"><span class="type-signature">&lt;static> </span>popoutPlayer</h4>
+</dt>
+<dd>
+    <div class="description">
+        Pop out player out of page’s content flow or move it back.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th>Default</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>popout</code></td>
+            <td class="type">
+                        Boolean
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+                <td class="default">
+                    false
+                </td>
+            <td class="description last">Whether to pop player out of page’s normal content flow
+(<code>true</code>) or to move it back into flow (<code>false</code>).</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6515</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="toggleHideAll"><span class="type-signature">&lt;static> </span>toggleHideAll</h4>
+</dt>
+<dd>
+    <div class="description">
+        Toggle state of options defined in
+<a href="/options.html#preferences/cleanup">Page Clean-up</a>.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>hide</code></td>
+            <td class="type">
+                        boolean
+            </td>
+            <td class="description last">If this argument is <code>true</code> it will toggle between hide all and
+respect preferences. If it's <code>false</code>it will toggle between
+show all and respect preferences. <cite>Hide all</cite> means pretend  that
+all options in <a href="/options.html#preferences/cleanup">Page Clean-up</a>
+section are set, while <cite>show all</cite> means pretend that all are
+unset.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6562</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="toggleLyrics"><span class="type-signature">&lt;static> </span>toggleLyrics</h4>
+</dt>
+<dd>
+    <div class="description">
+        Expand or collapse container that holds lyrics (show/hide lyrics).
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6581</li></ul></dd>
+</dl>
+</dd>
+        </dl>
+</article>
+</section>  
+</div>
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Namespaces</h3><ul><li><a href="Element.html">Element</a></li><li><a href="Node.html">Node</a></li><li><a href="xtt.ui.add.html">add</a></li><li><a href="xtt.ui.apply.html">apply</a></li><li><a href="xtt.ll.html">ll</a></li><li><a href="xtt.log.html">log</a></li><li><a href="xtt.player.loopSection.html">loopSection</a></li><li><a href="xtt.lyrics.html">lyrics</a></li><li><a href="xtt.player.html">player</a></li><li><a href="xtt.ui.remove.html">remove</a></li><li><a href="xtt.shortcut.html">shortcut</a></li><li><a href="xtt.ui.html">ui</a></li><li><a href="xtt.video.html">video</a></li><li><a href="xtt.html">xtt</a></li></ul>
+</nav>
+<br clear="both">
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3</a> on Tue Sep 25 2012 23:36:11 GMT+0200 (CEST)
+</footer>
+</body>
+</html>

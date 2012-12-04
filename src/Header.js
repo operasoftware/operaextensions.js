@@ -8,6 +8,10 @@
     return this.REVISION;
   };
   
+  Opera.prototype.buildNumber = function() {
+    return this.REVISION;
+  };
+  
   Opera.prototype.postError = function( str ) {
     console.log( str );
   };

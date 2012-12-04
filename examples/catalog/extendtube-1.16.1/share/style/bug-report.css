@@ -1,0 +1,19 @@
+h1 {
+	color: #fff9eb;
+	text-shadow: 0 0 6px #a52a2a;
+}
+section ul {
+	margin-left: 6em;
+	padding-left: 0;
+	list-style-image: url("../image/list-item.png");
+}
+section li {
+	padding-left: 0;
+	line-height: 1.3em;
+}
+section li:nth-child(odd) {
+	background-color: transparent;
+}
+p {
+	text-indent: 2em;
+}

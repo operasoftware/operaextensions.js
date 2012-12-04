@@ -1,0 +1,28 @@
+section  {
+	font-weight: bold;
+	font-size: 1.2em;
+	color: #4d4d4d;
+}
+header .logo img[alt="overlay"] {
+	left: auto;
+	right: -3px;
+	top: -8px;
+}
+h1 {
+	color: #47b347;
+	text-shadow: 0 0 3px #478fb3;
+}
+h2 {
+	color: #6699cc;
+	font-size: 1.5em;
+	text-align: center;
+	text-shadow: 1px 1px 1px #fff, 1px 1px 3px #000;
+}
+li {
+	display: inline-block;
+	margin: auto 1em;
+	background-color: transparent !important;
+}
+li a {
+	color: #f3460d !important;
+}

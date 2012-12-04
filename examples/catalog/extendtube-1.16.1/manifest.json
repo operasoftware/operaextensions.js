@@ -1,0 +1,39 @@
+{
+  "name": "ExtendTube",
+  "version": "1.16.1",
+  "manifest_version": 2,
+  "description": "OPERA PORT: ExtendTube adds few options to control YouTube videos, download video, customise page...",
+  "icons": { "128": "/share/image/icon.png" },
+  "background": {
+      "page": "index.html"
+  },
+  "content_scripts": [
+      {
+        "matches": [
+          "http://www.youtube.com/*",
+          "https://www.youtube.com/*",
+          "http://www.youtube-nocookie.com/*",
+          "https://www.youtube-nocookie.com/*"
+        ],
+        "exclude_matches": [
+          "http://www.youtube.com/my_*",
+          "https://www.youtube.com/my_*",
+          "http://www.youtube.com/inbox*",
+          "https://www.youtube.com/inbox*",
+          "http://www.youtube.com/account*",
+          "https://www.youtube.com/account*"
+        ],
+        "js": ["/shim/operaextensions_injectedscript.min.js", "/includes/xtt.js"],
+        "run_at":"document_start"
+      },
+      {
+        "matches": ["https://addons.opera.com/*"],
+        "js": ["/shim/operaextensions_injectedscript.min.js", "/includes/bugs.js"]
+      }
+  ],
+  "options_page": "options.html",
+  "permissions": [
+    "tabs", "<all_urls>"
+  ],
+  "browser_action": {}
+}
