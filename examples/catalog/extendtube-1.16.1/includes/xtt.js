@@ -11,8 +11,6 @@
 // @exclude			https://www.youtube.com/account*
 // ==/UserScript==
 
-document.addEventListener('domcontentloaded', function() { console.log("xtt: domcontentloaded fired"); }, false);
-
 opera.isReady(function() {
   
 /*

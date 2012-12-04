@@ -2,6 +2,8 @@
   "../src/Header.js",
   "../src/background/Require.js",
 
+  "../src/common/utils.js",
+
   "../src/common/third_party/rsvp.js",
 
   "../src/common/Event.js",

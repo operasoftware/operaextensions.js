@@ -5075,11 +5075,12 @@ var videoFormat = {
   }
 
   function addToolbarButton() {
+    
   	// Add button only if there is tab to associate it with or
   	// there is no available update.
   	if (toolbar.button || !toolbar.videoid && !availableUpdate)
   		return;
-
+  		
   	var button = {
   			badge: {
   				backgroundColor: "hsla(60, 100%, 50%, .4)",
