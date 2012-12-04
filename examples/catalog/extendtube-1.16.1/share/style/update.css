@@ -1,0 +1,16 @@
+header .logo img[alt="overlay"] {
+	left: -22px;
+	top: -8px;
+}
+h1 {
+	color: #136ac0;
+}
+pre {
+	margin: 1em 4%;
+	background-color: #fafdff;
+	padding: 1em;
+	border-radius: 5px;
+	box-shadow: 0 0 5px #1e90ff inset;
+	font-weight: normal;
+	word-wrap: break-word;
+}

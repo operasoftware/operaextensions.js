@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: video</title>
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+<div id="main">
+    <h1 class="page-title">Namespace: video</h1>
+<section>
+<header>
+    <h2>
+        <span class="ancestors"><a href="xtt.html">xtt</a>.</span>
+    video
+    </h2>
+</header>
+<article>
+    <div class="container-overview">
+            <div class="description">Holds information about playing video and methods to extract them.</div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6802</li></ul></dd>
+</dl>
+    </div>
+        <h3 class="subsection-title">Members</h3>
+        <dl>
+<dt>
+    <h4 class="name" id="is3d"><span class="type-signature">&lt;static, readonly> </span>is3d<span class="type-signature"> :Boolean</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        Says if video is 3D video.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6822</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="isChannel"><span class="type-signature">&lt;static, readonly> </span>isChannel<span class="type-signature"> :Boolean</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        Indicate that video is part of a channel.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6836</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="isEmbedded"><span class="type-signature">&lt;static, readonly> </span>isEmbedded<span class="type-signature"> :Boolean</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        Indicate that video is Iframe embedded video or YouTube pop-up video
+(page that opens after user right clicks on flash player and choose
+option <cite>Pop out</cite>).
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6845</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="ishtml5"><span class="type-signature">&lt;static, readonly> </span>ishtml5<span class="type-signature"> :Boolean</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        Says if video is HTML 5 video.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6829</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="isPlaylist"><span class="type-signature">&lt;static, readonly> </span>isPlaylist<span class="type-signature"> :Boolean</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        Indicate that video is part of a play list.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6852</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="isPopup"><span class="type-signature">&lt;static, readonly> </span>isPopup<span class="type-signature"> :Boolean</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        Indicate that video is part of a YouTube pop-up page. When this property
+is <code>true</code> <a href="xtt.video.html#isEmbedded">xtt.video.isEmbedded</a> is also
+<code>true</code>.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6861</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="isPreview"><span class="type-signature">&lt;static, readonly> </span>isPreview<span class="type-signature"> :Boolean</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        Indicate that video is part of a YouTube pop-up page which itself is part
+of video thumbnail preview. When this property is <code>true</code>
+<a href="xtt.video.html#isEmbedded">xtt.video.isEmbedded</a> and <a href="xtt.video.html#isPopup">xtt.video.isPopup</a> are also
+<code>true</code>.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6871</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="isWatch"><span class="type-signature">&lt;static, readonly> </span>isWatch<span class="type-signature"> :Boolean</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        Indicate that video is part of a regular YouTube page.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6878</li></ul></dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="length"><span class="type-signature">&lt;static, readonly> </span>length<span class="type-signature"> :Number</span></h4>
+</dt>
+<dd>
+    <div class="description">
+        Video length (in seconds).
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 6885</li></ul></dd>
+</dl>
+</dd>
+        </dl>
+        <h3 class="subsection-title">Methods</h3>
+        <dl>
+<dt>
+    <h4 class="name" id="getVideoID"><span class="type-signature">&lt;static> </span>getVideoID</h4>
+</dt>
+<dd>
+    <div class="description">
+        Get ID of currently playing video.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 7175</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    ID of current video.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">String</span>
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="getVideoSize"><span class="type-signature">&lt;static> </span>getVideoSize</h4>
+</dt>
+<dd>
+    <div class="description">
+        Get size of currently playing video. For flash videos predefined
+resolution is returned which may not be accurate. For HTML 5 videos real
+resolution is returned.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 7194</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    Object with information about video resolution. Returned object will have
+<cite>width</cite>, <cite>height</cite> and <cite>ratio</cite> properties.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">Object</span>
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="getVideoTitle"><span class="type-signature">&lt;static> </span>getVideoTitle</h4>
+</dt>
+<dd>
+    <div class="description">
+        Get title of currently playing video.
+    </div>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 7226</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    Title of current video.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">String</span>
+	</dd>
+</dl>
+</dd>
+<dt>
+    <h4 class="name" id="getVideoURI"><span class="type-signature">&lt;static> </span>getVideoURI</h4>
+</dt>
+<dd>
+    <div class="description">
+        Get URI of currently playing video.
+    </div>
+        <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Argument</th>
+		<th>Default</th>
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	<tbody>
+        <tr>
+                <td class="name"><code>encode</code></td>
+            <td class="type">
+                        Boolean
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+                <td class="default">
+                    false
+                </td>
+            <td class="description last">Return URI as URI-encoded string.</td>
+        </tr>
+	</tbody>
+</table>
+<dl class="details">
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>xtt.js, line 7254</li></ul></dd>
+</dl>
+    <h5>Returns:</h5>
+<div class="param-desc">
+    URI of current video.
+</div>
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		<span class="param-type">String</span>
+	</dd>
+</dl>
+</dd>
+        </dl>
+</article>
+</section>
+</div>
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Namespaces</h3><ul><li><a href="Element.html">Element</a></li><li><a href="Node.html">Node</a></li><li><a href="xtt.ui.add.html">add</a></li><li><a href="xtt.ui.apply.html">apply</a></li><li><a href="xtt.ll.html">ll</a></li><li><a href="xtt.log.html">log</a></li><li><a href="xtt.player.loopSection.html">loopSection</a></li><li><a href="xtt.lyrics.html">lyrics</a></li><li><a href="xtt.player.html">player</a></li><li><a href="xtt.ui.remove.html">remove</a></li><li><a href="xtt.shortcut.html">shortcut</a></li><li><a href="xtt.ui.html">ui</a></li><li><a href="xtt.video.html">video</a></li><li><a href="xtt.html">xtt</a></li></ul>
+</nav>
+<br clear="both">
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3</a> on Tue Sep 25 2012 23:36:11 GMT+0200 (CEST)
+</footer>
+</body>
+</html>

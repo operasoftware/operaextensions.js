@@ -18,3 +18,7 @@ cp ../build/operaextensions_injectedscript.js ../examples/Screenshot/operaextens
 cp ../build/operaextensions_background.js ../examples/catalog/close-tabs-right-of-current-0.2.4/shim/operaextensions_background.min.js
 cp ../build/operaextensions_injectedscript.js ../examples/catalog/close-tabs-right-of-current-0.2.4/shim/operaextensions_injectedscript.min.js
 cp ../build/operaextensions_popup.js ../examples/catalog/close-tabs-right-of-current-0.2.4/shim/operaextensions_popup.min.js
+
+cp ../build/operaextensions_background.js ../examples/catalog/extendtube-1.16.1/shim/operaextensions_background.min.js
+cp ../build/operaextensions_injectedscript.js ../examples/catalog/extendtube-1.16.1/shim/operaextensions_injectedscript.min.js
+cp ../build/operaextensions_popup.js ../examples/catalog/extendtube-1.16.1/shim/operaextensions_popup.min.js

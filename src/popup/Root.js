@@ -13,6 +13,6 @@ OperaExtension.prototype.__defineGetter__('bgProcess', function() {
 
 // Generate API stubs
 
-var OEX = opera.extension = opera.extension || (function() { return new OperaExtension(); })();
+var OEX = opera.extension = opera.extension || new OperaExtension();
 
 var OEC = opera.contexts = opera.contexts || {};

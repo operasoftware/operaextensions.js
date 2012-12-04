@@ -1,0 +1,639 @@
+html,
+body,
+body > div,
+.menu-active-item {
+	background-color: #fcfdfe;
+}
+body > div {
+	max-width: 1000px;
+	width: auto;
+}
+span.note {
+	background-color: transparent;
+	padding: 0;
+}
+header,
+footer,
+nav {
+	position: fixed;
+	top: 0;
+	width: 220px;
+}
+header,
+header span {
+	width: 220px;
+	height: 80px;
+	z-index: 2;
+}
+header img {
+	max-width: 100%;
+	max-height: 100%;
+	margin-left: 15px;
+}
+footer {
+	top: auto;
+	bottom: 0;
+	background-color: transparent;
+}
+nav {
+	background-color: #dbe8f3;
+	background-image: -o-linear-gradient(12deg, #fcfdfe 35%, #dadfe1);
+	background-image: linear-gradient(12deg, #fcfdfe 35%, #dadfe1);
+	box-shadow: 1px 0 2px 1px #c7cbcc;
+	padding-top: 80px;
+	bottom: 0;
+}
+nav a:link,
+nav a:visited {
+	color: #bf0a0a;
+}
+nav a:hover {
+	text-shadow: 0 0 2px #bf0a0a;
+	text-decoration: none;
+	background-color: #fcfdfe;
+	background-image: -o-linear-gradient(right, transparent 75%, #dadfe1);
+	background-image: linear-gradient(to left, transparent 75%, #dadfe1);
+}
+nav a.menu-active-item {
+	color: #0a64bf;
+	font-style: italic;
+	text-shadow: 0 0 2px #0a64bf;
+	background-color: #fcfdfe;
+	background-image: -o-linear-gradient(left, transparent 75%, #dadfe1);
+	background-image: linear-gradient(to right, transparent 75%, #dadfe1);
+}
+nav ul,
+nav li {
+	list-style: none;
+	border-radius: 0;
+	border: none;
+	background-color: transparent;
+	padding-left: 0;
+}
+nav li a {
+	padding: 0 1em;
+	display: block;
+	text-decoration: none;
+}
+nav ul:not(:first-child) li,
+nav ul:not(:first-child) li a {
+	-o-transition: height .5s;
+	transition: height .5s;
+	height: 1.2em;
+	overflow: hidden;
+}
+nav ul:not(:first-child) a {
+	padding-left: 1.5em;
+}
+nav ul:not(:first-child) a::before {
+	font-family: "DejaVu Sans", "Segoe UI Symbol", "Apple Braille", sans-serif;
+	content: '⠅';
+	line-height: 1.2em;
+	position: relative;
+	left: -.5em;
+	text-decoration: none !important;
+}
+nav ul:not(:first-child) a.menu-active-item::before {
+	content: '⠕';
+}
+nav ul.collapsed li,
+nav ul.collapsed li a {
+	height: 0;
+}
+section {
+	margin-left: 220px;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	padding: 3em 0;
+	background-color: transparent;
+	background-image: -o-linear-gradient(-25deg, #eeeeee, transparent 150px), -o-linear-gradient(-45deg, #eeeeee, transparent 200px), -o-linear-gradient(-75deg, #eeeeee, transparent 150px);
+	background-image: linear-gradient(-25deg, #eeeeee, transparent 150px), linear-gradient(-45deg, #eeeeee, transparent 200px), linear-gradient(-75deg, #eeeeee, transparent 150px);
+	background-attachment: fixed;
+	background-position: left 220px top 30px;
+}
+section h2 {
+	margin: 0;
+	padding: 10px 20px;
+	position: fixed;
+	top: 0;
+	max-width: 740px;
+	width: 100%;
+	z-index: 5;
+	background-color: #fff3d9;
+	background-image: -o-linear-gradient(left, #dadfe1 10%, #ebebeb 30%, #f5faff 50%, #fcfdfe 80%);
+	background-image: linear-gradient(to right, #dadfe1 10%, #ebebeb 30%, #f5faff 50%, #fcfdfe 80%);
+	color: #6c6962;
+	text-shadow: 1px 1px 2px #fcfdfe, 1px 1px 8px #262d33;
+	box-shadow: -3px 0 1px #dadfe1, -1px 1px 2px 1px #c7cbcc;
+	font-style: italic;
+}
+section :not(.collapsed) > .link {
+	font-style: italic;
+	text-shadow: 0 0 2px #f3460d;
+	color: #f3460d;
+}
+fieldset {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	padding-bottom: 1em;
+	margin-bottom: 1em;
+}
+legend {
+	margin-left: 2em;
+	font-weight: bold;
+}
+section > div,
+fieldset {
+	border-bottom: 3px solid #dbe8f3;
+}
+.link::before {
+	content: url("../image/expander.png");
+	position: relative;
+	left: 2px;
+	margin: 0 5px;
+}
+section .collapsed > .link::before {
+	content: url("../image/expander.png");
+	position: relative;
+	left: -5px;
+	margin: 0 5px;
+	-o-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+section .collapsed > :not(.link) {
+	display: none;
+}
+#preferences p.storage-note,
+#preferences p.appeal-note {
+	background-color: #fef3e8;
+	border-radius: 5px;
+	padding: .5em;
+}
+#preferences input[type="number"] {
+	width: 40px;
+}
+#preferences input[type="color"] {
+	width: 5em;
+	height: 1.8em;
+}
+#preferences input[type="range"] {
+	width: 8em;
+}
+#preferences input[type="range"] + span {
+	font-size: .75em;
+	display: inline-block;
+	width: 2.2em;
+}
+#shortcut p:last-of-type,
+#custom-style p:last-child {
+	text-align: right;
+	padding-right: 1em;
+}
+#preferences .space {
+	margin-top: 1em;
+}
+#preferences li {
+	border: 1px solid #dbe8f3;
+	box-sizing: border-box;
+}
+#preferences li.help span.help.note {
+	color: #ff8066 !important;
+}
+#preferences li.help span.help {
+	position: absolute;
+	right: 0;
+	top: 0;
+	line-height: 1.5em;
+	width: 1.5em;
+	height: 1.5em;
+	text-align: center;
+	border-radius: .75em;
+	background-color: #4d4d4d;
+	color: #e5e5e5;
+	font-weight: bold;
+	margin: .25em;
+	opacity: .5;
+}
+#preferences li.help > span.help {
+	right: 1em;
+}
+#preferences .h13 li.help > span.help {
+	right: 0;
+}
+#preferences li.help span.help:hover {
+	color: #ffdf40;
+	box-shadow: 0 0 10px #ffdf40;
+	opacity: 1;
+}
+#preferences li.help span.help + span {
+	position: absolute;
+	right: 3em;
+	top: 0;
+	width: 0;
+	max-height: 300px;
+	overflow: hidden;
+	line-height: 1.2em;
+	border-radius: .75em;
+	box-shadow: 0 0 10px #7a8a9a, 0 0 15px 1px #fff inset;
+	background-color: #f5f5b5;
+	background-image: -o-linear-gradient(left, #f5f5b5, #ffffe6);
+	background-image: linear-gradient(to right, #f5f5b5, #ffffe6);
+	color: #202223;
+	text-shadow: 0 0 1px #e5e5e5;
+	padding: .5em;
+	opacity: 0;
+	display: none;
+	-o-transition: opacity .3s .3s, width .5s .2s;
+	transition: opacity .3s .3s, width .5s .2s;
+	z-index: 10;
+}
+#preferences li.help .sub-group span.help {
+	right: 1em;
+}
+#preferences li.help .sub-group span.help + span {
+	top: auto;
+	bottom: 0;
+	right: 3em;
+}
+#preferences li.help span.help:hover + span {
+	display: inline-block;
+	width: 280px;
+	opacity: 1;
+}
+ul.sub-group.h1 {
+	height: 2em;
+}
+ul.sub-group.h2 {
+	height: 4em;
+}
+ul.sub-group.h3 {
+	height: 6em;
+}
+ul.sub-group.h4 {
+	height: 8em;
+}
+ul.sub-group.h5 {
+	height: 10em;
+}
+ul.sub-group.h6 {
+	height: 12em;
+}
+ul.sub-group.h7 {
+	height: 14em;
+}
+ul.sub-group.h8 {
+	height: 16em;
+}
+ul.sub-group.h9 {
+	height: 18em;
+}
+ul.sub-group.h10 {
+	height: 20em;
+}
+ul.sub-group.h11 {
+	height: 22em;
+}
+ul.sub-group.h12 {
+	height: 24em;
+}
+ul.sub-group.h13 {
+	height: 26em;
+}
+ul.sub-group.h14 {
+	height: 28em;
+}
+ul.sub-group.h15 {
+	height: 30em;
+}
+ul.sub-group.h16 {
+	height: 32em;
+}
+ul.sub-group.h17 {
+	height: 34em;
+}
+ul.sub-group.h18 {
+	height: 36em;
+}
+ul.sub-group.h19 {
+	height: 38em;
+}
+ul.sub-group.h20 {
+	height: 40em;
+}
+ul.sub-group.h7,
+ul.sub-group > li.h7 {
+	height: 14em;
+}
+ul.sub-group {
+	position: relative;
+	margin: 0;
+	-o-transition: height 1s;
+	transition: height 1s;
+}
+ul.sub-group > li {
+	height: 2em;
+	padding-left: 2em;
+	position: relative;
+	-o-transition: opacity .5s, height .5s;
+	transition: opacity .5s, height .5s;
+}
+ul.sub-group > li.high {
+	height: 20em;
+}
+ul.sub-group.h13 li.right-text {
+	padding-right: .5em;
+}
+.sub-group li.right-text {
+	padding-right: 1.5em;
+}
+#shortcut .sub-group li.right-text {
+	padding-right: .3em;
+}
+:not(.invert) > input[type="checkbox"]:not(:checked) ~ .sub-group,
+:not(.invert) > input[type="checkbox"]:not(:checked) ~ .sub-group li,
+.invert > input[type="checkbox"]:checked ~ .sub-group,
+.invert > input[type="checkbox"]:checked ~ .sub-group li {
+	height: 0;
+}
+/* hide elements after transition is done */
+:not(.invert) > input[type="checkbox"]:not(:checked) ~ .sub-group li *,
+.invert > input[type="checkbox"]:checked ~ .sub-group li * {
+	-o-transform: scale(0);
+	transform: scale(0);
+	-o-transition: -o-transform 0s 1s;
+	transition: transform 0s 1s;
+}
+:not(.invert) > input[type="checkbox"]:not(:checked) ~ .sub-group > li,
+.invert input[type="checkbox"]:checked ~ .sub-group > li {
+	opacity: 0;
+}
+:not(.invert) > input[type="checkbox"]:not(:checked) ~ .sub-group,
+.invert > input[type="checkbox"]:checked ~ .sub-group {
+	-o-transition-delay: .2s;
+	transition-delay: .2s;
+}
+/**/
+:not(.invert) > input[type="checkbox"]:checked ~ .sub-group > li,
+.invert > input[type="checkbox"]:not(:checked) ~ .sub-group > li {
+	-o-transition-delay: .3s;
+	transition-delay: .3s;
+}
+:not(.invert) > input[type="checkbox"]:not(:checked) ~ .sub-group > li,
+.invert > input[type="checkbox"]:checked ~ .sub-group > li {
+	-o-transition-delay: 0;
+	transition-delay: 0;
+}
+/**/
+.invert > input[type="checkbox"]:checked ~ .sub-group > li,
+:not(.invert) > input[type="checkbox"]:not(:checked) ~ .sub-group > li {
+	-o-transition-delay: .4s;
+	transition-delay: .4s;
+}
+.invert > input[type="checkbox"]:checked ~ .sub-group > li + li,
+:not(.invert) > input[type="checkbox"]:not(:checked) ~ .sub-group > li + li {
+	-o-transition-delay: .3s;
+	transition-delay: .3s;
+}
+.invert > input[type="checkbox"]:checked ~ .sub-group > li + li + li,
+:not(.invert) > input[type="checkbox"]:not(:checked) ~ .sub-group > li + li + li {
+	-o-transition-delay: .2s;
+	transition-delay: .2s;
+}
+.invert > input[type="checkbox"]:checked ~ .sub-group > li + li + li + li,
+:not(.invert) > input[type="checkbox"]:not(:checked) ~ .sub-group > li + li + li + li {
+	-o-transition-delay: .1s;
+	transition-delay: .1s;
+}
+.invert > input[type="checkbox"]:checked ~ .sub-group > li + li + li + li ~ li,
+:not(.invert) > input[type="checkbox"]:not(:checked) ~ .sub-group > li + li + li + li ~ li {
+	-o-transition-delay: 0;
+	transition-delay: 0;
+}
+/**/
+.invert > input[type="checkbox"]:not(:checked) ~ .sub-group > li,
+:not(.invert) > input[type="checkbox"]:checked ~ .sub-group > li {
+	-o-transition-delay: .3s;
+	transition-delay: .3s;
+}
+.invert > input[type="checkbox"]:not(:checked) ~ .sub-group > li + li,
+:not(.invert) > input[type="checkbox"]:checked ~ .sub-group > li + li {
+	-o-transition-delay: .4s;
+	transition-delay: .4s;
+}
+.invert > input[type="checkbox"]:not(:checked) ~ .sub-group > li + li + li,
+:not(.invert) > input[type="checkbox"]:checked ~ .sub-group > li + li + li {
+	-o-transition-delay: .5s;
+	transition-delay: .5s;
+}
+.invert > input[type="checkbox"]:not(:checked) ~ .sub-group > li + li + li + li,
+:not(.invert) > input[type="checkbox"]:checked ~ .sub-group > li + li + li + li {
+	-o-transition-delay: .6s;
+	transition-delay: .6s;
+}
+.invert > input[type="checkbox"]:not(:checked) ~ .sub-group > li + li + li + li ~ li,
+:not(.invert) > input[type="checkbox"]:checked ~ .sub-group > li + li + li + li ~ li {
+	-o-transition-delay: .7s;
+	transition-delay: .7s;
+}
+#shortcut li span.right {
+	position: absolute;
+	right: 0;
+	padding-right: 1em;
+}
+#shortcut li span.right button {
+	margin: .25em;
+}
+#shortcut .sub-group span:first-child {
+	display: inline-block;
+	width: 200px;
+}
+#shortcut .capture {
+	position: absolute;
+	top: 2em;
+	left: 0;
+	width: 100%;
+	height: 22em;
+	border-radius: 0px;
+	background-color: hsla(207, 50%, 91%, .95);
+	border: 1px solid #3e594b;
+	box-shadow: 0 0 15px #3e594b, 0 0 50px #ffffff inset;
+	text-align: center;
+	padding: 0;
+	line-height: 1em;
+	-o-transition: .5s;
+	transition: .5s;
+	-o-transform: scale(0);
+	transform: scale(0);
+	opacity: .3;
+}
+#shortcut .capture.expanded {
+	-o-transform: scale(1);
+	transform: scale(1);
+	opacity: 1;
+}
+#shortcut .capture p {
+	background-color: transparent;
+	padding: .5em;
+}
+#shortcut .capture p:first-of-type {
+	margin-top: 3em;
+}
+#shortcut .capture p:last-of-type {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin-bottom: 3em;
+}
+#shortcut .capture p:last-of-type button {
+	margin-bottom: .3em;
+}
+#shortcut .capture #shortcut-capture {
+	width: 60%;
+	height: 3em;
+	line-height: 3em;
+	background-color: hsla(0, 0%, 100%, .8);
+	border-radius: .75em;
+	box-shadow: 0 0 10px hsla(150, 50%, 51%, .33) inset;
+	margin: auto;
+	font-size: 1.8em;
+}
+#shortcut .capture button {
+	margin: auto 1em;
+	float: none;
+}
+#shortcut .capture p.notice {
+	color: #f00;
+}
+#shortcut-reset,
+#customcolor-reset {
+	margin-right: 1em;
+}
+textarea#customstyle,
+textarea#import-preferences {
+	width: 95%;
+	height: 95%;
+	margin-top: .4em;
+}
+.not-saved {
+	box-shadow: 0 0 10px 1px #ff9933;
+}
+.css ~ ul .save-note.saved {
+	color: #1e991e !important;
+	text-shadow: 0 0 2px #1e991e;
+}
+#actions input.state {
+	margin-right: -.3em;
+}
+#actions input.id {
+	width: 300px;
+	font-size: .9em;
+}
+#actions button.delete {
+	margin-top: .25em;
+}
+#actions .sub-group {
+	overflow: hidden;
+}
+.skip-this-section ul:not(.sub-group) > li > button {
+	padding: 3px 7px;
+}
+#about p,
+#about dl {
+	margin-left: 5%;
+	padding-left: 5%;
+}
+#about p:first-of-type,
+#about dl:first-of-type {
+	border-top-left-radius: 25px;
+	padding-top: .5em;
+}
+#about dl:last-of-type {
+	border-bottom-left-radius: 25px;
+	padding-bottom: .5em;
+}
+#about p:nth-of-type(3) {
+	padding-left: 10%;
+}
+#about h3 {
+	margin: 1em 5%;
+}
+#about table {
+	margin-right: 2em;
+	margin-left: 5%;
+	background-color: #fcfdfe;
+}
+#about table tr:nth-child(odd) {
+	background-color: #f5faff;
+}
+#about table td {
+	border-color: #e6eff8;
+	width: 5%;
+	padding-right: 5%;
+	vertical-align: top;
+	text-align: inherit;
+}
+#about table td:first-child {
+	width: 20%;
+	padding-left: 5%;
+}
+#about table td:last-child {
+	width: 25%;
+}
+#about #about-version em {
+	font-size: .9em;
+	color: #aaabac;
+}
+#about .google {
+	opacity: .25;
+}
+#help p {
+	text-align: left;
+	text-indent: 2em;
+}
+#help pre.code {
+	margin: 1.5em 2em .5em;
+	position: relative;
+	border: 1px solid #dbe8f3;
+	border-radius: 3px;
+	box-shadow: 0 0 20px 1px #f8fafc inset;
+}
+#help pre.code::before {
+	content: "Code:";
+	position: absolute;
+	top: -1.3em;
+	left: .5em;
+	font-size: .9em;
+	font-style: italic;
+	color: #8b0b00;
+}
+#help dt {
+	font-weight: normal;
+	color: #546474;
+	font-style: italic;
+}
+#help ul {
+	padding-left: 1em;
+	border: 0;
+}
+#help li {
+	background-color: transparent;
+	line-height: 1em;
+}
+.qualities th[rowspan] {
+	vertical-align: bottom;
+}
+.qualities th {
+	font-size: .9em;
+	font-weight: normal;
+	text-shadow: 0 0 1px #001933;
+}
+.qualities td {
+	font-size: .9em;
+	max-width: 100px;
+}
+#about .extension ~ p:last-child {
+	font-size: .75em;
+	color: #546474;
+}

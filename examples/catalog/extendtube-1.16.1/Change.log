@@ -1,0 +1,325 @@
+	Legend:
+	+ (plus) - added (new)
+	# (hash) - changed
+	- (hyphen) - removed
+	* (asterisk) - fixed
+
+29.10.2012. - 1.16.1
+	# partial support for YouTube experimental UI
+	* some options in page clean-up section don't work (again)
+	* pop-out button doesn't work
+
+23.10.2012. - 1.16
+	+ partial support for YouTube experimental UI
+	# support for Opera 11.50 is back
+	* overriding default language doesn't work
+	* some options in page clean-up section don't work
+
+18.10.2012. - 1.15.1
+	# support for Opera 11.60 is back
+	* not working in Opera 12.10
+
+08.10.2012. - 1.15
+	+ optional use of fall-back servers for download links
+	# no need for script storage anymore
+	* download menu is empty
+	* doesn't detect when embedded player becomes ready
+	* doesn't detect when channel player becomes ready
+	* doesn't detect when embedded player changes state
+	* doesn't detect when channel player changes state
+	* buttons below player are misaligned
+	* flash player is not reloading anymore (except on channels)
+	* "toggle wide player" shortcut doesn't work
+	* "hide add to button" doesn't work
+	* if language is overridden it's not used always
+	* playlists don't advance to next video
+	- support for Opera 11.60 is dropped (actually it isn't, but
+	  ECMAScript 5 support is not good enough and it just won't work)
+
+25.09.2012. - 1.14
+	# all "auto hide controls" options works on HTML5 videos
+	* doesn't detect when player becomes ready
+	* doesn't detect when player changes state
+	- support for Opera <11.60 is dropped
+
+21.08.2012. - 1.13.21
+	* download links are sometimes broken (again)
+	* video ratings are transparent in Opera 12.50
+
+19.08.2012. - 1.13.20
+	# will also work on youtube-nocookie.com
+	* download links are sometimes broken
+
+16.08.2012. - 1.13.19
+	* download links are almost always broken
+
+13.08.2012. - 1.13.18
+	# added new languages in translations (bn, gu, kn, ta)
+	* an issue when adding actions
+	* sometimes section loop gets stuck at beginning
+
+16.07.2012. - 1.13.17
+	# small update to style for custom colours
+	# it can detect debug scripts now
+
+07.06.2012. - 1.13.16
+	# added info about video format 36 (download menu)
+	* error loading lyrics in Opera 12
+
+14.05.2012. - 1.13.15
+	# small update to style for custom colours
+	* doesn't detect when embedded player becomes ready
+	* doesn't detect when embedded player changes state
+	* need extra click to play when autoplay is disabled
+
+11.05.2012. - 1.13.14
+	* doesn't detect when player becomes ready
+	* doesn't detect when player changes state
+	* check for update doesn't work for approved updates
+	* cannot get player (video) options
+
+02.05.2012. - 1.13.13
+	# small update to style for custom colours
+	# added “disable flash player shortcuts” option
+	* video ratings not visible
+
+15.03.2012. - 1.13.12
+	* doesn't detect when player becomes ready
+
+13.03.2012. - 1.13.11
+	# added “only player in full screen” option
+	# page clean-up works in full screen now
+	* on embedded videos doesn't detect when player changes state
+
+13.02.2012. - 1.13.10
+	* “force video quality” doesn't work on channels
+	* “always disable autoplay” doesn't work on channels
+
+11.02.2012. - 1.13.9
+	# flash player is now reloaded only once
+	# small update to style for custom colours
+	* “always disable autoplay” doesn't work
+	* “force video quality” doesn't work
+
+10.02.2012. - 1.13.8
+	* doesn't detect when HTML5 player changes state
+	* added buttons are different from default ones
+
+01.02.2012. - 1.13.7
+	- “how wide” option (cosmic panda not available any more)
+	* download menu emty for HTML5 videos
+	* “hide subscribe button” option doesn't work
+	* cannot pause video preview
+	* video preview doesn't show current time
+
+26.01.2012. - 1.13.6
+	* check for update doesn't work for approved updates
+	* HTML5 player doesn't work
+	* video ratings not visible
+	* toggle wide shortcut doesn't work
+
+19.01.2012. - 1.13.5
+	* doesn't detect when player changes state
+
+09.01.2012. - 1.13.4
+	# style for custom colours updated
+	* force video quality ignored when expanding/shrinking player
+	* sometimes player is wide even if that option is disabled
+
+19.11.2011. - 1.13.3
+	* html5 videos doesn't work in some versions of Opera
+
+10.11.2011. - 1.13.2
+	* preferences in scriptStorage are not updated
+	* actions not working if imported from older versions
+	* quality option not respected when seeking to unbuffered section
+
+09.11.2011. - 1.13.1
+	* embedded videos automatically start to buffer
+	* some actions have stopped working
+	* incorrect video count on toolbar button
+	* exported preferences are not valid JSON
+
+07.11.2011. - 1.13
+	+ respect auto-buffer option on channels
+	+ hiding ads can be disabled
+	# “update available” page replaced with toolbar button
+	# strip vendor specific properties when saving custom css
+	# updated API
+	* thumbnail preview don't work for HTML5 videos
+	* embedded videos don't start with desired quality
+	* html5 videos doesn't work
+
+28.10.2011. - 1.12
+	+ new event for actions available (develop)
+	+ new languages in translations (af, eu, gl, is, ur)
+	+ option to close video page from pop-up
+	+ rating bar option for video thumbnails
+	+ other player sizes as wide player (on cosmic panda)
+	+ shortcut to temporary disable page clean-up
+	# help updated
+	* detect state on channel's initial video
+
+21.10.2011. - 1.11.2
+	+ option to disable update check
+	* not working on embedded videos
+	* quality is not forced on embedded videos
+
+18.10.2011. - 1.11.1
+	* not working on embedded videos (fixed partially)
+	* quality is not forced on embedded videos (fixed partially)
+	* pop-up not working in Opera 12
+
+05.10.2011. - 1.11
+	+ new event for actions available (page load)
+	+ check for update on start-up
+	# example action for mp3 download is updated
+	* preview time is hidden when video preview is activated with mouse-over
+	* html5 videos doesn't work
+	* items added to download menu via actions are sometimes missing
+
+23.09.2011. - 1.10.3
+	+ new option (player progress bar colour)
+	# some changes regarding extensions pop-up
+
+20.09.2011. - 1.10.2
+	* page layout is broken when thumbnail preview is enabled
+	* with “exposed shortcuts”, increasing/decreasing playback volume always
+	  mutes the video
+	* tool-tips are missing from added buttons and menu(s)
+	* embedded videos cannot be paused from pop-up
+
+09.09.2011. - 1.10.1
+	* preferences are exported on start-up
+	* play only on first focus doesn't work
+
+06.09.2011. - 1.10
+	+ option to change auto-hide property of player controls
+	+ option to change player theme
+	+ preferences are copied to script storage (if available; see help)
+	* download menu is empty  if plug-ins are disabled
+	* when thumbnail preview is enabled playback start itself seconds after
+	  being paused
+	* an action cannot be deleted until it's enabled or disabled
+	* changing action ID will create new action
+	* selection loop doesn't loop video if end time is video length
+	* frame-step doesn't work in Opera 12
+
+29.08.2011. - 1.9.1
+	* autoplay disabled in watch_popup pages
+	* some menus are inactive on Windows
+	* embedded videos not detected correctly
+	* hiding of some buttons
+	* download menu is sometimes empty
+
+18.08.2011. - 1.9
+	+ video thumbnail preview
+	* no progress bar in pop-up for some videos
+	* end of loop section is always zero
+	* loop not working
+
+05.08.2011. - 1.8.6
+	* embedded videos cannot be controlled from pop-up
+	* download menu is always empty
+
+02.08.2011. - 1.8.5
+	+ focus tab from pop-up (opera:config#UserPrefs|Allowscripttoraisewindow
+	  must be set)
+	+ alpha channel to colours
+	+ toggle loop by click'n'hold or middle click
+	# custom colours re-enabled
+	* causes embedded players to autoplay
+
+19.07.2011. - 1.8
+	+ support for new interface (cosmic panda)
+	+ will modify youtube css to enable gradients
+	+ detect iframe embedded videos
+	+ toolbar button pop-up (Opera 11.10+)
+	+ new button
+	+ few new options in preferences
+	+ added api for actions
+	# loop button default behaviour switched (see help)
+	# help updated
+	# custom colours temporary disabled in this version
+	* wrong loop button icon after disabling section loop
+	* some fixes on preferences page
+	* hiding all comments fixed
+
+13.06.2011. - 1.7
+	+ video quality option is now applied on html 5 videos
+	+ more download options for html 5 videos
+	+ added option to add snippets of JavaScript code (actions)
+	* "Wide player" option doesn't work
+	* download button desn't work on channels
+	* disable autoplay doesn't work on 3D videos
+
+28.04.2011. - 1.6.1
+	+ three new shortcuts
+	+ removed "click to activate" message from flash player
+	+ some translations added
+	# some translations updated
+	* missing video player on channels
+	* misplaced buttons on channels
+
+06.04.2011. - 1.6
+	+ support for html 5 videos
+	+ full screen feature (please read help)
+	+ page colours can be changed
+	+ custom css can be added to page
+	+ light icons for buttons
+	# some translations updated
+	# improved finding artist/title for lyrics search
+	# improved hiding comments
+
+28.03.2011. - 1.5
+	+ extension localised in 39 languages
+	# deactivating section loop doesn't require Ctrl key any more
+	* section loop times cannot be decremented using mouse wheel
+	* video get stuck on beginning upon section loop activation
+	* some preferences are not set on first run
+
+24.03.2011. - 1.4.1
+	# download, loop and preferences button are now configurable (default is
+	  disabled)
+	# nothing is added to page if preferences are not set (default); only ads
+	  are removed
+	# frame step icon is now less confusing
+
+21.03.2011. - 1.4
+	+ work on channels (experimental)
+	+ possibility to hide various elements on page
+
+15.03.2011. - 1.3.3
+	* frame step button doesn't work
+
+11.03.2011. - 1.3.2
+	+ auto scroll to lyrics on "show lyrics" or to video on "hide lyrics"
+	# updated help
+	# lyrics button is visible only if artist and title is found
+	* hard coded lyrics shortcut (l) replaced with configurable one
+	* no auto play when browsing through tab history
+
+08.03.2011. - 1.3.1
+	* download menu is above tool-tip
+	* missing file name and extension when downloading
+
+06.03.2011. - 1.3
+	+ option to load lyrics (from external site)
+	* video cannot be played (automatically stops when played)
+
+02.03.2011. - 1.2 - not published
+	+ option to automatically expand video player
+	+ work on secure pages
+
+24.02.2011. - 1.1.1 - not published
+	+ make player shortcuts work even when player is not focused
+	+ hide video annotations by default
+
+22.02.2011. - 1.1 - not published
+	+ customisable keyboard shortcuts
+
+20.02.2011. - 1.0.1
+	* minor style changes
+
+15.02.2011. - 1.0
+	+ initial release (everything is new)

@@ -1,0 +1,24 @@
+body {
+	background-color: @pbgColor;
+	color: @pColor;
+}
+li:nth-child(odd) {
+	background-color: @chColor;
+}
+span.title {
+	text-shadow: 0 0 2px @pColor;
+}
+span.title.link {
+	color: @lColor;
+}
+span.title.link:hover {
+	text-shadow: 0 0 3px @lColor;
+}
+h1 {
+	text-shadow: 1px 1px 1px @pbgColor, 1px 1px 3px @pColor;
+}
+.tool-tip {
+	color: @pColor;
+	background-color: @pbgColor;
+	box-shadow: 0 0 3px 1px @pColor;
+}

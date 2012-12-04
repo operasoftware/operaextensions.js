@@ -44,12 +44,12 @@ Opera.prototype.defineMagicFunction = function(name, implementation) {
 };
 
 Opera.prototype.addEventListener = function(name, fn, useCapture) {
-  // TODO
+  // TODO Implement http://www.opera.com/docs/userjs/specs/#evlistener
   // ... this.on(name, function)
 };
 
 Opera.prototype.removeEventListener = function(name, fn, useCapture) {
-  // TODO
+  // TODO Implement http://www.opera.com/docs/userjs/specs/#evlistener
   // ... this.off(name, function)
 };
 

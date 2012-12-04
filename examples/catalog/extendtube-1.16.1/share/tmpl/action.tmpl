@@ -1,0 +1,24 @@
+<input type="checkbox" class="state">
+<label>enable</label>,
+ID: <input type="text" class="id" value="new action">
+<button class="delete text float-right">Delete action</button>
+<ul class="sub-group h7">
+	<li class="h7">
+		Action trigger:
+		<select>
+			<option value="immediately">immediately</option>
+			<option value="DOMContentLoaded">DOM created</option>
+			<option value="load">page loaded</option>
+			<option value="doc modified">document modified</option>
+			<option value="pluginInitialised">plug-in initialised</option>
+			<option value="player ready">player ready</option>
+			<option value="playback ended">playback ended</option>
+			<option value="playback started">playback started</option>
+			<option value="playback paused">playback paused</option>
+			<option value="develop">develop</option>
+		</select><br>
+		Action code:
+		<textarea rows="7" cols="80"></textarea>
+		<button class="save">Save action</button>
+	</li>
+</ul>

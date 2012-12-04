@@ -1,0 +1,2250 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/shim/operaextensions_popup.min.js"></script>
+    <meta charset="utf-8">
+    <title>ExtendTube: Preferences</title>
+    <link rel="shortcut icon"
+        type="image/png"
+        href="share/image/fav.png">
+    <link rel="stylesheet"
+        type="text/css"
+        href="share/style/general.css">
+    <link rel="stylesheet"
+        type="text/css"
+        href="share/style/options.css">
+    <link rel="stylesheet"
+        type="text/css"
+        href="share/style/code.css">
+    <script type="application/javascript"
+        src="lib/ext/Array.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/ext/Date.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/ext/Element.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/ext/Object.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/ext/Node.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/ext/Number.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/ext/Storage.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/ext/String.js">
+    </script>
+    <!--<script type="application/javascript"
+        src="lib/init.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/localisedStrings.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/style.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/videoFormat.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/preferences.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/opt-prefs.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/opt-scats.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/opt-acts.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/opt-listen.js">
+    </script>
+    <script type="application/javascript"
+        src="lib/options.js">
+    </script>-->
+    <script type="application/javascript"
+        src="lib/merged_scripts/options_merged.js">
+    </script>
+  </head>
+  <body>
+    <div>
+      <header>
+        <span>
+          <img src="share/image/logo.png" alt="ExtendTube logo">
+        </span>
+      </header>
+      <nav>
+        <ul>
+          <li>
+            <a href="#preferences">Preferences</a>
+            <ul class="preferences collapsed">
+              <li>
+                <a href="#preferences/general">General</a>
+              </li>
+              <li>
+                <a href="#preferences/extension">Extension</a>
+              </li>
+              <li>
+                <a href="#preferences/player">Video player</a>
+              </li>
+              <li>
+                <a href="#preferences/interface">Interface</a>
+              </li>
+              <li>
+                <a href="#preferences/shortcut">Keyboard shortcuts</a>
+              </li>
+              <li>
+                <a href="#preferences/cleanup">Page Clean-up</a>
+              </li>
+              <li>
+                <a href="#preferences/colors">Custom colours</a>
+              </li>
+              <li>
+                <a href="#preferences/css">Custom CSS</a>
+              </li>
+              <li>
+                <a href="#preferences/actions">Actions</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#about">About</a>
+            <ul class="about collapsed">
+              <li>
+                <a href="#about/extension">Extension</a>
+              </li>
+              <li>
+                <a href="#about/license">License</a>
+              </li>
+              <li>
+                <a href="#about/hacking">Hacking</a>
+              </li>
+              <li>
+                <a href="#about/translations">Translations</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#help">Help</a>
+            <ul class="help collapsed">
+              <li>
+                <a href="#help/interface">Interface</a>
+              </li>
+              <li>
+                <a href="#help/preferences">Preferences</a>
+              </li>
+              <li>
+                <a href="#help/shortcuts">Keyboard shortcuts</a>
+              </li>
+              <li>
+                <a href="#help/actions">Actions</a>
+              </li>
+              <li>
+                <a href="#help/popup">Extension pop-up</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="api/xtt.html">API</a>
+          </li>
+          <li>
+            <a href="share/page/log.html">Debug messages</a>
+          </li>
+          <li>
+            <a href="share/page/bug-report.html">Report a bug</a>
+          </li>
+        </ul>
+      </nav>
+      <section id="preferences">
+        <h2>
+          Preferences
+        </h2>
+        <p>
+          On this page you can set preferences for ExtendTube. There is no save/apply button and therefore preferences will take effect immediately and will affect all opened (YouTube) pages. However, there are some preferences that need to reload video player in order to be applied. They may reload video player or may not be applied until page is reloaded.
+        </p>
+        <fieldset class="collapsed dont-listen">
+          <legend id="preferences/general" class="general link">General</legend>
+          <p>
+            In this section some options can be hazardous. They are disabled until you check check-box in front of them.
+          </p>
+          <ul>
+            <li class="help">
+              <input type="checkbox" id="clear-confirmed">
+              <label for="clear-confirmed">Reset</label> to
+              <button id="preferences-reset" class="delete text">default</button> preferences!
+              <span class="help">?</span>
+              <span>The “default” button will clear all preferences including shortcuts, custom style, colours and actions. When preferences are cleared ExtendTube will only clear ads.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="load-confirmed">
+              <label for="load-confirmed">Load </label>
+              <button id="preferences-recommended" class="load text">recommended</button> preferences.
+              <span class="help">?</span>
+              <span>The “recommended” button will change recommended settings but other will be left unchanged.</span>
+            </li>
+            <li class="help">
+              <button id="preferences-export" class="save text">Export</button> preferences!
+              <span class="help">?</span>
+              <span>Click “export” button to export preferences.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="import-check-box">
+              <label for="import-check-box">Import preferences</label>
+              <span class="help">?</span>
+              <span>Check this to be able to import preferences.</span>
+              <ul class="sub-group h12">
+                <li class="high">
+                  <textarea id="import-preferences" rows="5" cols="80">// Paste here previously exported preferences (or part of them)
+// and click “Import” button below.
+//
+// Preferences must be in JSON format.
+// Single line comments (like this ones) are allowed.
+
+</textarea>
+                </li>
+                <li class="right-text">
+                  <strong class="save-note note"></strong><button id="import" class="load text">Import</button>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </fieldset>
+        <fieldset class="collapsed">
+          <legend id="preferences/extension" class="extension link">Extension</legend>
+          <ul>
+            <li class="help">
+              <input type="checkbox" id="updatecheck">
+              <label for="updatecheck">Check for updates</label>
+              <span class="help">?</span>
+              <span>If enabled ExtendTube will check for updates periodically.</span>
+              <ul class="sub-group h1">
+                <li>
+                  <input type="checkbox" id="unapprovedcheck">
+                  <label for="unapprovedcheck">Check for unapproved updates</label>
+                  <span class="help">?</span>
+                  <span>If you enable this option you will be notified when new version, which is not yet approved, is released.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <label for="replace">Replace invalid characters with:</label>
+              <input type="text" id="replace" size="3">
+              <span class="help">?</span>
+              <span>While saving video replace invalid characters in file name with this character(s). Default is "space".</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="addtoolbarbutton">
+              <label for="addtoolbarbutton">Add toolbar button</label>
+              <span class="help note">?</span>
+              <span>Add button to toolbar that can be used to play/pause video if tab currently playing video is not focused.<br>
+              <span class="note">Note</span>: If check for update is enabled and an update is available, toolbar button will be visible regardless of this option.</span>
+              <ul class="sub-group h2">
+                <li>
+                  <input type="checkbox" id="addbuttonpopup">
+                  <label for="addbuttonpopup">Add pop-up to toolbar button</label>
+                  <span class="help">?</span>
+                  <span>Add pop-up to toolbar button if there’s more than one video available to control.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="buttonpopupalways">
+                  <label for="buttonpopupalways">Always add pop-up</label>
+                  <span class="help note">?</span>
+                  <span>Add pop-up to toolbar button even if there’s only one video available to control.<br>
+                  <span class="note">Note</span>: This option will override previous one.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <label for="loglevel">Log this type of messages:</label>
+              <select id="loglevel">
+                <option value="0">nothing</option>
+                <option value="1">errors</option>
+                <option value="2">warnings</option>
+                <option value="3">informations</option>
+              </select>
+              <span class="help note">?</span>
+              <span>Log at least this type of messages to Opera’s error console.<br>
+              <span class="note">Note</span>: All messages are logged internally regardless of this option.</span>
+            </li>
+          </ul>
+        </fieldset>
+        <fieldset class="collapsed">
+          <legend id="preferences/player" class="player link">Video player</legend>
+          <ul>
+            <li class="help">
+              <input type="checkbox" id="hideplayerads">
+              <label for="hideplayerads">Hide in-video ads</label>
+              <span class="help">?</span>
+              <span>Hide ads and brand watermarks in video player.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="disableautoplay">
+              <label for="disableautoplay">Disable autoplay</label>
+              <span class="help">?</span>
+              <span>Prevent autoplay of new videos if another is already playing and allows only one video to play at a time.</span>
+              <ul class="sub-group h1">
+                <li>
+                  <input type="checkbox" id="disableautoplayalways">
+                  <label for="disableautoplayalways">Always disable autoplay</label>
+                  <span class="help">?</span>
+                  <span>Prevent autoplay even if it is the only video.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="channelautoplay">
+              <label for="channelautoplay">Respect autoplay on channels</label>
+              <span class="help note">?</span>
+              <span>Respect autoplay option if video is on channel page.<br>
+              <span class="note">Note</span>: This option may not work any more. It was for channels before <em>cosmic panda</em> was merged with default YouTube interface.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="loop">
+              <label for="loop">Loop video</label>
+              <span class="help">?</span>
+              <span>Play video over and over again.</span>
+              <ul class="sub-group h1">
+                <li>
+                  <input type="checkbox" id="forceloop">
+                  <label for="forceloop">Force loop</label>
+                  <span class="help">?</span>
+                  <span>Force “loop video” in playlists.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="enablewideplayer">
+              <label for="enablewideplayer">Enable wide player</label>
+              <span class="help">?</span>
+              <span>Force wide video player (make it expanded).</span>
+            </li>
+            <li class="help">
+              <label for="videoquality">Force this video quality:</label>
+              <select id="videoquality">
+                <option value="default">Default</option>
+                <option value="small">240p</option>
+                <option value="medium">360p</option>
+                <option value="large">480p</option>
+                <option value="hd720">HD 720p</option>
+                <option value="hd1080">HD 1080p</option>
+                <option value="highres">Extra HD 4K</option>
+              </select>
+              <span class="help">?</span>
+              <span>Force video player to use this video quality. Default means let player choose automatically.</span>
+            </li>
+            <li class="help">
+              <label for="seektime">Seek time:</label>
+              <input type="number" id="seektime" min="1" max="30">
+              <label for="seektime">seconds</label>
+              <span class="help">?</span>
+              <span>Time used to seek video forward/back using buttons or keyboard shortcuts.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="playonfocus">
+              <label for="playonfocus">Play on focus</label>
+              <span class="help">?</span>
+              <span>Play video when tab is focused.</span>
+              <ul class="sub-group h2">
+                <li>
+                  <input type="checkbox" id="onlyonfirstfocus">
+                  <label for="onlyonfirstfocus">Only on first play</label>
+                  <span class="help">?</span>
+                  <span>This option will cause video to play when tab is focused only if video is not played before.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="forceplayonfocus">
+                  <label for="forceplayonfocus">Force play on focus</label>
+                  <span class="help note">?</span>
+                  <span>Force “play on focus” even if another video is already playing.<br>
+                  <span class="note">Note</span>: If this option is set it will override “only on first play”.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="hideannotations">
+              <label for="hideannotations">Hide annotations</label>
+              <span class="help note">?</span>
+              <span>Hide overlay notes in videos.<br>
+              <span class="note">Note</span>: Flash player will not respond to changes until page is reloaded.</span>
+            </li>
+            <li class="help">
+              <label for="hidecontrols">Auto-hide controls:</label>
+              <select id="hidecontrols">
+                <option value="0">disabled</option>
+                <option value="1">enabled</option>
+                <option value="2">minimise progress</option>
+                <option value="3">show only progress</option>
+              </select>
+              <span class="help note">?</span>
+              <span>Auto-hide video controls and/or progress bar.<br>
+              <span class="note">Note</span>: Flash player will not respond to changes until page is reloaded. Please read help.</span>
+            </li>
+            <li class="help">
+              <label for="playertheme">Player theme:</label>
+              <select id="playertheme">
+                <option value="light">light</option>
+                <option value="dark">dark</option>
+              </select>
+              <span class="help note">?</span>
+              <span>What theme should video player use.<br>
+              <span class="note">Note</span>: Flash player will not respond to changes until page is reloaded.</span>
+            </li>
+            <li class="help">
+              <label for="progresscolor">Progress colour:</label>
+              <select id="progresscolor">
+                <option value="red">red</option>
+                <option value="white">white</option>
+              </select>
+              <span class="help note">?</span>
+              <span>What colour to use for video player’s progress bar.<br>
+              <span class="note">Note</span>: Flash player will not respond to changes until page is reloaded.</span>
+            </li>
+          </ul>
+        </fieldset>
+        <fieldset class="collapsed">
+          <legend id="preferences/interface" class="interface link">Interface</legend>
+          <ul>
+            <li class="help">
+              <input type="checkbox" id="hidepageads">
+              <label for="hidepageads">Hide ads on page</label>
+              <span class="help">?</span>
+              <span>Disable scripts which load ads (doubleckick, googlesyndication).</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="overridelocale">
+              <label for="overridelocale">Don’t detect language</label>
+              <span class="help note">?</span>
+              <span>Do not detect YouTube language. Use language defined below.<br>
+              <span class="note">Note</span>: There is no need for this option to be enabled. Please read help.</span>
+              <ul class="sub-group h1">
+                <li>
+                  <label for="locale">Use this language:</label>
+                  <select id="locale">
+                    <option value="af">Afrikaans</option>
+                  <!--<option value="am">አማርኛ</option>-->
+                    <option value="ar">العربية</option>
+                    <option value="bg">Български език</option>
+                    <option value="be">Беларуская</option>
+                    <option value="ca">Català</option>
+                    <option value="cs">Čeština</option>
+                    <option value="da">Dansk</option>
+                    <option value="de">Deutsch</option>
+                    <option value="el">Ελληνικά</option>
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="et">Eesti keel</option>
+                    <option value="eu">Euskara</option>
+                    <option value="fa">فارسی</option>
+                    <option value="fi">Suomi</option>
+                    <option value="fr">Français</option>
+                    <option value="gl">Galego</option>
+                    <option value="he">עברית</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="hr">Hrvatski</option>
+                    <option value="hu">Magyar</option>
+                    <option value="id">Bahasa Indonesia</option>
+                    <option value="is">Íslenska</option>
+                    <option value="it">Italiano</option>
+                    <option value="ja">日本語</option>
+                    <option value="ko">한국어</option>
+                    <option value="lt">Lietuvių kalba</option>
+                    <option value="lv">Latviešu valoda</option>
+                    <option value="ms">Bahasa Melayu</option>
+                    <option value="nl">Nederlands</option>
+                    <option value="no">Norsk</option>
+                    <option value="pl">Polski</option>
+                    <option value="pt_BR">Português Brasileiro</option>
+                    <option value="pt_PT">Português</option>
+                    <option value="ro">Română</option>
+                    <option value="ru">Русский язык</option>
+                    <option value="sk">Slovenský jazyk</option>
+                    <option value="sl">Slovenščina</option>
+                    <option value="sr">Српски језик</option>
+                    <option value="sv">Svenska</option>
+                    <option value="sw">Kiswahili</option>
+                    <option value="th">ภาษาไทย</option>
+                    <option value="tl">Tagalog</option>
+                    <option value="tr">Türkçe</option>
+                    <option value="uk">Українська</option>
+                    <option value="ur">اردو</option>
+                    <option value="vi">Tiếng Việt</option>
+                    <option value="zh_CN">中文简体</option>
+                    <option value="zh_TW">中文繁體</option>
+                  <!--<option value="zu">isiZulu</option>-->
+                  </select>
+                  <span class="help">?</span>
+                  <span>Force extension to use selected language.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="enabledownload">
+              <label for="enabledownload">Enable download</label>
+              <span class="help">?</span>
+              <span>Add button to page which will allow you to download video.</span>
+              <ul class="sub-group h1">
+                <li>
+                  <input type="checkbox" id="usefallbacklinks">
+                  <label for="usefallbacklinks">Use fallback servers</label>
+                  <span class="help">?</span>
+                  <span>Use fallback servers in download links.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="loopbutton">
+              <label for="loopbutton">Add loop button</label>
+              <span class="help">?</span>
+              <span>Add button that can be used to toggle loop.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="enablepopout">
+              <label for="enablepopout">Add pop out player button</label>
+              <span class="help">?</span>
+              <span>Add button that can be used to pop player out of page.</span>
+              <ul class="sub-group h1">
+                <li>
+                  <input type="checkbox" id="popoutrealsize">
+                  <label for="popoutrealsize">Resize player on pop out</label>
+                  <span class="help">?</span>
+                  <span>When player is popped out resize it to display real video size.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="extrabuttons">
+              <label for="extrabuttons">Add extra buttons</label>
+              <span class="help">?</span>
+              <span>Add buttons that will allow you to seek video few seconds back/forward or step approximately one frame forward.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="lyrics">
+              <label for="lyrics">Enable lyrics</label>
+              <span class="help">?</span>
+              <span>Add button below player that allows you to load lyrics for playing song.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="prefbutton">
+              <label for="prefbutton">Add preferences button</label>
+              <span class="help">?</span>
+              <span>Add button to page that can be used to open this window.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="thumbpreview">
+              <label for="thumbpreview">Enable thumbnail preview</label>
+              <span class="help">?</span>
+              <span>Convert video thumbnails to playable videos.</span>
+              <ul class="sub-group h1">
+                <li>
+                  <label for="thumbpreviewtrigger">Preview trigger is:</label>
+                  <select id="thumbpreviewtrigger">
+                    <option value="button">click on a button</option>
+                    <option value="hover">mouse over</option>
+                  </select>
+                  <span class="help">?</span>
+                  <span>What should trigger video preview.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="ratevideos">
+              <label for="ratevideos">Show video ratings</label>
+              <span class="help">?</span>
+              <span>Show ratings over video thumbnails.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="fullscreenstyle">
+              <label for="fullscreenstyle">Only player in full screen</label>
+              <span class="help">?</span>
+              <span>Show only video player when Opera is in full screen mode.</span>
+            </li>
+          </ul>
+        </fieldset>
+        <fieldset id="shortcut" class="collapsed">
+          <legend id="preferences/shortcut" class="shortcut link">Keyboard shortcuts</legend>
+          <ul>
+            <li class="help">
+              <input type="checkbox" id="enableshortcutkeys">
+              <label for="enableshortcutkeys">Enable keyboard shortcuts</label>
+              <span class="help">?</span>
+              <span>Check this option to enable keyboard shortcuts.</span>
+              <ul class="sub-group h17">
+                <li>
+                  <input type="checkbox" id="exposeplayershortcuts">
+                  <label for="exposeplayershortcuts">Expose player shortcuts</label>
+                  <span class="help">?</span>
+                  <span>Make player shortcuts work when player is not focused.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="disableflashshortcuts">
+                  <label for="disableflashshortcuts">Disable flash player shortcuts</label>
+                  <span class="help note">?</span>
+                  <span>Disable flash player shortcuts when they are exposed to page.<br>
+                  <span class="note">Note</span>: This option will work only if previous option is enabled.<br>
+                  <span class="note">Note 2</span>: You’ll need to reload page(s) for this option to take effect.
+                  </span>
+                </li>
+                <li>
+                  <span>Frame step</span>
+                  <span id="framestep"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Toggle loop section</span>
+                  <span id="loopsection"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Mark section start</span>
+                  <span id="marksectionstart"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Mark section end</span>
+                  <span id="marksectionend"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Play/Pause</span>
+                  <span id="playpause"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Seek video back</span>
+                  <span id="seekback"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Seek video forward</span>
+                  <span id="seekforward"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Toggle wide player</span>
+                  <span id="expandplayer"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Pop out player</span>
+                  <span id="popplayer"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Show/hide lyrics</span>
+                  <span id="showlyrics"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Toggle custom colours</span>
+                  <span id="togglecolors"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Toggle custom CSS</span>
+                  <span id="togglecss"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Hide/show all elements</span>
+                  <span id="hideall"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li>
+                  <span>Show hidden elements</span>
+                  <span id="showhidden"><em>(not available)</em></span>
+                  <span class="right">
+                    <button class="delete">Clear</button><button class="load">Change...</button>
+                  </span>
+                </li>
+                <li class="right-text">
+                  <button id="shortcut-reset" class="delete text">Clear all shortcuts!</button>
+                </li>
+                <li class="capture">
+                  <p>
+                    Press the combination of keys you want to use as shortcut for:<br>
+                    <strong> </strong>
+                  </p>
+                  <div id="shortcut-capture"></div>
+                  <p class="note hidden">
+                    This key combination is already in use for “<strong> </strong>”.<br>
+                    If you continue it will be overridden.
+                  </p>
+                  <p>
+                    <button>Abort</button>
+                    <button class="save">Save</button>
+                  </p>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </fieldset>
+        <fieldset id="cleanwatch" class="collapsed">
+          <legend id="preferences/cleanup" class="cleanup link">Page clean-up</legend>
+          <ul>
+            <li class="help">
+              <input type="checkbox" id="cleanwatch/ticker">
+              <label for="cleanwatch/ticker">Hide ticker</label>
+              <span class="help">?</span>
+              <span>Hide bar at top of the page that shows news like stuff.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="cleanwatch/header">
+              <label for="cleanwatch/header">Hide page header</label>
+              <span class="help">?</span>
+              <span>Hide logo, search form and links (browse, upload, sign in...).</span>
+            </li>
+            <li class="help invert">
+              <input type="checkbox" id="cleanwatch/videotitle">
+              <label for="cleanwatch/videotitle">Hide video title</label>
+              <span class="help">?</span>
+              <span>Hide video title.</span>
+            </li>
+            <li class="help invert">
+              <input type="checkbox" id="cleanwatch/headuser">
+              <label for="cleanwatch/headuser">Hide user info header</label>
+              <span class="help">?</span>
+              <span>Hide user header (header between video title and player).</span>
+              <ul class="sub-group h1">
+                <li>
+                  <input type="checkbox" id="cleanwatch/subscribe">
+                  <label for="cleanwatch/subscribe">Hide subscribe button</label>
+                  <span class="help">?</span>
+                  <span>Hide just subscribe button.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="cleanwatch/brand">
+              <label for="cleanwatch/brand">Hide brand image</label>
+              <span class="help">?</span>
+              <span>Hide player background image and ad on branded videos.</span>
+            </li>
+            <li class="help invert">
+              <input type="checkbox" id="cleanwatch/allsidebar">
+              <label for="cleanwatch/allsidebar">Hide sidebar</label>
+              <span class="help">?</span>
+              <span>Hide featured videos and video suggestions.</span>
+              <ul class="sub-group h2">
+                <li>
+                  <input type="checkbox" id="cleanwatch/featured">
+                  <label for="cleanwatch/featured">Hide featured videos</label>
+                  <span class="help">?</span>
+                  <span>Hide featured videos in sidebar.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="cleanwatch/suggestions">
+                  <label for="cleanwatch/suggestions">Hide video suggestions</label>
+                  <span class="help">?</span>
+                  <span>Hide video suggestions in sidebar.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help invert">
+              <input type="checkbox" id="cleanwatch/allbuttons">
+              <label for="cleanwatch/allbuttons">Hide all buttons</label>
+              <span class="help">?</span>
+              <span>Hide all buttons beneath the player.</span>
+              <ul class="sub-group h7">
+                <li>
+                  <input type="checkbox" id="cleanwatch/likebutton">
+                  <label for="cleanwatch/likebutton">Hide like button</label>
+                  <span class="help">?</span>
+                  <span>Hide “I like/dislike this” button.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="cleanwatch/addtobutton">
+                  <label for="cleanwatch/addtobutton">Hide add to button</label>
+                  <span class="help">?</span>
+                  <span>Hide “Add to queue/favourites/playlist” button.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="cleanwatch/sharebutton">
+                  <label for="cleanwatch/sharebutton">Hide share button</label>
+                  <span class="help">?</span>
+                  <span>Hide “Share this video” button.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="cleanwatch/embedbutton">
+                  <label for="cleanwatch/embedbutton">Hide embed button</label>
+                  <span class="help">?</span>
+                  <span>Hide “Get video embed code” button.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="cleanwatch/statsbutton">
+                  <label for="cleanwatch/statsbutton">Hide stats button</label>
+                  <span class="help">?</span>
+                  <span>Hide “Show video statistics” button.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="cleanwatch/flagbutton">
+                  <label for="cleanwatch/flagbutton">Hide flag button</label>
+                  <span class="help">?</span>
+                  <span>Hide “Flag as inappropriate” button.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="cleanwatch/transcript">
+                  <label for="cleanwatch/transcript">Hide transcript button</label>
+                  <span class="help">?</span>
+                  <span>Hide “Interactive Transcript” button.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="cleanwatch/flashpromo">
+              <label for="cleanwatch/flashpromo">Flash promo</label>
+              <span class="help">?</span>
+              <span>Hide Flash 10 upgrade remainder.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="cleanwatch/viewcount">
+              <label for="cleanwatch/viewcount">Hide view counter</label>
+              <span class="help">?</span>
+              <span>Hide counter that shows how many times video is watched.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="cleanwatch/description">
+              <label for="cleanwatch/description">Hide description</label>
+              <span class="help">?</span>
+              <span>Hide video description.</span>
+            </li>
+            <li class="help invert">
+              <input type="checkbox" id="cleanwatch/allcomments">
+              <label for="cleanwatch/allcomments">Hide all comments</label>
+              <span class="help">?</span>
+              <span>Hide “Uploader Comments”, “Top Comments”, “Video Responses” and “All Comments” sections.</span>
+              <ul class="sub-group h4">
+                <li>
+                  <input type="checkbox" id="cleanwatch/uploader">
+                  <label for="cleanwatch/uploader">Hide uploader’s comments</label>
+                  <span class="help">?</span>
+                  <span>Hide “Uploader Comments” section.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="cleanwatch/toprated">
+                  <label for="cleanwatch/toprated">Hide top rated comments</label>
+                  <span class="help">?</span>
+                  <span>Hide “Top Comments” section.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="cleanwatch/responses">
+                  <label for="cleanwatch/responses">Hide video responses</label>
+                  <span class="help">?</span>
+                  <span>Hide “Video Responses” section.</span>
+                </li>
+                <li>
+                  <input type="checkbox" id="cleanwatch/comments">
+                  <label for="cleanwatch/comments">Hide comments</label>
+                  <span class="help">?</span>
+                  <span>Hide “All Comments” section.</span>
+                </li>
+              </ul>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="cleanwatch/footer">
+              <label for="cleanwatch/footer">Hide page footer</label>
+              <span class="help">?</span>
+              <span>Hide page footer (menu like links, location info...).</span>
+            </li>
+          </ul>
+        </fieldset>
+        <fieldset id="customcolor" class="collapsed">
+          <legend id="preferences/colors" class="colors link">Custom colours</legend>
+          <p>
+            This are custom colours that will be applied to YouTube page. If you want to change more than just colours use <a href="#preferences/css">custom CSS</a>.
+          </p>
+          <p>
+            As with other preferences changes in this section will be visible immediately. Open some YouTube page in new window and put it side by side whit this window to see changes while you change colours.
+          </p>
+          <ul>
+            <li class="help">
+              <input type="checkbox" id="customlogo">
+              <label for="customlogo">Replace logo</label>
+              <span class="help note">?</span>
+              <span>If enabled YouTube logo will be replaced with transparent one.<br>
+              <span class="note">Note</span>: This option will not replace YouTube doodles.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="uselighticons">
+              <label for="uselighticons">Use light icons</label>
+              <span class="help">?</span>
+              <span>If this option is set icons that this extension adds to page will have light colours.</span>
+            </li>
+            <li class="help">
+              <input type="checkbox" id="enablecustomcolors">
+              <label for="enablecustomcolors">Enable custom colours</label>
+              <span class="help note">?</span>
+              <span>Enables you to redefine colours of some elements on the page.<br>
+              <span class="note">Note</span>: Colours will be applied to most, but not all pages.</span>
+              <ul class="sub-group h13">
+                <li class="help">
+                  <input type="color" id="customcolor/pagebackground">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-pagebackground"><span>1</span>
+                  Page background
+                  <span class="help">?</span>
+                  <span>Background colour for whole page (header, video content, sidebar...).</span>
+                </li>
+                <li class="help">
+                  <input type="color" id="customcolor/pagecolor">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-pagecolor"><span>1</span>
+                  Page text colour
+                  <span class="help">?</span>
+                  <span>Colour for text on page (header, video content, sidebar...).</span>
+                </li>
+                <li class="help">
+                  <input type="color" id="customcolor/linkcolor">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-linkcolor"><span>1</span>
+                  Link colour
+                  <span class="help">?</span>
+                  <span>Colour for links.</span>
+                </li>
+                <li class="help">
+                  <input type="color" id="customcolor/buttonbackground">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-buttonbackground"><span>1</span>
+                  Button background
+                  <span class="help">?</span>
+                  <span>Background colour for buttons.</span>
+                </li>
+                <li class="help">
+                  <input type="color" id="customcolor/buttonbackgroundhover">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-buttonbackgroundhover"><span>1</span>
+                  Button hover background
+                  <span class="help">?</span>
+                  <span>Background colour of hovered buttons.</span>
+                </li>
+                <li class="help">
+                  <input type="color" id="customcolor/buttonborder">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-buttonborder"><span>1</span>
+                  Button border
+                  <span class="help">?</span>
+                  <span>Colour for button borders.</span>
+                </li>
+                <li class="help">
+                  <input type="color" id="customcolor/buttoncolor">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-buttoncolor"><span>1</span>
+                  Button text
+                  <span class="help">?</span>
+                  <span>Colour for button content.</span>
+                </li>
+                <li class="help">
+                  <input type="color" id="customcolor/titlecolor">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-titlecolor"><span>1</span>
+                  Video title
+                  <span class="help">?</span>
+                  <span>Colour for video title.</span>
+                </li>
+                <li class="help">
+                  <input type="color" id="customcolor/videothumbbackground">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-videothumbbackground"><span>1</span>
+                  Video thumbnail background
+                  <span class="help">?</span>
+                  <span>Background and border colour of video thumbnails.</span>
+                </li>
+                <li class="help">
+                  <input type="color" id="customcolor/videolinkhover">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-videolinkhover"><span>1</span>
+                  Video thumbnail hover background
+                  <span class="help">?</span>
+                  <span>Background colour for video thumbnails while is hovered with mouse pointer.</span>
+                </li>
+                <li class="help">
+                  <input type="color" id="customcolor/commenthover">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-commenthover"><span>1</span>
+                  Comment hover background
+                  <span class="help">?</span>
+                  <span>Background colour for individual comment while mouse is over it.</span>
+                </li>
+                <li class="help">
+                  <input type="color" id="customcolor/infocolor">
+                  <input type="range" min="0" max="1" step="0.01" value="1" id="alpha-infocolor"><span>1</span>
+                  Info colour
+                  <span class="help">?</span>
+                  <span>Colour for info like text (info of videos in sidebar, info about comments). It will also be used as colour for headings and some borders.</span>
+                </li>
+                <li class="right-text">
+                  <button id="customcolor-reset" class="delete">Reset all colours!</button>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </fieldset>
+        <fieldset class="collapsed">
+          <legend id="preferences/css" class="css link">Custom CSS</legend>
+          <p>
+            Here you can enter custom CSS that will be added to page. ExtendTube will not check CSS grammar, but some of vendor specific properties will be removed (-moz-, -ms-, -webkit-, zoom and filter), so, please be sure everything is OK after saving.
+          </p>
+          <p class="appeal-note">
+            If you have some interesting style that you wish to share with others you can <a href="mailto:pdarko@myopera.com">send it to me</a> or post as comment on <a href="http://my.opera.com/pdarko">support page</a> and I will publish it.
+          </p>
+          <ul>
+            <li class="help">
+              <input type="checkbox" id="enablecustomstyle">
+              <label for="enablecustomstyle">Enable custom style</label>
+              <span class="help">?</span>
+              <span>If this option is set you can add custom CSS to page.</span>
+              <ul class="sub-group h11">
+                <li class="high">
+                  <textarea id="customstyle" rows="5" cols="80"></textarea>
+                </li>
+                <li class="right-text">
+                  <strong class="save-note note"></strong><button id="customstyle-save" class="save">Save style</button>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </fieldset>
+        <fieldset class="collapsed dont-listen">
+          <legend id="preferences/actions" class="actions link">Actions</legend>
+          <p>
+            In this section you can define actions that will be executed by this extension. For more information see <a href="#help/actions">help</a>.
+          </p>
+          <p>
+            To be able to edit an action you need to enable it first. Depending on when an action is added or edited you may meed to reload opened pages for it to be executed.
+          </p>
+          <p class="appeal-note">
+            If you have some interesting actions that you wish to share with others you can <a href="mailto:pdarko@myopera.com">send them to me</a> or post as comment on <a href="http://my.opera.com/pdarko">support page</a> and I will publish it.
+          </p>
+          <ul id="actions">
+            <li>
+              <button id="new-action" class="load text">Add new action</button>
+            </li>
+          </ul>
+        </fieldset>
+      </section>
+      <section id="about">
+        <h2>
+          About
+        </h2>
+        <div class="collapsed">
+          <h3 id="about/extension" class="extension link">
+            Extension
+          </h3>
+          <p>
+            <strong><a href="README">README</a></strong>
+          </p>
+          <dl>
+            <dt>
+              Name
+            </dt>
+            <dd id="about-name">
+              <em>(not available)</em>
+            </dd>
+            <dt>
+              Version
+            </dt>
+            <dd id="about-version">
+              <em>(not available)</em><em>(view <a href="Change.log">change log</a>)</em>
+            </dd>
+            <dt>
+              Author
+            </dt>
+            <dd id="about-author">
+              <em>(not available)</em>
+            </dd>
+            <dt>
+              Author Email
+            </dt>
+            <dd id="about-email">
+              <em>(not available)</em>
+            </dd>
+            <dt>
+              Author Page
+            </dt>
+            <dd id="about-page">
+              <em>(not available)</em>
+            </dd>
+          </dl>
+          <dl>
+            <dt>
+              Platform
+            </dt>
+            <dd id="about-platform">
+              <em>(not available)</em>
+            </dd>
+            <dt>
+              Opera version
+            </dt>
+            <dd id="about-opera">
+              <em>(not available)</em>
+            </dd>
+            <dt>
+              Extension ID<sup>1</sup>
+            </dt>
+            <dd id="about-id">
+              <em>(not available)</em>
+            </dd>
+          </dl>
+          <p>
+            1. All extensions are installed in <em><a href="opera:config#Opera directory">Opera directory</a>/widget</em> folder. ExtendTube is in folder which name is same as extension ID. This ID is generated by Opera during extension installation and it is unique for this installation.
+          </p>
+        </div>
+        <div class="collapsed">
+          <h3 id="about/license" class="license link">
+            License information
+          </h3>
+          <p>
+            Copyright © 2011-2012 Darko Pantić (pdarko@myopera.com)
+          </p>
+          <p>
+            Licensed under the Apache License, Version 2.0 (the "License");<br>
+            you may not use this file except in compliance with the License.<br>
+            You may obtain a copy of the License at
+          </p>
+          <p>
+            http://www.apache.org/licenses/LICENSE-2.0
+          </p>
+          <p>
+            Unless required by applicable law or agreed to in writing, software<br>
+            distributed under the License is distributed on an "AS IS" BASIS,<br>
+            WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<br>
+            See the License for the specific language governing permissions and<br>
+            limitations under the License.
+          </p>
+          <p>
+            <strong><a href="share/page/license.html">View full license</a></strong>
+          </p>
+        </div>
+        <div class="collapsed">
+          <h3 id="about/hacking" class="hacking link">
+            Hacking
+          </h3>
+          <p>
+            <a href="xtt.hack">Hacking ExtendTube</a>
+          </p>
+        </div>
+        <div class="collapsed">
+          <h3 id="about/translations" class="translations link">
+            Translations
+          </h3>
+          <p>
+            ExtendTube is translated to many languages using Google’s Translate service. Translations are far from good, so, consider contributing translation. If YouTube supports your language translate <a href="translation.source">this file</a> and send it back <a href="mailto:pdarko@myopera.com">to me</a>. Before you start translating check <a href="share/page/translations.html">existing translation</a>.<br>
+            <span class="note">Note</span>: Only content that is added to YouTube page can be translated. This page cannot.
+          </p>
+          <p>
+            Thanks to all who helped translating this extension.
+          </p>
+          <table>
+            <tr>
+              <td title="Afrikaans">Afrikaans</td>
+              <td>af</td>
+              <td class="google">google translate</td>
+            </tr>
+          <!--<tr>
+              <td title="Amharic">አማርኛ</td>
+              <td>am</td>
+              <td class="google">google translate</td>
+            </tr>-->
+            <tr>
+              <td title="Arabic" dir="rtl">العربية</td>
+              <td>ar</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Bulgarian">Български език</td>
+              <td>bg</td>
+              <td>
+                <a href="mailto:extrawordinary@hotmai.com">Любомир</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Belarusian">Беларуская</td>
+              <td>be</td>
+              <td>
+                <a href="mailto:Jahor@mail.by">Jahor Sivahryvaŭ</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Bengali">বাংলা</td>
+              <td>bn</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Catalan; Valencian">Català</td>
+              <td>ca</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Czech">Čeština</td>
+              <td>cs</td>
+              <td>
+                watrill<br>
+                RomanK47
+              </td>
+            </tr>
+            <tr>
+              <td title="Danish">Dansk</td>
+              <td>da</td>
+              <td>
+                Frederik Riboe Olsen
+              </td>
+            </tr>
+            <tr>
+              <td title="German">Deutsch</td>
+              <td>de</td>
+              <td>
+                Ralf Beckebans<br>
+                <a href="mailto:velocity@bossmail.de">Steve K.</a><br>
+                Gedeon<br>
+                Andreas Böhm<br>
+                <a href="mailto:carlaron@carls.de">Carl Aron Carls</a>
+                <a href="mailto:nicola@besonet.ch">Nicola Markus Pfister</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Greek">Ελληνικά</td>
+              <td>el</td>
+              <td>
+                <a href="mailto:so.murat@hotmail.com">Murat SO</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="English">English</td>
+              <td>en</td>
+              <td>
+                <a href="mailto:pdarko@myopera.com">Darko Pantić</a> (author)
+              </td>
+            </tr>
+            <tr>
+              <td title="Spanish">Español</td>
+              <td>es</td>
+              <td>
+                <a href="mailto:santiago.puerto@gmail.com">Santiago Puerto</a><br>
+                <a href="mailto:lukaznet@gmail.com">LuKaZ PaiN</a><br>
+                <a href="mailto:elkotox3@live.cl">José Manuel Navarro Vargas</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Estonian">Eesti keel</td>
+              <td>et</td>
+              <td>
+                Alexander Assmann
+              </td>
+            </tr>
+            <tr>
+              <td title="Basque">Euskara</td>
+              <td>eu</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Persian" dir="rtl">فارسی</td>
+              <td>fa</td>
+              <td>
+                Hessam Sameri
+              </td>
+            </tr>
+            <tr>
+              <td title="Finnish">Suomi</td>
+              <td>fi</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="French">Français</td>
+              <td>fr</td>
+              <td>
+                <a href="mailto:alban.roger.lemaitre@gmail.com">Alban Lemaitre</a><br>
+                <a href="mailto:vchemiere@gmail.com">Valentin Chemiere</a><br>
+                <a href="mailto:guinavet@gmail.com">Guillaume Navet</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Galician">Galego</td>
+              <td>gl</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Gujarati">ગુજરાતી</td>
+              <td>gu</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Hebrew" dir="rtl">עברית</td>
+              <td>he</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Hindi">हिन्दी</td>
+              <td>hi</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Croatian">Hrvatski</td>
+              <td>hr</td>
+              <td>
+                <a href="mailto:pdarko@myopera.com">Darko Pantić</a> (author)
+              </td>
+            </tr>
+            <tr>
+              <td title="Hungarian">Magyar</td>
+              <td>hu</td>
+              <td>
+                <a href="mailto:mtibee@gmail.com">Molnár Tibor</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Indonesian">Bahasa Indonesia</td>
+              <td>id</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Icelandic">Íslenska</td>
+              <td>is</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Italian">Italiano</td>
+              <td>it</td>
+              <td>
+                <a href="mailto:frenk_91@hotmail.it">Francesco Parente</a><br>
+                Emanuele Buda
+              </td>
+            </tr>
+            <tr>
+              <td title="Japanese">日本語</td>
+              <td>ja</td>
+              <td>
+                <a href="mailto:kat465a@live.jp">ka106_56</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Kannada">ಕನ್ನಡ</td>
+              <td>kn</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Korean">한국어</td>
+              <td>ko</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Lithuanian">Lietuvių kalba</td>
+              <td>lt</td>
+              <td>
+                <a href="mailto:aleksandrr@gmail.com">Aleksandras</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Latvian">Latviešu valoda</td>
+              <td>lv</td>
+              <td class="google">google translate</td>
+            </tr>
+          <!--<tr>
+              <td title="Malayalam">മലയാളം</td>
+              <td>ml</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Marathi (Marāṭhī)">मराठी</td>
+              <td>mr</td>
+              <td class="google">google translate</td>
+            </tr>-->
+            <tr>
+              <td title="Malay">Bahasa Melayu</td>
+              <td>ms</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Dutch">Nederlands</td>
+              <td>nl</td>
+              <td>
+                <a href="mailto:robin_tenberge@hotmail.com">Robin ten Berge</a><br>
+                <a href="mailto:Creadskel@gmail.com">Don van Weverwijk</a><br>
+                <a href="mailto:alwyn_kik@hotmail.com">Alwyn Kik</a><br>
+                J. Puik
+              </td>
+            </tr>
+            <tr>
+              <td title="Norwegian">Norsk</td>
+              <td>no</td>
+              <td>
+                Dennis Moe<br>
+                <a href="mailto:arelamo@studioare.net">Are Kristoffer Lamo</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Polish">Polski</td>
+              <td>pl</td>
+              <td>
+                <a href="mailto:k.wyrzykowski@gmail.com">Kamil Wyrzykowski</a><br>
+                <a href="mailto:maximusadw@gmail.com">Maksymilian Lutek</a><br>
+                <a href="mailto:galhali@o2.pl">Galhali</a><br>
+                <a href="mailto:danielm86@wp.pl">Daniel M</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Brazilian Portuguese">Português Brasileiro</td>
+              <td>pt_BR</td>
+              <td>
+                <a href="mailto:joseassis1993@gmail.com">Jose Renan</a><br>
+                Romário Paiva<br>
+                <a href="mailto:webmaster@lucasrafael.com.br">Lucas Rafael Barboza</a><br>
+                André Zanghelini
+              </td>
+            </tr>
+            <tr>
+              <td title="European Portuguese">Português</td>
+              <td>pt_PT</td>
+              <td>
+                <a href="mailto:miguelmclara@gmail.com">Miguel Clara</a><br>
+                <a href="mailto:pedromagalhaes@gmx.com">Pedro Magalhães</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Romanian">Română</td>
+              <td>ro</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Russian">Русский язык</td>
+              <td>ru</td>
+              <td>
+                <a href="mailto:nimrod07@rambler.ru">Игорь Харитонов</a><br>
+                <a href="mailto:333hronos@gmail.com">Антон Шаповалов</a><br>
+                <a href="mailto:lakaicheaker@gmail.com">Кирилл Климанов</a><br>
+                <a href="mailto:Davletwin@gmail.com">Тимур Давлетшин</a><br>
+                <a href="mailto:babovnikova@gmail.com">Маргарита Бабовникова</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Slovak">Slovenský jazyk</td>
+              <td>sk</td>
+              <td>
+                <a href="mailto:michal.galan@post.sk">Michal Galan</a><br>
+                <a href="mailto:andrejovsky.jaro@gmail.com">Jaroslav Andrejovský</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Slovene">Slovenščina</td>
+              <td>sl</td>
+              <td>
+                Vito Meznaric
+              </td>
+            </tr>
+            <tr>
+              <td title="Serbian">Српски језик</td>
+              <td>sr</td>
+              <td>
+                <a href="mailto:pdarko@myopera.com">Дарко Пантић</a> (author)
+              </td>
+            </tr>
+            <tr>
+              <td title="Swedish">Svenska</td>
+              <td>sv</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Swahili">Kiswahili</td>
+              <td>sw</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Tamil">தமிழ்</td>
+              <td>ta</td>
+              <td class="google">google translate</td>
+            </tr>
+          <!--<tr>
+              <td title="Telugu">తెలుగు</td>
+              <td>te</td>
+              <td class="google">google translate</td>
+            </tr>-->
+            <tr>
+              <td title="Thai">ภาษาไทย</td>
+              <td>th</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Tagalog; Filipino">Tagalog</td>
+              <td>tl</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Turkish">Türkçe</td>
+              <td>tr</td>
+              <td>
+                <a href="mailto:so.murat@hotmail.com">Murat SO</a>
+              </td>
+            </tr>
+            <tr>
+              <td title="Ukrainian">Українська</td>
+              <td>uk</td>
+              <td>
+                Петро Віжевський<br>
+                Evol G.
+              </td>
+            </tr>
+            <tr>
+              <td title="Urdu" dir="rtl">اردو</td>
+              <td>ur</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Vietnamese">Tiếng Việt</td>
+              <td>vi</td>
+              <td class="google">google translate</td>
+            </tr>
+            <tr>
+              <td title="Simplified Chinese">中文简体</td>
+              <td>zh_CN</td>
+              <td class="google">google translate</td>
+            </tr>
+          <!--<tr>
+              <td title="Cantonese">广州话 / 廣州話</td>
+              <td>zh_HK</td>
+              <td class="google">google translate</td>
+            </tr>-->
+            <tr>
+              <td title="Traditional Chinese">中文繁體</td>
+              <td>zh_TW</td>
+              <td>
+                Yang
+              </td>
+            </tr>
+          <!--<tr>
+              <td title="Zulu">isiZulu</td>
+              <td>zu</td>
+              <td class="google">google translate</td>
+            </tr>-->
+          </table>
+        </div>
+      </section>
+      <section id="help">
+        <h2>
+          Help
+        </h2>
+        <p id="version-notice" class="right-text note">
+          This help is for version <span>1.15</span>.
+        </p>
+        <div class="collapsed">
+          <h3 id="help/interface" class="interface link">
+            Interface
+          </h3>
+          <figure>
+            <img src="share/image/buttons.png" alt="Buttons"><br>
+            <figcaption>Fig 1: Buttons</figcaption>
+          </figure>
+          <p>
+            When ExtendTube is active you will see some buttons (if they are enabled) beneath video player (some of them are shown on figure 1). Their actions are explained below.
+          </p>
+          <figure>
+            <img src="share/image/loop-buttons.png" alt="Loop buttons"><br>
+            <figcaption>Fig 2: Loop buttons</figcaption>
+          </figure>
+          <p>
+            First button is Loop button. It have two functions. First is controlling section loop and second is controlling loop globally (it will change loop option in preferences). To enable or disable section loop just click on this button. If you want to toggle loop globally hold <kbd>Ctrl</kbd> key down while clicking on it. The button will show what will happen when video riches end. Straight arrow means video will stop at end while circular arrow means it will loop. If icon is red that means that actual loop action is forced (this will happen if video is part of playlist or when section loop is enabled).<br>
+            <span class="note">Note</span>: Activation of loop and section loop was reversed prior to version 1.8.<br>
+            <span class="note">Note 2</span>: Since version 1.8.5 there are two new ways to toggle loop globally. First is <em>middle click</em>, and second <em>click ’n’ hold</em>.
+          </p>
+          <figure>
+            <img src="share/image/lsect-buttons.png" alt="Loop section buttons"><br>
+            <figcaption>Fig 3: Loop section buttons</figcaption>
+          </figure>
+          <p>
+            When section loop is enabled two new buttons will appear (figure 3). These new buttons allows you to mark section of video you want to loop. You can click on them to set current playback progress as section start/end time or use mouse wheel to increment/decrement current time.
+          </p>
+          <figure>
+            <img src="share/image/dl-button.png" alt="Download button"><br>
+            <figcaption>Fig 4: Download button</figcaption>
+          </figure>
+          <p>
+            Second button (figure 4) from figure 1 is used for video downloading. When you click it a menu will appear with different download options.
+          </p>
+          <figure class="narrow">
+            <img src="share/image/dl-menu.png" alt="Download menu"><br>
+            <figcaption>Fig 5: Download menu</figcaption>
+          </figure>
+          <p>
+            In this menu you can choose quality of video you want to download. Available qualities are determined automatically and only those available are shown in menu (figure 5). See following table for details.
+          </p>
+          <table class="qualities">
+            <caption>Possible download options</caption>
+            <tfoot>
+              <tr>
+                <td colspan="8">
+                  1. Bit rates are approximate.<br>
+                  2. Also available as 3D video.<br>
+                </td>
+              </tr>
+            </tfoot>
+            <tbody>
+              <tr>
+                <th rowspan="2">Qualities</th>
+                <th rowspan="2">Container</th>
+                <th colspan="3">Video</th>
+                <th colspan="3">Audio</th>
+              </tr>
+              <tr>
+                <th>Encoding</th>
+                <th>Resolution</th>
+                <th>Bitrate <sup>1</sup></th>
+                <th>Encoding</th>
+                <th>Sampling</th>
+                <th>Bitrate <sup>1</sup></th>
+              </tr>
+              <tr>
+                <th>Medium</th>
+                <td>MP4</td>
+                <td>MPEG-4 AVC (H.264)</td>
+                <td title="max width 480 pixels, max height 360 pixels">480×360</td>
+                <td title="approximately 500kbit/s">0.5</td>
+                <td>AAC</td>
+                <td title="44100Hz">44.1</td>
+                <td title="approximately 96kbit/s">96</td>
+              </tr>
+              <tr>
+                <th>240p <sup>2</sup></th>
+                <td rowspan="3">FLV</td>
+                <td>Sorenson H.263</td>
+                <td title="max width 400 pixels, max height 240 pixels">400×240</td>
+                <td title="approximately 250kbit/s">0.25</td>
+                <td>MP3</td>
+                <td title="22050Hz">22.05</td>
+                <td title="approximately 64kbit/s">64</td>
+              </tr>
+              <tr>
+                <th>360p <sup>2</sup></th>
+                <td rowspan="5">MPEG-4 AVC (H.264)</td>
+                <td title="max width 640 pixels, max height 360 pixels">640×360</td>
+                <td title="approximately 500kbit/s">0.5</td>
+                <td rowspan="5">AAC</td>
+                <td rowspan="9" title="44100Hz">44.1</td>
+                <td rowspan="2" title="approximately 128kbit/s">128</td>
+              </tr>
+              <tr>
+                <th>480p <sup>2</sup></th>
+                <td title="max width 854 pixels, max height 480 pixels">854×480</td>
+                <td title="approximately 800-1000kbit/s">0.8-1</td>
+              </tr>
+              <tr>
+                <th>HD 720p <sup>2</sup></th>
+                <td rowspan="3">MP4</td>
+                <td title="max width 1280 pixels, max height 720 pixels">1280×720</td>
+                <td title="approximately 2-3Mbit/s">2-3</td>
+                <td rowspan="3" title="approximately 152kbit/s">152</td>
+              </tr>
+              <tr>
+                <th>HD 1080p <sup>2</sup></th>
+                <td title="max width 1920 pixels, max height 1080 pixels">1920×1080</td>
+                <td title="approximately 3.5-5Mbit/s">3.5-5</td>
+              </tr>
+              <tr>
+                <th>Extra HD 4K</th>
+                <td title="max width 4096 pixels, max height 3072 pixels">4096×3072</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <th>WebM 360p <sup>2</sup></th>
+                <td rowspan="4">WebM</td>
+                <td rowspan="4">VP8</td>
+                <td title="max width 640 pixels, max height 360 pixels">640×360</td>
+                <td title="approximately 500kbit/s">0.5</td>
+                <td rowspan="4">Vorbis</td>
+                <td rowspan="2" title="approximately 128kbit/s">128</td>
+              </tr>
+              <tr>
+                <th>WebM 480p <sup>2</sup></th>
+                <td title="max width 854 pixels, max height 480 pixels">854×480</td>
+                <td title="approximately 1Mbit/s">1</td>
+              </tr>
+              <tr>
+                <th>WebM 720p <sup>2</sup></th>
+                <td title="max width 1280 pixels, max height 720 pixels">1280×720</td>
+                <td title="approximately 2Mbit/s">2</td>
+                <td title="approximately 192kbit/s">192</td>
+              </tr>
+              <tr>
+                <th>WebM 1080p <sup>2</sup></th>
+                <td title="max width 1920 pixels, max height 1080 pixels">1920×1080</td>
+                <td title="approximately 4Mbit/s">4</td>
+                <td title="approximately 256kbit/s">256</td>
+              </tr>
+              <tr>
+                <th>Mobile (low)</th>
+                <td rowspan="2">3GP</td>
+                <td rowspan="2">MPEG-4 Visual</td>
+                <td title="max width 176 pixels, max height 144 pixels">176×144</td>
+                <td title="approximately 64kbit/s">0.064</td>
+                <td rowspan="2">AAC</td>
+                <td rowspan="2" title="22050Hz">22.05</td>
+                <td title="approximately 24kbit/s">24</td>
+              </tr>
+              <tr>
+                <th>Mobile (high)</th>
+                <td title="max width 320 pixels, max height 240 pixels">320×240</td>
+                <td title="approximately 0.2Mbit/s">0.2</td>
+                <td title="approximately 64kbit/s">64</td>
+              </tr>
+            </tbody>
+          </table>
+          <figure>
+            <img src="share/image/pref-button.png" alt="Preferences button"><br>
+            <figcaption>Fig 6: Preferences button</figcaption>
+          </figure>
+          <p>
+            Last button on figure 1 is “preferences” button (figure 6). If you click on it it will open this page in which you can set preferences or read this help.
+          </p>
+          <figure>
+            <img src="share/image/extra-buttons.png" alt="Extra buttons"><br>
+            <figcaption>Fig 7: Extra buttons</figcaption>
+          </figure>
+          <p>
+            There are also three extra buttons (figure 7). By default they are not visible and you need to enable them in preferences. These buttons allows you to seek video back or forward or to play video one frame at a time. When enabled they will be placed before loop button.
+          </p>
+          <figure class="wide">
+            <img src="share/image/lyrics.png" alt="Lyrics button"><br>
+            <figcaption>Fig 8: Lyrics button</figcaption>
+          </figure>
+          <p>
+            For some videos ExtendTube can load lyrics from an external source (lyrics.wikia.com). If lyrics are enabled ExtendTube will try to guess artist and title of the song from video title and it will show a button above video description. Clicking this button will initiate lyrics search and, if found, lyrics will be shown. If ExtendTube cannot find artist and title no button will appear. However, you can still initiate lyrics search via keyboard shortcut (if you defined one). If search fail you will be asked to enter artist and title of the song manually. Remember, lyrics are loaded from an external source and some may not exist on their servers.
+          </p>
+          <figure>
+            <img src="share/image/pop-out-button.png" alt="Pop out button"><br>
+            <figcaption>Fig 9: Pop out button</figcaption>
+          </figure>
+          <p>
+            New button since (version 1.8) is pop out button (figure 9). When you click on it player will be taken out of normal content flow and centred on <a href="http://www.w3.org/TR/CSS2/visuren.html#viewport" title="A window or other viewing area on the screen">viewport</a> with dark background around it.
+          </p>
+        </div>
+        <div class="collapsed">
+          <h3 id="help/preferences" class="preferences link">
+            Preferences
+          </h3>
+          <h4>
+            General section
+          </h4>
+          <dl>
+            <dt>
+              Reset to default preferences!
+            </dt>
+            <dd>
+              When you click on <em>default</em> button all preferences will be cleared and YouTube will behave as ExtendTube is not installed. Only part of ExtendTube that will still work is hiding ads.
+            </dd>
+            <dt>
+              Load recommended preferences.
+            </dt>
+            <dd>
+              When you click on <em>recommended</em> button recommended preferences will be loaded. This are the preferences that are set when extension is run for the first time. This action will change only those preferences that are in <em>recommended</em> group; other will remain unchanged.
+            </dd>
+            <dt>
+              Export preferences!
+            </dt>
+            <dd>
+              If you want to make backup of preferences click on <em>export</em> button. A new page will open with current preferences. Save that page so you can later import those preferences.
+            </dd>
+            <dt>
+              Import preferences
+            </dt>
+            <dd>
+              Opera extension cannot read local files, so, you have to paste preferences in import text-area. They must be in <abbr title="JavaScript Object Notation">JSON</abbr> format. You don’t have to enter whole preferences, just ones you actually want to change.
+            </dd>
+          </dl>
+          <h4>
+            Extension section
+          </h4>
+          <dl>
+            <dt>
+              Check for update
+            </dt>
+            <dd>
+              When this option is enabled ExtendTube will check for update every time it starts. That is on Opera start-up and when you manually disable and re-enable this extension.
+            </dd>
+            <dt>
+              Replace invalid characters
+            </dt>
+            <dd>
+              When you choose to save video, video title will be used as file name. Invalid characters in video title will be replaced whit this character(s). File name is then appended to download link and sent to YouTube as part of download request, so, YouTube may also remove or replace some characters.
+            </dd>
+            <dt>
+              Add toolbar button
+            </dt>
+            <dd>
+              Add button to toolbar that can be used to control playing video. This button will allow you to play or pause video when tab which plays video is not focused. It will also show how many videos (tabs) are currently opened. This number may not be correct if you go back/forward through tab history.
+            </dd>
+            <dt>
+              Log this type of messages
+            </dt>
+            <dd>
+              What type of messages should be logged to Opera’s Error Console (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>).<br>
+              <em>nothing</em> - don’t log anything<br>
+              <em>errors</em> - log just errors<br>
+              <em>warnings</em> - log errors and warnings<br>
+              <em>informations</em> - log errors, warnings and informations
+            </dd>
+          </dl>
+          <h4>
+            Video player section
+          </h4>
+          <dl>
+            <dt>
+              Hide in-video ads
+            </dt>
+            <dd>
+              Hide ads and video watermark inside flash player.
+            </dd>
+            <dt>
+              Disable autoplay
+            </dt>
+            <dd>
+              This option have two effects but works only if there is another video playing in some other tab. If enabled it will prevent autoplay of videos opened in new tab. Also, it will allow only one video to play at a time. If, for example, there is video playing in another tab it will be stopped. If you want to disable autoplay even if it is the only opened video, set sub-option <em>Always disable autoplay</em>.
+            </dd>
+            <dt>
+              Loop video
+            </dt>
+            <dd>
+              When this option is enabled video will play over and over again. However, this doesn’t work if video is part of a playlist because YouTube automatically advances to next video. If you want to prevent this behaviour you will have to enable sub-option named <em>Force loop</em>.
+            </dd>
+            <dt>
+              Enable wide player
+            </dt>
+            <dd>
+              Enabling this option will make video player wider (expanded to 854x510 rather than default 640x390).
+            </dd>
+            <dt>
+              Force video quality
+            </dt>
+            <dd>
+              If set to other than default this option will force player to load video in chosen quality. it will also prevent player from changing quality when you expand player or go full screen. If chosen quality is not available first lower available quality will be loaded. Default means let player choose automatically.
+            </dd>
+            <dt>
+              Seek time
+            </dt>
+            <dd>
+              This is time used when seeking video back and forward using <em>extra buttons</em> or via keyboard shortcuts. The forward time will always be little more than this time, and back time will be little less. This is because JavaScript code that controls player takes time to execute. For example: if you set this time to 5 seconds forward jump may be 6 and back 4 seconds.
+            </dd>
+            <dt>
+              Play on focus
+            </dt>
+            <dd>
+              If you want video to start playing when you focus tab enable this option. But, this option will be ignored if another video is already playing unless you enable sub-option <em>Force play on focus</em>. There is also sub-option <em>Only on first play</em> which will start playback only if playback is not started before.
+            </dd>
+            <dt>
+              Hide annotations
+            </dt>
+            <dd>
+              Hide overlay notes (annotations) inside video.<br>
+              <span class="note">Note</span>: When this option is changed flash player will not respond to change until page is reloaded.
+            </dd>
+            <dt>
+              Auto-hide controls
+            </dt>
+            <dd>
+              Auto-hide player controls. This option can be set to: <em>disabled</em> (controls and progress bar always visible), <em>enabled</em> (controls and progress bar will be hidden after few seconds), <em>minimise progress</em> (controls will be visible and progress bar will be minimised after few seconds) and <em>show only progress</em> (controls will be hidden and progress bar will be minimised after few seconds).<br>
+              <span class="note">Note</span>: When this option is changed flash player will not respond to change until page is reloaded.<br>
+            </dd>
+            <dt>
+              Player theme
+            </dt>
+            <dd>
+              What theme video player should use: <em>dark</em> (black) or <em>light</em> (white).<br>
+              <span class="note">Note</span>: When this option is changed flash player will not respond to change until page is reloaded.
+            </dd>
+            <dt>
+              Progress colour
+            </dt>
+            <dd>
+              Choose colour for player’s progress bar (<em>red</em> or <em>white</em>).<br>
+              <span class="note">Note</span>: When this option is changed flash player will not respond to change until page is reloaded.
+            </dd>
+          </dl>
+          <h4>
+            Interface section
+          </h4>
+          <dl>
+            <dt>
+              Hide ads on page
+            </dt>
+            <dd>
+              Hide ads on YouTube pages.
+            </dd>
+            <dt>
+              Don’t detect language
+            </dt>
+            <dd>
+              By default ExtendTube will detect language that YouTube currently uses, and will use the same language for content that adds to page. If you enable this option, ExtendTube will always use language that you can choose upon enabling this option.<br>
+              <span class="note">Note</span>: This option will change language only for content added by this extension not the whole page.
+            </dd>
+            <dt>
+              Enable download
+            </dt>
+            <dd>
+              This option will add button that, when activated, will show menu with download options for playing video. When this option is enabled a new option will be available. Named <em>Use fallback servers</em> this new option will allow you to use alternate servers for download links.
+            </dd>
+            <dt>
+              Add loop button
+            </dt>
+            <dd>
+              This option will add button that can be used to enable or disable <em>Loop video</em> option.
+            </dd>
+            <dt>
+              Add pop out player button
+            </dt>
+            <dd>
+              Adds button that can be used to pop player out of page and centre it on the <a href="http://www.w3.org/TR/CSS2/visuren.html#viewport" title="A window or other viewing area on the screen">viewport</a>. When it’s enabled you can choose whether you want player to be resized to display real video size. If you choose for player to be resized it will be expanded or shrunk to size of video or viewport size if video is greater than viewport. Otherwise, player size will be 854x510 pixels.
+            </dd>
+            <dt>
+              Add extra buttons
+            </dt>
+            <dd>
+              This option will add three more buttons that will allow you to seek video few seconds back/forward or step approximately one frame forward.
+            </dd>
+            <dt>
+              Enable lyrics
+            </dt>
+            <dd>
+              When enabled you will have a button below player which will, when clicked, load and show lyrics for current video.
+            </dd>
+            <dt>
+              Add preferences button
+            </dt>
+            <dd>
+              This option will add button that can be used to open <em>Preferences page</em> (this page).
+            </dd>
+            <dt>
+              Enable thumbnail preview
+            </dt>
+            <dd>
+              <figure>
+                <img src="share/image/thumb-preview.png" alt="Preview button"><br>
+                <figcaption>Fig 10: Preview button</figcaption>
+              </figure>
+              If this option is enabled video thumbnails will be converted to playable videos. After you enable this option you can choose what should trigger video preview. If you choose <em>click on a button</em> a new button will be added to thumbnail <em>add to</em> menu (figure 10). If you choose <em>mouse hover</em> you’ll need to hover thumbnail to enable preview.
+            </dd>
+            <dt>
+              Show video ratings
+            </dt>
+            <dd>
+              <figure>
+                <img src="share/image/video-rating.png" alt="Video rating"><br>
+                <figcaption>Fig 11: Video rating</figcaption>
+              </figure>
+              If this option is enabled at top of video thumbnails a bar, showing video rating, will be inserted (see figure 11).
+            </dd>
+            <dt>
+              Only player in full screen
+            </dt>
+            <dd>
+              When this option is enabled only video player will be visible when Opera goes full screen (<kbd>F11</kbd>). Video player will stretch to cover entire screen. This feature will allow you to watch HTML 5 videos in full screen but it has a bad side on flash videos.<br>
+              <span class="note">Note</span>: If you click on flash video while in full screen, flash will steal keyboard focus from Opera and you wont be able to come back from full screen. For that very reason ExtendTube will add one pixel bluish line at top of the screen on which you can click to take keyboard focus back from flash.
+            </dd>
+          </dl>
+          <h4>
+            Keyboard shortcuts section
+          </h4>
+          <p>
+            See <a href="#help/shortcuts">keyboard shortcuts</a> section.
+          </p>
+          <h4>
+            Page clean-up section
+          </h4>
+          <p>
+            Options in this section are self explanatory. They hide various parts of the page and they don’t need individual explanation except this ones:
+          </p>
+          <dl>
+            <dt>
+              Hide sidebar
+            </dt>
+            <dd>
+              When this option is enabled sidebar which shows featured videos and suggestions will be hidden. When sidebar is hidden rest of the page (video player, comments, video description) will be expanded to fill empty space. When that happens video player will be wider than when <em>Enable wide player</em> is enabled (around 970x591).
+            </dd>
+            <dt>
+              Hide video suggestions
+            </dt>
+            <dd>
+              When only this option is enabled in <em>Hide sidebar</em> subgroup and there is no featured videos on page it will have same effect as if <em>Hide sidebar</em> is enabled.
+            </dd>
+          </dl>
+          <h4>
+            Custom colours section
+          </h4>
+          <dl>
+            <dt>
+              Replace logo
+            </dt>
+            <dd>
+              <figure>
+                <img src="share/image/logo-replacement.png" alt="Logo replacement"><br>
+                <figcaption>Fig 12: Logo replacement</figcaption>
+              </figure>
+              This option, when enabled, will replace YouTube logo with transparent one (figure 12). If you change background colour of page, either via custom colours or custom CSS, you should enable this option.<br>
+              <span class="note">Note</span>: This option will not replace YouTube doodles.
+            </dd>
+            <dt>
+              Use light icons
+            </dt>
+            <dd>
+              <figure>
+                <img src="share/image/light-icons.png" alt="Light icons"><br>
+                <figcaption>Fig 13: Light icons</figcaption>
+              </figure>
+              When this option is enabled buttons that this extension adds to page will have light grey icons. You should enable this option if you change background colour of buttons to some dark colour (figure 13).
+            </dd>
+            <dt>
+              Enable custom colours
+            </dt>
+            <dd>
+              This option will allow you to redefine colours for various elements on YouTube. When you enable it a new interface will appear below it, so, you can enter your colours.<br>
+              <span class="note">Note</span>: Custom colours will be applied to most, but not to all pages. More specifically, they will not be applied to pages whose path begins with: <cite>/my_</cite>, <cite>/inbox</cite> and <cite>/account</cite>.
+            </dd>
+          </dl>
+          <h4>
+            Custom CSS section
+          </h4>
+          <dl>
+            <dt>
+              Enable custom style
+            </dt>
+            <dd>
+              When enabled custom CSS will be added to YouTube page but you need to enter it in text area below this option. Please note that ExtendTube does not check CSS syntax, so, be sure it’s correct. Also, some of vendor specific properties will be removed (-moz-, -ms-, -webkit-, zoom and filter), so, please check it after saving style.
+            </dd>
+          </dl>
+        </div>
+        <div class="collapsed">
+          <h3 id="help/shortcuts" class="shortcuts link">
+            Keyboard shortcuts
+          </h3>
+          <dl>
+            <dt>
+              Enable keyboard shortcuts
+            </dt>
+            <dd>
+              Set this option to enable keyboard shortcuts.<br>YouTube flash player have some keyboard shortcuts predefined, but they work only if player is focused. If you enable <em>Expose player shortcuts</em> sub-option this extension will try to make them work even when player is not focused.<br>
+              <span class="note">Note</span>: If some action (ex. play/pause) is executed twice when you interact (click) with flash player and player shortcuts are exposed to page please enable <em>Disable flash player shortcuts</em> sub-option.
+            </dd>
+          </dl>
+          <p>
+            When defining shortcuts it is recommended, but not absolutely necessary, to use modifier keys<sup><a href="http://en.wikipedia.org/wiki/Modifier_key">(?)</a></sup>. Note that some key combination are reserved by system and should be avoided (like <kbd>Alt</kbd>+<kbd>F4</kbd> or <kbd>Alt</kbd>+<kbd>f</kbd>). Also, when some elements on page are focused (like search field or a button) some keyboard shortcuts may not work.
+          </p>
+          <p>
+            If you enabled “expose player shortcuts” option you will also have this shortcuts available. They cannot be redefined but they will be executed only if no other action is defined for shortcut.
+          </p>
+          <ul>
+            <li>
+              <kbd>0</kbd>, <kbd>1</kbd>,... <kbd>9</kbd> - jump to 0%, 10%,... 90% of video
+            </li>
+            <li>
+              <kbd>Home</kbd> - jump to beginning of video
+            </li>
+            <li>
+              <kbd>End</kbd> - jump to end of video
+            </li>
+            <li>
+              <kbd>Left</kbd> - jump 10% back
+            </li>
+            <li>
+              <kbd>Right</kbd> - jump 10% forward
+            </li>
+            <li>
+              <kbd>Up</kbd> - increase volume 5%
+            </li>
+            <li>
+              <kbd>Down</kbd> - decrease volume 5%
+            </li>
+            <li>
+              <kbd>Space</kbd> - play/pause video
+            </li>
+          </ul>
+          <p>
+            <span class="note">Note</span>: since version 1.8 you cannot set <kbd>Esc</kbd> as keyboard shortcut (unless you do a little <a href="options.html#about/hacking">hacking</a>, but it will not work even if you do).
+          </p>
+        </div>
+        <div class="collapsed">
+          <h3 id="help/actions" class="actions link">
+            Actions
+          </h3>
+          <p>
+            Actions are JavaScript <a href="http://en.wikipedia.org/wiki/Snippet_(programming)">snippets</a> that can be executed by this extension. They are executed by being passed to <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function">function</a> <a href="http://dmitrysoshnikov.com/ecmascript/chapter-5-functions/#functions-created-via-function-constructor">constructor</a> as an argument.
+          </p>
+<pre class="code"><span class="class">Function</span><span class="operator">(<span class="string">"xtt"</span></span><span class="operator">,</span> <span class="string">"&lt;action_code&gt;"</span><span class="operator">)(</span>window<span class="operator">.</span>opera<span class="operator">.</span>xtt<span class="operator">);</span></pre>
+          <p>
+            This is equivalent to:
+          </p>
+<pre class="code"><span class="comment">// anonymous function executed in global scope</span>
+<span class="operator">(</span><span class="word">function</span> <span class="operator">(</span>xtt<span class="operator">)</span> <span class="operator">{</span>
+    <span class="comment">// action cod goes here</span>
+<span class="operator">})(</span>window<span class="operator">.</span>opera<span class="operator">.</span>xtt<span class="operator">);</span></pre>
+          <p>
+            So, everything that is created in action will be destroyed after action is executed. If you want something to be available after action is done executing make it property of some globally accessible object.
+          </p>
+<pre class="code"><span class="word">var</span> run_counter <span class="operator">=</span> <span class="number">0</span><span class="operator">;</span>
+<span class="word">if</span> <span class="operator">(</span>window<span class="operator">.</span>run_counter <span class="operator">!==</span> <span class="word">undefined</span><span class="operator">)</span>
+    run_counter <span class="operator">=</span> window<span class="operator">.</span>run_counter<span class="operator">;</span>
+run_counter<span class="operator">++;</span>
+
+console<span class="operator">.</span>log<span class="operator">(</span><span class="string">"This action is run "</span> <span class="operator">+</span> run_counter <span class="operator">+</span> <span class="string">" times."</span><span class="operator">);</span>
+window<span class="operator">.</span>run_counter <span class="operator">=</span> run_counter<span class="operator">;</span></pre>
+          <h4>
+            Adding new action
+          </h4>
+          <p>
+            When adding new action you need to define three things. First you need to define unique action ID. Second, you need to define when action should be executed and last, you need to enter action code. Then just click <em>Save action</em> button.
+          </p>
+          <p>
+            Actions are executed when some event is triggered. If some event is fired before actions are sent by background process, actions defined for that event will be executed immediately after they are received. Events that can trigger an action are:
+          </p>
+          <dl>
+            <dt>
+              immediately
+            </dt>
+            <dd>
+              Actions are executed immediately (after some initialisation).
+            </dd>
+            <dt>
+              DOM created
+            </dt>
+            <dd>
+              Actions are executed when <cite>DOMContentLoaded</cite> event is fired.
+            </dd>
+            <dt>
+              page loaded
+            </dt>
+            <dd>
+              Actions are executed when <cite>load</cite> event is fired.
+            </dd>
+            <dt>
+              document modified
+            </dt>
+            <dd>
+              Actions are executed after extension is done modifying document (after buttons are added).
+            </dd>
+            <dt>
+              plug-in initialised
+            </dt>
+            <dd>
+              Actions are executed when flash plug-in is initialised.<br>
+              <span class="note">Note</span>: This event may be fired several times (if flash player is replaced for some reason).
+            </dd>
+            <dt>
+              player ready
+            </dt>
+            <dd>
+              This event will be triggered twice. First time when video player becomes ready to play video. At the same time background process will be signalled about player being ready. When background process returns message, event will be triggered second time.<br>
+              <span class="note">Note</span>: This event may be fired several times (if flash player is replaced for some reason).
+            </dd>
+            <dt>
+              playback ended
+            </dt>
+            <dd>
+              Actions are executed when video playback reaches end.
+            </dd>
+            <dt>
+              playback started
+            </dt>
+            <dd>
+              Actions are executed when video starts playing (whether for the first time or after being paused).
+            </dd>
+            <dt>
+              playback paused
+            </dt>
+            <dd>
+              Actions are executed when video playback is paused.
+            </dd>
+            <dt>
+              develop
+            </dt>
+            <dd>
+              This is special event. Actions with this event will be executed every time preferences are received from background process which is every time you save an action.
+            </dd>
+          </dl>
+          <p>
+            As you may guess some events will fire only if page contains a video.
+          </p>
+          <p>
+            If you are writing new action it is recommended to use “develop” event. First open a YouTube page, then write action, click <em>Save action</em> button and watch Error Console (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>) for errors. I there are errors fix them and click <em>Save again</em> and action will be executed. There is no need to reload YouTube page. If everything went without errors, choose different event trigger and you are done.
+          </p>
+          <p>
+            While writing action code you may call some methods of extension object. ExtendTube object is property of <a href="http://www.howtocreate.co.uk/operaStuff/operaObject.html">Opera object</a>. See <a href="api/xtt.html">API</a> for details.
+          </p>
+<pre class="code"><span class="comment">// reference to ExtendTube object.</span>
+window<span class="operator">.</span>opera<span class="operator">.</span>xtt<span class="operator">;</span></pre>
+          <h4>
+            Action examples
+          </h4>
+<pre class="code"><span class="comment">// This action will prevent video auto buffering.
+// It should be executed on event “player ready”.</span>
+
+<span class="comment">// Give time to flash player to finish initialising.</span>
+window<span class="operator">.</span>setTimeout<span class="operator">(</span><span class="word">function</span> <span class="operator">()</span> <span class="operator">{</span>
+  xtt<span class="operator">.</span>player<span class="operator">.</span>control<span class="operator">(<span class="string">"stop"</span>);</span>
+<span class="operator">},</span> <span class="number">1000</span><span class="operator">);</span>
+<span class="comment">// If you have fast machine you can reduce time out delay.</span></pre>
+<pre class="code"><span class="comment">// This action will add option to download video as mp3.
+// It should be executed on event “document modified”.</span>
+
+xtt<span class="operator">.</span>ui<span class="operator">.</span>add<span class="operator">.</span>downloadMenuItem<span class="operator">({</span>
+    text<span class="operator">:</span> <span class="string">"mp3 download HQ"</span><span class="operator">,</span>
+    tooltip<span class="operator">:</span> <span class="string">"Download as high quality mp3"</span><span class="operator">,</span>
+    uri<span class="operator">:</span> <span class="string">"http://www.video2mp3.net/?hq=1&amp;url="</span> <span class="operator">+</span> xtt<span class="operator">.</span>video<span class="operator">.</span>getVideoUri<span class="operator">(</span><span class="word">true</span><span class="operator">)</span>
+<span class="operator">});</span>
+
+<span class="comment">// This action will open conversion window in new tab.</span>
+xtt<span class="operator">.</span>ui<span class="operator">.</span>add<span class="operator">.</span>downloadMenuItem<span class="operator">({</span>
+    text<span class="operator">:</span> <span class="string">"mp3 download"</span><span class="operator">,</span>
+    tooltip<span class="operator">:</span> <span class="string">"Download as standard quality mp3"</span><span class="operator">,</span>
+    uri<span class="operator">:</span> <span class="string">"http://www.video2mp3.net/?url="</span> <span class="operator">+</span> xtt<span class="operator">.</span>video<span class="operator">.</span>getVideoUri<span class="operator">(</span><span class="word">true</span><span class="operator">),</span>
+    clickListener<span class="operator">:</span> <span class="word">function</span> <span class="operator">(</span>event<span class="operator">)</span> <span class="operator">{</span>
+        event<span class="operator">.</span>preventDefault<span class="operator">();</span>
+        window<span class="operator">.</span>open<span class="operator">(</span><span class="word">this</span><span class="operator">.</span>href<span class="operator">);</span>
+    <span class="operator">}</span>
+<span class="operator">});</span></pre>
+        </div>
+        <div class="collapsed">
+          <h3 id="help/popup" class="popup link">
+            Extension pop-up
+          </h3>
+          <p>
+            Depending on your settings, when you click on extensions button a pop-up may appear. In this pop-up you’ll see list of all opened videos. Every list entry have video title, current video progress and playback control button.
+          </p>
+          <p>
+            For embedded videos, click on video title will open video in new regular YouTube page. If video is on regular YouTube page, tab will be focused. In order for tab focus to work you have to enable <em><a href="opera:config#Allow%20script%20to%20raise%20window">Allow raising of windows</a></em> option in <em>Preferences/Advanced/Content/JavaScript Options...</em> . In front of video title an icon may appear showing some info about video (<img class="small" src="share/image/html5.png" alt="HTML 5 icon."> - video is HTML5 video; <img class="small" src="share/image/iframe.png" alt="Frame icon."> - video is iframe embedded video).
+          </p>
+          <p>
+            Progress bar will show current video progress and it will allow you to seek video. In some versions of Opera it will change colour depending of whether playback is paused (yellow) or playing (green).
+          </p>
+          <p>
+            Control button will show current playback state (<img class="small" src="share/image/paused.png" alt="Play icon - playback is paused."> - paused; <img class="small" src="share/image/playing.png" alt="Pause icon - playback is playing."> - playing) and it will allow you to change that state by clicking on it.
+          </p>
+          <p>
+            Pop-up will use <a href="#preferences/colors">Custom colours</a> if you’ve enabled them.
+          </p>
+        </div>
+      </section>
+      <footer>
+        <address>
+          Copyright © 2011-2012<br>
+          <a href="mailto:pdarko@myopera.com">Darko Pantić</a>
+        </address>
+      </footer>
+    </div>
+  </body>
+</html>
