@@ -42,6 +42,8 @@ var OStorage = function () {
   
   Object.defineProperty(OStorage.prototype, "setItem", { 
     value: function( key, value, proxiedChange ) {
+      var oldVal = this._storage.getItem(key);
+      
       this._storage.setItem(key, value);
       
       if( !this[key] ) {
@@ -57,7 +59,18 @@ var OStorage = function () {
             "val": value
           }
         });
-      } 
+      }
+      
+      // Create and fire 'storage' event on window object
+      var storageEvt = new OEvent('storage', {
+        "key": key,
+        "oldValue": oldVal,
+        "newValue": this._storage.getItem(key),
+        "url": chrome.extension.getURL(""),
+        "storageArea": this._storage
+      });
+      global.dispatchEvent( storageEvt );
+      
     }.bind(this)
   });
   

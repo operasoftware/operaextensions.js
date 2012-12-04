@@ -946,8 +946,7 @@ Opera.prototype.__defineGetter__('getOverrideHistoryNavigationMode', function() 
       function fireEvent(name, target) {
         var evtName = name.toLowerCase();
 
-        var evt = document.createEvent('Event');
-        evt.initEvent(evtName, true, true);
+        var evt = new OEvent(evtName, {});
 
         for (var i = 0, len = fns[evtName].length; i < len; i++) {
           fns[evtName][i].call(target, evt);

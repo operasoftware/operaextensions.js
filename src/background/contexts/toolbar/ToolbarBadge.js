@@ -7,8 +7,8 @@ var ToolbarBadge = function( properties ) {
   
   // Set provided properties through object prototype setter functions
   this.properties.textContent = properties.textContent;
-  this.properties.backgroundColor = properties.backgroundColor;
-  this.properties.color = properties.color;
+  this.properties.backgroundColor = complexColorToHex(properties.backgroundColor);
+  this.properties.color = complexColorToHex(properties.color);
   this.properties.display = properties.display;
   
   //this.enqueue('apply');
@@ -49,10 +49,10 @@ ToolbarBadge.prototype.__defineGetter__("backgroundColor", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("backgroundColor", function( val ) {
-  this.properties.backgroundColor = "" + val;
+  this.properties.backgroundColor = complexColorToHex("" + val);
 
   if( this.resolved ) {
-    chrome.browserAction.setBadgeBackgroundColor({ "color": ("" + val) });
+    chrome.browserAction.setBadgeBackgroundColor({ "color": this.properties.backgroundColor });
   }
 });
 
@@ -61,7 +61,7 @@ ToolbarBadge.prototype.__defineGetter__("color", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("color", function( val ) {
-  this.properties.color = "" + val;
+  this.properties.color = complexColorToHex("" + val);
   // not implemented in chromium
 });
 
