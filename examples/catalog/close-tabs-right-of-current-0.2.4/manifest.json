@@ -12,7 +12,8 @@
   "content_scripts": [
       {
         "matches": ["http://*/*", "https://*/*"],
-        "js": ["/shim/operaextensions_injectedscript.min.js", "/includes/userJS.js"]
+        "js": ["/shim/operaextensions_injectedscript.min.js", "/includes/userJS.js"],
+        "run_at":"document_start"
       }
   ],
   "options_page": "options.html",
