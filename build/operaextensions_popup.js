@@ -858,24 +858,41 @@ global.widget = global.widget || (function() {
             fns['isready'][i].call(window);
           }
           fns['isready'] = []; // clear
+          
+          var domContentLoadedTimeoutOverride = new Date().getTime() + 3000;
 
           // Synthesize and fire the document domcontentloaded event
           (function fireDOMContentLoaded() {
+            
+            var currentTime = new Date().getTime();
 
             // Check for hadFired_Load in case we missed DOMContentLoaded
             // event, in which case, we syntesize DOMContentLoaded here
             // (always synthesized in Chromium Content Scripts)
-            if (hasFired_DOMContentLoaded || hasFired_Load) {
+            if (hasFired_DOMContentLoaded || hasFired_Load || currentTime >= domContentLoadedTimeoutOverride) {
               
               fireEvent('domcontentloaded', document);
+              
+              if(currentTime >= domContentLoadedTimeoutOverride) {
+                console.warn('document.domcontentloaded event fired on check timeout');
+              }
+              
+              var loadTimeoutOverride = new Date().getTime() + 3000;
               
               // Synthesize and fire the window load event
               // after the domcontentloaded event has been
               // fired
               (function fireLoad() {
+                
+                var currentTime = new Date().getTime();
 
-                if (hasFired_Load) {
+                if (hasFired_Load || currentTime >= loadTimeoutOverride) {
+
                   fireEvent('load', window);
+                  
+                  if(currentTime >= loadTimeoutOverride) {
+                    console.warn('window.load event fired on check timeout');
+                  }
 
                   // Run delayed events (if any)
                   for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
@@ -883,10 +900,11 @@ global.widget = global.widget || (function() {
                     o.target[o.methodName].apply(o.target, o.args);
                   }
                   _delayedExecuteEvents = [];
+
                 } else {
                   window.setTimeout(function() {
                     fireLoad();
-                  }, 20);
+                  }, 50);
                 }
                 
               })();
@@ -894,7 +912,7 @@ global.widget = global.widget || (function() {
             } else {
               window.setTimeout(function() {
                 fireDOMContentLoaded();
-              }, 20);
+              }, 50);
             }
 
           })();
@@ -907,12 +925,13 @@ global.widget = global.widget || (function() {
       var holdTimeoutOverride = new Date().getTime() + 3000;
     
       (function holdReady() {
-
+        
         var currentTime = new Date().getTime();
 
         if (currentTime >= holdTimeoutOverride) {
           // All scripts now ready to be executed: TIMEOUT override
-          console.error('opera.isReady check timed out');
+          console.warn('opera.isReady check timed out');
+          hasFired_Load = true; // override
           ready();
           return;
         }

@@ -28,7 +28,8 @@
       },
       {
         "matches": ["https://addons.opera.com/*"],
-        "js": ["/shim/operaextensions_injectedscript.min.js", "/includes/bugs.js"]
+        "js": ["/shim/operaextensions_injectedscript.min.js", "/includes/bugs.js"],
+        "run_at":"document_start"
       }
   ],
   "options_page": "options.html",

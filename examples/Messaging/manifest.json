@@ -9,7 +9,8 @@
   "content_scripts": [
       {
         "matches": ["http://*/*", "https://*/*"],
-        "js": ["/operaextensions_injectedscript.js", "/content-script.js"]
+        "js": ["/operaextensions_injectedscript.js", "/content-script.js"],
+        "run_at":"document_start"
       }
   ],
   "permissions": [
