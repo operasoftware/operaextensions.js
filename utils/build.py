@@ -50,7 +50,7 @@ def main(argv=None):
     # header
 
     with open(output,'r') as f: text = f.read()
-    with open(output,'w') as f: f.write(("// %s - http://github.com/richtr/operaextensions.js\n" % os.path.basename(output)) + text)
+    with open(output,'w') as f: f.write(("// %s - http://github.com/operasoftware/operaextensions.js\n" % os.path.basename(output)) + text)
 
   os.close(fd)
   os.remove(path)
