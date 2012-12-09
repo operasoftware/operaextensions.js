@@ -1,12 +1,7 @@
 
-OEC.ToolbarContext = function() {
+var ToolbarContext = function() {
   
-  OPromise.call( this );
-  
-  // we shouldn't need this on this object since it is never checked 
-  // and nothing is enqueued
-  // (we need OPromise for its event handling capabilities only)
-  this.resolve();
+  OEventTarget.call( this );
   
   // Unfortunately, click events only fire if a popup is not supplied 
   // to a registered browser action in Chromium :(
@@ -16,11 +11,11 @@ OEC.ToolbarContext = function() {
   function clickEventHandler(_tab) {
     
     if( this[ 0 ] ) {
-      this[ 0 ].fireEvent( new OEvent('click', {}) );
+      this[ 0 ].dispatchEvent( new OEvent('click', {}) );
     }
     
     // Fire event also on ToolbarContext API stub
-    this.fireEvent( new OEvent('click', {}) );
+    this.dispatchEvent( new OEvent('click', {}) );
     
   }
   
@@ -28,13 +23,13 @@ OEC.ToolbarContext = function() {
   
 };
 
-OEC.ToolbarContext.prototype = Object.create( OPromise.prototype );
+ToolbarContext.prototype = Object.create( OEventTarget.prototype );
 
-OEC.ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
+ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
   return new ToolbarUIItem( toolbarUIItemProperties );
 };
 
-OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
+ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
   
   if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
     return;
@@ -57,7 +52,7 @@ OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
 
 };
 
-OEC.ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
+ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
 
   if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
     return;
@@ -71,10 +66,10 @@ OEC.ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
     // Disable the toolbar button
     chrome.browserAction.disable();
   
-    toolbarUIItem.fireEvent( new OEvent('remove', {}) );
+    toolbarUIItem.dispatchEvent( new OEvent('remove', {}) );
   
     // Fire event on self
-    this.fireEvent( new OEvent('remove', {}) );
+    this.dispatchEvent( new OEvent('remove', {}) );
   
   }
 

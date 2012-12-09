@@ -74,6 +74,14 @@ var OWidgetObjProxy = function() {
     "action": "___O_widget_setup_REQUEST"
   });
   
+  // When the page unloads, take all items that have been 
+  // added with preference.blah or preferences['blah']
+  // (instead of the catachable .setItem) and push these
+  // preferences to the background script
+  global.addEventListener('beforeunload', function() {
+    // TODO implement widget.preferences page unload behavior
+  }, false);
+  
 };
 
 OWidgetObjProxy.prototype = Object.create( OEventTarget.prototype );

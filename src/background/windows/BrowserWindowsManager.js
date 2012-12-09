@@ -1,5 +1,5 @@
 
-BrowserWindowsManager = function() {
+var BrowserWindowsManager = function() {
 
   OPromise.call(this);
 
@@ -149,7 +149,7 @@ BrowserWindowsManager = function() {
         }
 
         // Fire a new 'create' event on this manager object
-        this.fireEvent(new OEvent('create', {
+        this.dispatchEvent(new OEvent('create', {
           browserWindow: newBrowserWindow
         }));
 
@@ -173,12 +173,12 @@ BrowserWindowsManager = function() {
     if (deleteIndex > -1) {
 
       // Fire a new 'close' event on the closed BrowserWindow object
-      this[deleteIndex].fireEvent(new OEvent('close', {
+      this[deleteIndex].dispatchEvent(new OEvent('close', {
         'browserWindow': this[deleteIndex]
       }));
 
       // Fire a new 'close' event on this manager object
-      this.fireEvent(new OEvent('close', {
+      this.dispatchEvent(new OEvent('close', {
         'browserWindow': this[deleteIndex]
       }));
 
@@ -323,7 +323,7 @@ BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowPro
       }
 
       // Fire a new 'create' event on this manager object
-      this.fireEvent(new OEvent('create', {
+      this.dispatchEvent(new OEvent('create', {
         browserWindow: shadowBrowserWindow
       }));
 
