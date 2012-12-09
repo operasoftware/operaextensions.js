@@ -14,7 +14,7 @@ var OMessagePort = function( isBackground ) {
     
     this._localPort.onDisconnect.addListener(function() {
     
-      this.fireEvent( new OEvent( 'disconnect', { "source": this._localPort } ) );
+      this.dispatchEvent( new OEvent( 'disconnect', { "source": this._localPort } ) );
       
       this._localPort = null;
       
@@ -27,7 +27,7 @@ var OMessagePort = function( isBackground ) {
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
 
         // Fire controlmessage events *immediately*
-        this.fireEvent( new OEvent(
+        this.dispatchEvent( new OEvent(
           'controlmessage', 
           { 
             "data": _message,
@@ -45,7 +45,7 @@ var OMessagePort = function( isBackground ) {
         // Fire 'message' event once we have all the initial listeners setup on the page
         // so we don't miss any .onconnect call from the extension page.
         // Or immediately if the shim isReady
-        addDelayedEvent(this, 'fireEvent', [ new OEvent(
+        addDelayedEvent(this, 'dispatchEvent', [ new OEvent(
           'message', 
           { 
             "data": _message,
@@ -64,7 +64,7 @@ var OMessagePort = function( isBackground ) {
 
     // Fire 'connect' event once we have all the initial listeners setup on the page
     // so we don't miss any .onconnect call from the extension page
-    addDelayedEvent(this, 'fireEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
+    addDelayedEvent(this, 'dispatchEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
     
   }
   

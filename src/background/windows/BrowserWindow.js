@@ -1,5 +1,5 @@
 
-BrowserWindow = function(browserWindowProperties) {
+var BrowserWindow = function(browserWindowProperties) {
 
   OPromise.call(this);
 
