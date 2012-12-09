@@ -495,7 +495,7 @@ var OEX = opera.extension = opera.extension || new OperaExtension();
 
 var OEC = opera.contexts = opera.contexts || {};
 
-OperaExtension.prototype.getFile = opera.extension.getFile || function(path) {
+OperaExtension.prototype.getFile = function(path) {
   var response = null;
 
   if(typeof path != "string")return response;
