@@ -7,14 +7,12 @@ var BrowserWindow = function(browserWindowProperties) {
 
   this._parent = null;
 
-  this._tabGroups = [];
-
   // Create a unique browserWindow id
   this._operaId = Math.floor(Math.random() * 1e16);
 
   this.tabs = new BrowserTabsManager(this);
-  // TODO Implement BrowserTabGroupsManager interface
-  //this.tabGroups = new BrowserTabGroupsManager( this );
+
+  this.tabGroups = new BrowserTabGroupManager(this);
 };
 
 BrowserWindow.prototype = Object.create(OPromise.prototype);
@@ -99,11 +97,6 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
     );
 
   }
-/* else if( browserTab instanceof BrowserTabGroup ) {
-
-    // TODO implement BrowserTabGroup interface
-
-  }*/
 
 };
 
