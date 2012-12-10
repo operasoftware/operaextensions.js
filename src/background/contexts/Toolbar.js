@@ -1,4 +1,2 @@
 
-OEC.toolbar = OEC.toolbar || (function() {
-  return new OEC.ToolbarContext();
-})();
+OEC.toolbar = OEC.toolbar || new ToolbarContext();

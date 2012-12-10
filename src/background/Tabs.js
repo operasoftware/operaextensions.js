@@ -1,4 +1,2 @@
 
-OEX.tabs = OEX.tabs || (function() {
-  return new RootBrowserTabsManager();
-})();
+OEX.tabs = OEX.tabs || new RootBrowserTabsManager();

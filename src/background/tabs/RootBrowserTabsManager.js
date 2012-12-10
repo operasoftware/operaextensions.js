@@ -1,12 +1,12 @@
 
-RootBrowserTabsManager = function() {
+var RootBrowserTabsManager = function() {
 
   BrowserTabsManager.call(this);
 
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
 
-    window.setTimeout(function() {
+    global.setTimeout(function() {
 
       // If this tab is already registered in the root tab collection then ignore
       var tabFound = false;
@@ -42,7 +42,7 @@ RootBrowserTabsManager = function() {
 
         newTab._windowParent.tabs.addTabs([newTab], newTab.properties.index);
 
-        newTab._windowParent.tabs.fireEvent(new OEvent('create', {
+        newTab._windowParent.tabs.dispatchEvent(new OEvent('create', {
           "tab": newTab,
           "prevWindow": newTab._windowParent,
           "prevTabGroup": null,
@@ -56,7 +56,7 @@ RootBrowserTabsManager = function() {
         newTab.resolve();
 
         // Fire a create event at RootTabsManager
-        this.fireEvent(new OEvent('create', {
+        this.dispatchEvent(new OEvent('create', {
           "tab": newTab,
           "prevWindow": newTab._windowParent,
           "prevTabGroup": null,
@@ -98,7 +98,7 @@ RootBrowserTabsManager = function() {
       this.removeTab( oldTab );
 
       // Fire a new 'close' event on the closed BrowserTab object
-      oldTab.fireEvent(new OEvent('close', {
+      oldTab.dispatchEvent(new OEvent('close', {
         "tab": oldTab,
         "prevWindow": oldTabWindowParent,
         "prevTabGroup": null,
@@ -108,7 +108,7 @@ RootBrowserTabsManager = function() {
       // Fire a new 'close' event on the closed BrowserTab's previous 
       // BrowserWindow parent object
       if(oldTabWindowParent) {
-        oldTabWindowParent.tabs.fireEvent(new OEvent('close', {
+        oldTabWindowParent.tabs.dispatchEvent(new OEvent('close', {
           "tab": oldTab,
           "prevWindow": oldTabWindowParent,
           "prevTabGroup": null,
@@ -117,7 +117,7 @@ RootBrowserTabsManager = function() {
       }
 
       // Fire a new 'close' event on this root tab manager object
-      this.fireEvent(new OEvent('close', {
+      this.dispatchEvent(new OEvent('close', {
         "tab": oldTab,
         "prevWindow": oldTabWindowParent,
         "prevTabGroup": null,
@@ -230,14 +230,14 @@ RootBrowserTabsManager = function() {
         }
       }
 
-      moveTab.fireEvent(new OEvent('move', {
+      moveTab.dispatchEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
         "prevPosition": moveInfo.fromIndex
       }));
 
-      this.fireEvent(new OEvent('move', {
+      this.dispatchEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,

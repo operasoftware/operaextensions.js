@@ -26,24 +26,6 @@ for(var i in OEventTarget.prototype) {
   OPromise.prototype[i] = OEventTarget.prototype[i];
 }
 
-/*
-OPromise.prototype.addEventListener = OPromise.prototype.on;
-
-OPromise.prototype.removeEventListener = OPromise.prototype.off;
-
-OPromise.prototype.fireEvent = function( oexEventObj ) {
-
-  var eventName = oexEventObj.type;
-
-  // Register an onX functions registered for this event
-  if(typeof this[ 'on' + eventName.toLowerCase() ] === 'function') {
-    this.on( eventName, this[ 'on' + eventName.toLowerCase() ] );
-  }
-
-  this.trigger( eventName, oexEventObj );
-
-}*/
-
 OPromise.prototype.enqueue = function() {
 
   // Must at least provide a method name to queue

@@ -46,199 +46,6 @@ var deferredComponentsLoadStatus = {
 };
 
 /**
- * GENERAL OEX SHIM UTILITY FUNCTIONS
- */
- 
-/**
- * Chromium doesn't support complex colors in places so
- * this function will convert colors from rgb, rgba, hsv,
- * hsl and hsla in to hex colors.
- *
- * 'color' is the color string to convert.
- * 'backgroundColorVal' is a background color number (0-255)
- * with which to apply alpha blending (if any).
- */
-function complexColorToHex(color, backgroundColorVal) {
-  
-  if(color === undefined || color === null) {
-    return color;
-  }
-  
-  // Force covert color to String
-  color = color + "";
-  
-  // X11/W3C Color Names List
-  var colorKeywords = { aliceblue: [240,248,255], antiquewhite: [250,235,215], aqua: [0,255,255], aquamarine: [127,255,212],
-  azure: [240,255,255], beige: [245,245,220], bisque: [255,228,196], black: [0,0,0], blanchedalmond: [255,235,205],
-  blue: [0,0,255], blueviolet: [138,43,226], brown: [165,42,42], burlywood: [222,184,135], cadetblue: [95,158,160],
-  chartreuse: [127,255,0], chocolate: [210,105,30], coral: [255,127,80], cornflowerblue: [100,149,237], cornsilk: [255,248,220],
-  crimson: [220,20,60], cyan: [0,255,255], darkblue: [0,0,139], darkcyan: [0,139,139], darkgoldenrod: [184,134,11],
-  darkgray: [169,169,169], darkgreen: [0,100,0], darkgrey: [169,169,169], darkkhaki: [189,183,107], darkmagenta: [139,0,139],
-  darkolivegreen: [85,107,47], darkorange: [255,140,0], darkorchid: [153,50,204], darkred: [139,0,0], darksalmon: [233,150,122],
-  darkseagreen: [143,188,143], darkslateblue: [72,61,139], darkslategray: [47,79,79], darkslategrey: [47,79,79],
-  darkturquoise: [0,206,209], darkviolet: [148,0,211], deeppink: [255,20,147], deepskyblue: [0,191,255], dimgray: [105,105,105],
-  dimgrey: [105,105,105], dodgerblue: [30,144,255], firebrick: [178,34,34], floralwhite: [255,250,240], forestgreen: [34,139,34],
-  fuchsia: [255,0,255], gainsboro: [220,220,220], ghostwhite: [248,248,255], gold: [255,215,0], goldenrod: [218,165,32],
-  gray: [128,128,128], green: [0,128,0], greenyellow: [173,255,47], grey: [128,128,128], honeydew: [240,255,240],
-  hotpink: [255,105,180], indianred: [205,92,92], indigo: [75,0,130], ivory: [255,255,240], khaki: [240,230,140],
-  lavender: [230,230,250], lavenderblush: [255,240,245], lawngreen: [124,252,0], lemonchiffon: [255,250,205],
-  lightblue: [173,216,230], lightcoral: [240,128,128], lightcyan: [224,255,255], lightgoldenrodyellow: [250,250,210],
-  lightgray: [211,211,211], lightgreen: [144,238,144], lightgrey: [211,211,211], lightpink: [255,182,193],
-  lightsalmon: [255,160,122], lightseagreen: [32,178,170], lightskyblue: [135,206,250], lightslategray: [119,136,153],
-  lightslategrey: [119,136,153], lightsteelblue: [176,196,222], lightyellow: [255,255,224], lime: [0,255,0],
-  limegreen: [50,205,50], linen: [250,240,230], magenta: [255,0,255], maroon: [128,0,0], mediumaquamarine: [102,205,170],
-  mediumblue: [0,0,205], mediumorchid: [186,85,211], mediumpurple: [147,112,219], mediumseagreen: [60,179,113],
-  mediumslateblue: [123,104,238], mediumspringgreen: [0,250,154], mediumturquoise: [72,209,204], mediumvioletred: [199,21,133],
-  midnightblue: [25,25,112], mintcream: [245,255,250], mistyrose: [255,228,225], moccasin: [255,228,181], navajowhite: [255,222,173],
-  navy: [0,0,128], oldlace: [253,245,230], olive: [128,128,0], olivedrab: [107,142,35], orange: [255,165,0], orangered: [255,69,0],
-  orchid: [218,112,214], palegoldenrod: [238,232,170], palegreen: [152,251,152], paleturquoise: [175,238,238],
-  palevioletred: [219,112,147], papayawhip: [255,239,213], peachpuff: [255,218,185], peru: [205,133,63], pink: [255,192,203],
-  plum: [221,160,221], powderblue: [176,224,230], purple: [128,0,128], red: [255,0,0], rosybrown: [188,143,143],
-  royalblue: [65,105,225], saddlebrown: [139,69,19], salmon: [250,128,114], sandybrown: [244,164,96], seagreen: [46,139,87],
-  seashell: [255,245,238], sienna: [160,82,45], silver: [192,192,192], skyblue: [135,206,235], slateblue: [106,90,205],
-  slategray: [112,128,144], slategrey: [112,128,144], snow: [255,250,250], springgreen: [0,255,127], steelblue: [70,130,180],
-  tan: [210,180,140], teal: [0,128,128], thistle: [216,191,216], tomato: [255,99,71], turquoise: [64,224,208], violet: [238,130,238],
-  wheat: [245,222,179], white: [255,255,255], whitesmoke: [245,245,245], yellow: [255,255,0], yellowgreen: [154,205,50] };
-
-  // X11/W3C Color Name check
-  var predefinedColor = colorKeywords[ color.toLowerCase() ];
-  if( predefinedColor ) {
-    return "#" + DectoHex(predefinedColor[0]) + DectoHex(predefinedColor[1]) + DectoHex(predefinedColor[2]);
-  }
-
-  // Hex color patterns
-  var hexColorTypes = {
-    "hexLong": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
-    "hexShort": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
-  };
-
-  for(var colorType in hexColorTypes) {
-    if(color.match(hexColorTypes[ colorType ]))
-      return color;
-  }
-
-  // Other color patterns
-  var otherColorTypes = [
-    ["rgb", /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/],
-    ["rgb", /^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d+(?:\.\d+)?|\.\d+)\s*\)$/], // rgba
-    ["hsl", /^hsl\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%\)$/],
-    ["hsl", /^hsla\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%,\s*(\d+(?:\.\d+)?|\.\d+)\s*\)$/], // hsla
-    ["hsv", /^hsv\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%\)$/]
-  ];
-
-  function hueToRgb( p, q, t ) {
-    if ( t < 0 ) {
-      t += 1;
-    }
-    if ( t > 1 ) {
-      t -= 1;
-    }
-    if ( t < 1 / 6 ) {
-      return p + ( q - p ) * 6 * t;
-    }
-    if ( t < 1 / 2 ) {
-      return q;
-    }
-    if ( t < 2 / 3 ) {
-      return p + ( q - p ) * ( 2 / 3 - t ) * 6;
-    }
-    return p;
-  };
-
-  var toRGB = {
-    rgb: function( bits ) {
-      return [ bits[1], bits[2], bits[3], bits[4] || 1 ];
-    },
-    hsl: function( bits ) {
-      var hsl = {
-        h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
-        s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
-        l : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100,
-        a : bits[4] || 1
-      };
-
-      if ( hsl.s === 0 )
-        return [ hsl.l, hsl.l, hsl.l ];
-
-      var q = hsl.l < 0.5 ? hsl.l * ( 1 + hsl.s ) : hsl.l + hsl.s - hsl.l * hsl.s;
-      var p = 2 * hsl.l - q;
-
-      return [
-        ( hueToRgb( p, q, hsl.h + 1 / 3 ) * 256 ).toFixed( 0 ),
-        ( hueToRgb( p, q, hsl.h ) * 256 ).toFixed( 0 ),
-        ( hueToRgb( p, q, hsl.h - 1 / 3 ) * 256 ).toFixed( 0 ),
-        hsl.a
-      ];
-    },
-    hsv: function( bits ) {
-      var rgb = {},
-          hsv = {
-            h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
-            s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
-            v : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100
-          },
-          i = Math.floor( hsv.h * 6 ),
-          f = hsv.h * 6 - i,
-          p = hsv.v * ( 1 - hsv.s ),
-          q = hsv.v * ( 1 - f * hsv.s ),
-          t = hsv.v * ( 1 - ( 1 - f ) * hsv.s );
-
-      switch( i % 6 ) {
-        case 0:
-          rgb.r = hsv.v; rgb.g = t; rgb.b = p;
-          break;
-        case 1:
-          rgb.r = q; rgb.g = hsv.v; rgb.b = p;
-          break;
-        case 2:
-          rgb.r = p; rgb.g = hsv.v; rgb.b = t;
-          break;
-        case 3:
-          rgb.r = p; rgb.g = q; rgb.b = hsv.v;
-          break;
-        case 4:
-          rgb.r = t; rgb.g = p; rgb.b = hsv.v;
-          break;
-        case 5:
-          rgb.r = hsv.v; rgb.g = p; rgb.b = q;
-          break;
-      }
-
-      return [ rgb.r * 256,  rgb.g * 256, rgb.b * 256 ];
-    }
-  };
-
-  function DectoHex( dec ) {
-    var hex = parseInt( dec, 10 );
-    hex = hex.toString(16);
-    return hex == 0 ? "00" : hex;
-  }
-
-  function applySaturation( rgb ) {
-    var alpha = parseFloat(rgb[3] || 1);
-    if((alpha + "") === "NaN" || alpha < 0 || alpha >= 1) return rgb;
-    if(alpha == 0) {
-      return [ 255, 255, 255 ];
-    }
-    return [
-      alpha * parseInt(rgb[0], 10) + (1 - alpha) * (backgroundColorVal || 255),
-      alpha * parseInt(rgb[1], 10) + (1 - alpha) * (backgroundColorVal || 255),
-      alpha * parseInt(rgb[2], 10) + (1 - alpha) * (backgroundColorVal || 255)
-    ]; // assumes background is white (255)
-  }
-
-  for(var i = 0, l = otherColorTypes.length; i < l; i++) {
-    var bits = otherColorTypes[i][1].exec( color );
-    if(bits) {
-      var rgbVal = applySaturation( toRGB[ otherColorTypes[i][0] ]( bits ) );
-      return "#" + DectoHex(rgbVal[0] || 255) + DectoHex(rgbVal[1] || 255) + DectoHex(rgbVal[2] || 255);
-    }
-  }
-  
-  return "#f00"; // default in case of error
-
-};
-/**
  * rsvp.js
  *
  * Author: Tilde, Inc.
@@ -463,6 +270,200 @@ function complexColorToHex(color, backgroundColorVal) {
 
  EventTarget.mixin(Promise.prototype);
 
+/**
+ * GENERAL OEX SHIM UTILITY FUNCTIONS
+ */
+ 
+/**
+ * Chromium doesn't support complex colors in places so
+ * this function will convert colors from rgb, rgba, hsv,
+ * hsl and hsla in to hex colors.
+ *
+ * 'color' is the color string to convert.
+ * 'backgroundColorVal' is a background color number (0-255)
+ * with which to apply alpha blending (if any).
+ */
+function complexColorToHex(color, backgroundColorVal) {
+  
+  if(color === undefined || color === null) {
+    return color;
+  }
+  
+  // Force covert color to String
+  color = color + "";
+  
+  // X11/W3C Color Names List
+  var colorKeywords = { aliceblue: [240,248,255], antiquewhite: [250,235,215], aqua: [0,255,255], aquamarine: [127,255,212],
+  azure: [240,255,255], beige: [245,245,220], bisque: [255,228,196], black: [0,0,0], blanchedalmond: [255,235,205],
+  blue: [0,0,255], blueviolet: [138,43,226], brown: [165,42,42], burlywood: [222,184,135], cadetblue: [95,158,160],
+  chartreuse: [127,255,0], chocolate: [210,105,30], coral: [255,127,80], cornflowerblue: [100,149,237], cornsilk: [255,248,220],
+  crimson: [220,20,60], cyan: [0,255,255], darkblue: [0,0,139], darkcyan: [0,139,139], darkgoldenrod: [184,134,11],
+  darkgray: [169,169,169], darkgreen: [0,100,0], darkgrey: [169,169,169], darkkhaki: [189,183,107], darkmagenta: [139,0,139],
+  darkolivegreen: [85,107,47], darkorange: [255,140,0], darkorchid: [153,50,204], darkred: [139,0,0], darksalmon: [233,150,122],
+  darkseagreen: [143,188,143], darkslateblue: [72,61,139], darkslategray: [47,79,79], darkslategrey: [47,79,79],
+  darkturquoise: [0,206,209], darkviolet: [148,0,211], deeppink: [255,20,147], deepskyblue: [0,191,255], dimgray: [105,105,105],
+  dimgrey: [105,105,105], dodgerblue: [30,144,255], firebrick: [178,34,34], floralwhite: [255,250,240], forestgreen: [34,139,34],
+  fuchsia: [255,0,255], gainsboro: [220,220,220], ghostwhite: [248,248,255], gold: [255,215,0], goldenrod: [218,165,32],
+  gray: [128,128,128], green: [0,128,0], greenyellow: [173,255,47], grey: [128,128,128], honeydew: [240,255,240],
+  hotpink: [255,105,180], indianred: [205,92,92], indigo: [75,0,130], ivory: [255,255,240], khaki: [240,230,140],
+  lavender: [230,230,250], lavenderblush: [255,240,245], lawngreen: [124,252,0], lemonchiffon: [255,250,205],
+  lightblue: [173,216,230], lightcoral: [240,128,128], lightcyan: [224,255,255], lightgoldenrodyellow: [250,250,210],
+  lightgray: [211,211,211], lightgreen: [144,238,144], lightgrey: [211,211,211], lightpink: [255,182,193],
+  lightsalmon: [255,160,122], lightseagreen: [32,178,170], lightskyblue: [135,206,250], lightslategray: [119,136,153],
+  lightslategrey: [119,136,153], lightsteelblue: [176,196,222], lightyellow: [255,255,224], lime: [0,255,0],
+  limegreen: [50,205,50], linen: [250,240,230], magenta: [255,0,255], maroon: [128,0,0], mediumaquamarine: [102,205,170],
+  mediumblue: [0,0,205], mediumorchid: [186,85,211], mediumpurple: [147,112,219], mediumseagreen: [60,179,113],
+  mediumslateblue: [123,104,238], mediumspringgreen: [0,250,154], mediumturquoise: [72,209,204], mediumvioletred: [199,21,133],
+  midnightblue: [25,25,112], mintcream: [245,255,250], mistyrose: [255,228,225], moccasin: [255,228,181], navajowhite: [255,222,173],
+  navy: [0,0,128], oldlace: [253,245,230], olive: [128,128,0], olivedrab: [107,142,35], orange: [255,165,0], orangered: [255,69,0],
+  orchid: [218,112,214], palegoldenrod: [238,232,170], palegreen: [152,251,152], paleturquoise: [175,238,238],
+  palevioletred: [219,112,147], papayawhip: [255,239,213], peachpuff: [255,218,185], peru: [205,133,63], pink: [255,192,203],
+  plum: [221,160,221], powderblue: [176,224,230], purple: [128,0,128], red: [255,0,0], rosybrown: [188,143,143],
+  royalblue: [65,105,225], saddlebrown: [139,69,19], salmon: [250,128,114], sandybrown: [244,164,96], seagreen: [46,139,87],
+  seashell: [255,245,238], sienna: [160,82,45], silver: [192,192,192], skyblue: [135,206,235], slateblue: [106,90,205],
+  slategray: [112,128,144], slategrey: [112,128,144], snow: [255,250,250], springgreen: [0,255,127], steelblue: [70,130,180],
+  tan: [210,180,140], teal: [0,128,128], thistle: [216,191,216], tomato: [255,99,71], turquoise: [64,224,208], violet: [238,130,238],
+  wheat: [245,222,179], white: [255,255,255], whitesmoke: [245,245,245], yellow: [255,255,0], yellowgreen: [154,205,50] };
+
+  // X11/W3C Color Name check
+  var predefinedColor = colorKeywords[ color.toLowerCase() ];
+  if( predefinedColor ) {
+    return "#" + DectoHex(predefinedColor[0]) + DectoHex(predefinedColor[1]) + DectoHex(predefinedColor[2]);
+  }
+
+  // Hex color patterns
+  var hexColorTypes = {
+    "hexLong": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+    "hexShort": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
+  };
+
+  for(var colorType in hexColorTypes) {
+    if(color.match(hexColorTypes[ colorType ]))
+      return color;
+  }
+
+  // Other color patterns
+  var otherColorTypes = [
+    ["rgb", /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/],
+    ["rgb", /^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d+(?:\.\d+)?|\.\d+)\s*\)$/], // rgba
+    ["hsl", /^hsl\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%\)$/],
+    ["hsl", /^hsla\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%,\s*(\d+(?:\.\d+)?|\.\d+)\s*\)$/], // hsla
+    ["hsv", /^hsv\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%\)$/]
+  ];
+
+  function hueToRgb( p, q, t ) {
+    if ( t < 0 ) {
+      t += 1;
+    }
+    if ( t > 1 ) {
+      t -= 1;
+    }
+    if ( t < 1 / 6 ) {
+      return p + ( q - p ) * 6 * t;
+    }
+    if ( t < 1 / 2 ) {
+      return q;
+    }
+    if ( t < 2 / 3 ) {
+      return p + ( q - p ) * ( 2 / 3 - t ) * 6;
+    }
+    return p;
+  };
+
+  var toRGB = {
+    rgb: function( bits ) {
+      return [ bits[1], bits[2], bits[3], bits[4] || 1 ];
+    },
+    hsl: function( bits ) {
+      var hsl = {
+        h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
+        s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
+        l : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100,
+        a : bits[4] || 1
+      };
+
+      if ( hsl.s === 0 )
+        return [ hsl.l, hsl.l, hsl.l ];
+
+      var q = hsl.l < 0.5 ? hsl.l * ( 1 + hsl.s ) : hsl.l + hsl.s - hsl.l * hsl.s;
+      var p = 2 * hsl.l - q;
+
+      return [
+        ( hueToRgb( p, q, hsl.h + 1 / 3 ) * 256 ).toFixed( 0 ),
+        ( hueToRgb( p, q, hsl.h ) * 256 ).toFixed( 0 ),
+        ( hueToRgb( p, q, hsl.h - 1 / 3 ) * 256 ).toFixed( 0 ),
+        hsl.a
+      ];
+    },
+    hsv: function( bits ) {
+      var rgb = {},
+          hsv = {
+            h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
+            s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
+            v : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100
+          },
+          i = Math.floor( hsv.h * 6 ),
+          f = hsv.h * 6 - i,
+          p = hsv.v * ( 1 - hsv.s ),
+          q = hsv.v * ( 1 - f * hsv.s ),
+          t = hsv.v * ( 1 - ( 1 - f ) * hsv.s );
+
+      switch( i % 6 ) {
+        case 0:
+          rgb.r = hsv.v; rgb.g = t; rgb.b = p;
+          break;
+        case 1:
+          rgb.r = q; rgb.g = hsv.v; rgb.b = p;
+          break;
+        case 2:
+          rgb.r = p; rgb.g = hsv.v; rgb.b = t;
+          break;
+        case 3:
+          rgb.r = p; rgb.g = q; rgb.b = hsv.v;
+          break;
+        case 4:
+          rgb.r = t; rgb.g = p; rgb.b = hsv.v;
+          break;
+        case 5:
+          rgb.r = hsv.v; rgb.g = p; rgb.b = q;
+          break;
+      }
+
+      return [ rgb.r * 256,  rgb.g * 256, rgb.b * 256 ];
+    }
+  };
+
+  function DectoHex( dec ) {
+    var hex = parseInt( dec, 10 );
+    hex = hex.toString(16);
+    return hex == 0 ? "00" : hex;
+  }
+
+  function applySaturation( rgb ) {
+    var alpha = parseFloat(rgb[3] || 1);
+    if((alpha + "") === "NaN" || alpha < 0 || alpha >= 1) return rgb;
+    if(alpha == 0) {
+      return [ 255, 255, 255 ];
+    }
+    return [
+      alpha * parseInt(rgb[0], 10) + (1 - alpha) * (backgroundColorVal || 255),
+      alpha * parseInt(rgb[1], 10) + (1 - alpha) * (backgroundColorVal || 255),
+      alpha * parseInt(rgb[2], 10) + (1 - alpha) * (backgroundColorVal || 255)
+    ]; // assumes background is white (255)
+  }
+
+  for(var i = 0, l = otherColorTypes.length; i < l; i++) {
+    var bits = otherColorTypes[i][1].exec( color );
+    if(bits) {
+      var rgbVal = applySaturation( toRGB[ otherColorTypes[i][0] ]( bits ) );
+      return "#" + DectoHex(rgbVal[0] || 255) + DectoHex(rgbVal[1] || 255) + DectoHex(rgbVal[2] || 255);
+    }
+  }
+  
+  return "#f00"; // default in case of error
+
+};
+
 var OEvent = function(eventType, eventProperties) {
 
   var evt = document.createEvent("Event");
@@ -494,16 +495,16 @@ OEventTarget.prototype.removeEventListener = function(eventName, callback, useCa
   this.off(eventName, callback); // no useCapture
 }
 
-OEventTarget.prototype.fireEvent = function( oexEventObj ) {
+OEventTarget.prototype.dispatchEvent = function( eventObj ) {
 
-  var eventName = oexEventObj.type;
+  var eventName = eventObj.type;
 
   // Register an onX functions registered for this event, if any
   if(typeof this[ 'on' + eventName.toLowerCase() ] === 'function') {
     this.on( eventName, this[ 'on' + eventName.toLowerCase() ] );
   }
 
-  this.trigger( eventName, oexEventObj );
+  this.trigger( eventName, eventObj );
 
 };
 
@@ -533,24 +534,6 @@ OPromise.prototype = Object.create( Promise.prototype );
 for(var i in OEventTarget.prototype) {
   OPromise.prototype[i] = OEventTarget.prototype[i];
 }
-
-/*
-OPromise.prototype.addEventListener = OPromise.prototype.on;
-
-OPromise.prototype.removeEventListener = OPromise.prototype.off;
-
-OPromise.prototype.fireEvent = function( oexEventObj ) {
-
-  var eventName = oexEventObj.type;
-
-  // Register an onX functions registered for this event
-  if(typeof this[ 'on' + eventName.toLowerCase() ] === 'function') {
-    this.on( eventName, this[ 'on' + eventName.toLowerCase() ] );
-  }
-
-  this.trigger( eventName, oexEventObj );
-
-}*/
 
 OPromise.prototype.enqueue = function() {
 
@@ -608,7 +591,7 @@ var OMessagePort = function( isBackground ) {
     
     this._localPort.onDisconnect.addListener(function() {
     
-      this.fireEvent( new OEvent( 'disconnect', { "source": this._localPort } ) );
+      this.dispatchEvent( new OEvent( 'disconnect', { "source": this._localPort } ) );
       
       this._localPort = null;
       
@@ -621,7 +604,7 @@ var OMessagePort = function( isBackground ) {
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
 
         // Fire controlmessage events *immediately*
-        this.fireEvent( new OEvent(
+        this.dispatchEvent( new OEvent(
           'controlmessage', 
           { 
             "data": _message,
@@ -639,7 +622,7 @@ var OMessagePort = function( isBackground ) {
         // Fire 'message' event once we have all the initial listeners setup on the page
         // so we don't miss any .onconnect call from the extension page.
         // Or immediately if the shim isReady
-        addDelayedEvent(this, 'fireEvent', [ new OEvent(
+        addDelayedEvent(this, 'dispatchEvent', [ new OEvent(
           'message', 
           { 
             "data": _message,
@@ -658,7 +641,7 @@ var OMessagePort = function( isBackground ) {
 
     // Fire 'connect' event once we have all the initial listeners setup on the page
     // so we don't miss any .onconnect call from the extension page
-    addDelayedEvent(this, 'fireEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
+    addDelayedEvent(this, 'dispatchEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
     
   }
   
@@ -697,7 +680,7 @@ var OBackgroundMessagePort = function() {
       
       this._allPorts.splice( portIndex - 1, 1 );
       
-      this.fireEvent( new OEvent('disconnect', { "source": _remotePort }) );
+      this.dispatchEvent( new OEvent('disconnect', { "source": _remotePort }) );
       
     }.bind(this));
     
@@ -708,7 +691,7 @@ var OBackgroundMessagePort = function() {
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
 
         // Fire controlmessage events *immediately*
-        this.fireEvent( new OEvent(
+        this.dispatchEvent( new OEvent(
           'controlmessage', 
           { 
             "data": _message,
@@ -726,7 +709,7 @@ var OBackgroundMessagePort = function() {
         // Fire 'message' event once we have all the initial listeners setup on the page
         // so we don't miss any .onconnect call from the extension page.
         // Or immediately if the shim isReady
-        addDelayedEvent(this, 'fireEvent', [ new OEvent(
+        addDelayedEvent(this, 'dispatchEvent', [ new OEvent(
           'message', 
           { 
             "data": _message,
@@ -743,7 +726,7 @@ var OBackgroundMessagePort = function() {
 
     }.bind(this) );
   
-    this.fireEvent( new OEvent('connect', { "source": _remotePort }) );
+    this.dispatchEvent( new OEvent('connect', { "source": _remotePort }) );
   
   }.bind(this));
   
@@ -773,7 +756,7 @@ var OEX = opera.extension = opera.extension || new OperaExtension();
 
 var OEC = opera.contexts = opera.contexts || {};
 
-OperaExtension.prototype.getFile = opera.extension.getFile || function(path) {
+OperaExtension.prototype.getFile = function(path) {
   var response = null;
 
   if(typeof path != "string")return response;
@@ -1037,10 +1020,9 @@ OWidgetObj.prototype.__defineGetter__('preferences', function() {
 });
 
 // Add Widget API directly to global window
-global.widget = global.widget || (function() {
-  return new OWidgetObj();
-})();
-BrowserWindowsManager = function() {
+global.widget = global.widget || new OWidgetObj();
+
+var BrowserWindowsManager = function() {
 
   OPromise.call(this);
 
@@ -1190,7 +1172,7 @@ BrowserWindowsManager = function() {
         }
 
         // Fire a new 'create' event on this manager object
-        this.fireEvent(new OEvent('create', {
+        this.dispatchEvent(new OEvent('create', {
           browserWindow: newBrowserWindow
         }));
 
@@ -1214,12 +1196,12 @@ BrowserWindowsManager = function() {
     if (deleteIndex > -1) {
 
       // Fire a new 'close' event on the closed BrowserWindow object
-      this[deleteIndex].fireEvent(new OEvent('close', {
+      this[deleteIndex].dispatchEvent(new OEvent('close', {
         'browserWindow': this[deleteIndex]
       }));
 
       // Fire a new 'close' event on this manager object
-      this.fireEvent(new OEvent('close', {
+      this.dispatchEvent(new OEvent('close', {
         'browserWindow': this[deleteIndex]
       }));
 
@@ -1364,7 +1346,7 @@ BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowPro
       }
 
       // Fire a new 'create' event on this manager object
-      this.fireEvent(new OEvent('create', {
+      this.dispatchEvent(new OEvent('create', {
         browserWindow: shadowBrowserWindow
       }));
 
@@ -1405,7 +1387,7 @@ BrowserWindowsManager.prototype.close = function(browserWindow) {
 
 };
 
-BrowserWindow = function(browserWindowProperties) {
+var BrowserWindow = function(browserWindowProperties) {
 
   OPromise.call(this);
 
@@ -1570,7 +1552,7 @@ BrowserWindow.prototype.close = function() {
 
 };
 
-BrowserTabsManager = function( parentObj ) {
+var BrowserTabsManager = function( parentObj ) {
 
   OPromise.call( this );
 
@@ -1769,7 +1751,7 @@ BrowserTabsManager.prototype.create = function( browserTabProperties, before, ob
       shadowBrowserTab.resolve( _tab );
 
       // Dispatch oncreate event to all attached event listeners
-      this.fireEvent( new OEvent('create', {
+      this.dispatchEvent( new OEvent('create', {
           "tab": shadowBrowserTab,
           "prevWindow": shadowBrowserTab._windowParent,
           "prevTabGroup": null,
@@ -1824,14 +1806,14 @@ BrowserTabsManager.prototype.close = function( browserTab ) {
 
 };
 
-RootBrowserTabsManager = function() {
+var RootBrowserTabsManager = function() {
 
   BrowserTabsManager.call(this);
 
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
 
-    window.setTimeout(function() {
+    global.setTimeout(function() {
 
       // If this tab is already registered in the root tab collection then ignore
       var tabFound = false;
@@ -1867,7 +1849,7 @@ RootBrowserTabsManager = function() {
 
         newTab._windowParent.tabs.addTabs([newTab], newTab.properties.index);
 
-        newTab._windowParent.tabs.fireEvent(new OEvent('create', {
+        newTab._windowParent.tabs.dispatchEvent(new OEvent('create', {
           "tab": newTab,
           "prevWindow": newTab._windowParent,
           "prevTabGroup": null,
@@ -1881,7 +1863,7 @@ RootBrowserTabsManager = function() {
         newTab.resolve();
 
         // Fire a create event at RootTabsManager
-        this.fireEvent(new OEvent('create', {
+        this.dispatchEvent(new OEvent('create', {
           "tab": newTab,
           "prevWindow": newTab._windowParent,
           "prevTabGroup": null,
@@ -1923,7 +1905,7 @@ RootBrowserTabsManager = function() {
       this.removeTab( oldTab );
 
       // Fire a new 'close' event on the closed BrowserTab object
-      oldTab.fireEvent(new OEvent('close', {
+      oldTab.dispatchEvent(new OEvent('close', {
         "tab": oldTab,
         "prevWindow": oldTabWindowParent,
         "prevTabGroup": null,
@@ -1933,7 +1915,7 @@ RootBrowserTabsManager = function() {
       // Fire a new 'close' event on the closed BrowserTab's previous 
       // BrowserWindow parent object
       if(oldTabWindowParent) {
-        oldTabWindowParent.tabs.fireEvent(new OEvent('close', {
+        oldTabWindowParent.tabs.dispatchEvent(new OEvent('close', {
           "tab": oldTab,
           "prevWindow": oldTabWindowParent,
           "prevTabGroup": null,
@@ -1942,7 +1924,7 @@ RootBrowserTabsManager = function() {
       }
 
       // Fire a new 'close' event on this root tab manager object
-      this.fireEvent(new OEvent('close', {
+      this.dispatchEvent(new OEvent('close', {
         "tab": oldTab,
         "prevWindow": oldTabWindowParent,
         "prevTabGroup": null,
@@ -2055,14 +2037,14 @@ RootBrowserTabsManager = function() {
         }
       }
 
-      moveTab.fireEvent(new OEvent('move', {
+      moveTab.dispatchEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
         "prevPosition": moveInfo.fromIndex
       }));
 
-      this.fireEvent(new OEvent('move', {
+      this.dispatchEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
@@ -2159,7 +2141,7 @@ RootBrowserTabsManager = function() {
 
 RootBrowserTabsManager.prototype = Object.create( BrowserTabsManager.prototype );
 
-BrowserTab = function(browserTabProperties, windowParent) {
+var BrowserTab = function(browserTabProperties, windowParent) {
 
   OPromise.call(this);
 
@@ -2371,22 +2353,13 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
   
 };
 
-OEX.windows = OEX.windows || (function() {
-  return new BrowserWindowsManager();
-})();
+OEX.windows = OEX.windows || new BrowserWindowsManager();
 
-OEX.tabs = OEX.tabs || (function() {
-  return new RootBrowserTabsManager();
-})();
+OEX.tabs = OEX.tabs || new RootBrowserTabsManager();
 
-OEC.ToolbarContext = function() {
+var ToolbarContext = function() {
   
-  OPromise.call( this );
-  
-  // we shouldn't need this on this object since it is never checked 
-  // and nothing is enqueued
-  // (we need OPromise for its event handling capabilities only)
-  this.resolve();
+  OEventTarget.call( this );
   
   // Unfortunately, click events only fire if a popup is not supplied 
   // to a registered browser action in Chromium :(
@@ -2396,11 +2369,11 @@ OEC.ToolbarContext = function() {
   function clickEventHandler(_tab) {
     
     if( this[ 0 ] ) {
-      this[ 0 ].fireEvent( new OEvent('click', {}) );
+      this[ 0 ].dispatchEvent( new OEvent('click', {}) );
     }
     
     // Fire event also on ToolbarContext API stub
-    this.fireEvent( new OEvent('click', {}) );
+    this.dispatchEvent( new OEvent('click', {}) );
     
   }
   
@@ -2408,13 +2381,13 @@ OEC.ToolbarContext = function() {
   
 };
 
-OEC.ToolbarContext.prototype = Object.create( OPromise.prototype );
+ToolbarContext.prototype = Object.create( OEventTarget.prototype );
 
-OEC.ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
+ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
   return new ToolbarUIItem( toolbarUIItemProperties );
 };
 
-OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
+ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
   
   if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
     return;
@@ -2437,7 +2410,7 @@ OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
 
 };
 
-OEC.ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
+ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
 
   if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
     return;
@@ -2451,10 +2424,10 @@ OEC.ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
     // Disable the toolbar button
     chrome.browserAction.disable();
   
-    toolbarUIItem.fireEvent( new OEvent('remove', {}) );
+    toolbarUIItem.dispatchEvent( new OEvent('remove', {}) );
   
     // Fire event on self
-    this.fireEvent( new OEvent('remove', {}) );
+    this.dispatchEvent( new OEvent('remove', {}) );
   
   }
 
@@ -2691,11 +2664,9 @@ ToolbarUIItem.prototype.__defineGetter__("badge", function() {
   return this.properties.badge;
 });
 
-OEC.toolbar = OEC.toolbar || (function() {
-  return new OEC.ToolbarContext();
-})();
+OEC.toolbar = OEC.toolbar || new ToolbarContext();
 
-  if (window.opera) {
+  if (global.opera) {
     isReady = true;
 
     // Make scripts also work in Opera <= version 12
@@ -2723,14 +2694,14 @@ OEC.toolbar = OEC.toolbar || (function() {
       var hasFired_DOMContentLoaded = false,
           hasFired_Load = false;
 
-      document.addEventListener("DOMContentLoaded", function handle_DomContentLoaded() {
+      global.document.addEventListener("DOMContentLoaded", function handle_DomContentLoaded() {
         hasFired_DOMContentLoaded = true;
-        document.removeEventListener("DOMContentLoaded", handle_DomContentLoaded, true);
+        global.document.removeEventListener("DOMContentLoaded", handle_DomContentLoaded, true);
       }, true);
     
-      window.addEventListener("load", function handle_Load() {
+      global.addEventListener("load", function handle_Load() {
         hasFired_Load = true;
-        window.removeEventListener("load", handle_Load, true);
+        global.removeEventListener("load", handle_Load, true);
       }, true);
 
       function interceptAddEventListener(target, _name) {
@@ -2746,7 +2717,7 @@ OEC.toolbar = OEC.toolbar || (function() {
             }
           
             if (isReady) {
-              fn.call(window);
+              fn.call(global);
             } else {
               fns[_name.toLowerCase()].push(fn);
             }
@@ -2764,9 +2735,9 @@ OEC.toolbar = OEC.toolbar || (function() {
 
       }
 
-      interceptAddEventListener(window, 'load');
-      interceptAddEventListener(document, 'domcontentloaded');
-      interceptAddEventListener(window, 'domcontentloaded'); // handled bubbled DOMContentLoaded
+      interceptAddEventListener(global, 'load');
+      interceptAddEventListener(global.document, 'domcontentloaded');
+      interceptAddEventListener(global, 'domcontentloaded'); // handled bubbled DOMContentLoaded
 
       function fireEvent(name, target) {
         var evtName = name.toLowerCase();
@@ -2780,7 +2751,7 @@ OEC.toolbar = OEC.toolbar || (function() {
       }
 
       function ready() {
-        window.setTimeout(function() {
+        global.setTimeout(function() {
 
           if (isReady) {
             return;
@@ -2788,7 +2759,7 @@ OEC.toolbar = OEC.toolbar || (function() {
 
           // Handle queued opera 'isReady' event functions
           for (var i = 0, len = fns['isready'].length; i < len; i++) {
-            fns['isready'][i].call(window);
+            fns['isready'][i].call(global);
           }
           fns['isready'] = []; // clear
           
@@ -2804,7 +2775,7 @@ OEC.toolbar = OEC.toolbar || (function() {
             // (always synthesized in Chromium Content Scripts)
             if (hasFired_DOMContentLoaded || hasFired_Load || currentTime >= domContentLoadedTimeoutOverride) {
               
-              fireEvent('domcontentloaded', document);
+              fireEvent('domcontentloaded', global.document);
               
               if(currentTime >= domContentLoadedTimeoutOverride) {
                 console.warn('document.domcontentloaded event fired on check timeout');
@@ -2835,7 +2806,7 @@ OEC.toolbar = OEC.toolbar || (function() {
                   _delayedExecuteEvents = [];
 
                 } else {
-                  window.setTimeout(function() {
+                  global.setTimeout(function() {
                     fireLoad();
                   }, 50);
                 }
@@ -2843,7 +2814,7 @@ OEC.toolbar = OEC.toolbar || (function() {
               })();
               
             } else {
-              window.setTimeout(function() {
+              global.setTimeout(function() {
                 fireDOMContentLoaded();
               }, 50);
             }
@@ -2874,7 +2845,7 @@ OEC.toolbar = OEC.toolbar || (function() {
             // spin the loop until everything is working
             // or we receive a timeout override (handled
             // in next loop, above)
-            window.setTimeout(function() {
+            global.setTimeout(function() {
               holdReady();
             }, 20);
             return;
@@ -2891,7 +2862,7 @@ OEC.toolbar = OEC.toolbar || (function() {
         // execute the function immediately.
         // otherwise, queue it up until isReady
         if (isReady) {
-          fn.call(window);
+          fn.call(global);
         } else {
           fns['isready'].push(fn);
         }

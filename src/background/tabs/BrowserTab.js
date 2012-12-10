@@ -1,5 +1,5 @@
 
-BrowserTab = function(browserTabProperties, windowParent) {
+var BrowserTab = function(browserTabProperties, windowParent) {
 
   OPromise.call(this);
 
