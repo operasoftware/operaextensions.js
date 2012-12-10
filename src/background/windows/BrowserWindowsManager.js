@@ -311,10 +311,6 @@ BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowPro
               );
             })(tabsToInject[i]);
 
-          } else if (tabsToInject[i] instanceof BrowserTabGroup) {
-
-            // TODO Implement BrowserTabGroup object handling here
-            
           } else { // Treat as a BrowserTabProperties object by default
             (function(browserTabProperties) {
               

@@ -1334,10 +1334,6 @@ BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowPro
               );
             })(tabsToInject[i]);
 
-          } else if (tabsToInject[i] instanceof BrowserTabGroup) {
-
-            // TODO Implement BrowserTabGroup object handling here
-            
           } else { // Treat as a BrowserTabProperties object by default
             (function(browserTabProperties) {
               
@@ -1422,14 +1418,12 @@ var BrowserWindow = function(browserWindowProperties) {
 
   this._parent = null;
 
-  this._tabGroups = [];
-
   // Create a unique browserWindow id
   this._operaId = Math.floor(Math.random() * 1e16);
 
   this.tabs = new BrowserTabsManager(this);
-  // TODO Implement BrowserTabGroupsManager interface
-  //this.tabGroups = new BrowserTabGroupsManager( this );
+
+  this.tabGroups = new BrowserTabGroupManager(this);
 };
 
 BrowserWindow.prototype = Object.create(OPromise.prototype);
@@ -1514,11 +1508,6 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
     );
 
   }
-/* else if( browserTab instanceof BrowserTabGroup ) {
-
-    // TODO implement BrowserTabGroup interface
-
-  }*/
 
 };
 
@@ -2387,10 +2376,38 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
   
 };
 
-var BrowserTabGroup = function(browserTabGroupProperties, windowParent) {};
+var BrowserTabGroupManager = function( parentObj ) {
+  
+  OEventTarget.call(this);
+  
+  this._parent = parentObj;
+  
+  // Set up 0 mock BrowserTabGroup objects at startup
+  this.length = 0;
+  
+};
+
+BrowserTabGroupManager.prototype = Object.create( OEventTarget.prototype );
+
+BrowserTabGroupManager.prototype.create = function() {
+  
+  // When this feature is not supported in the current user agent then we must
+  // throw a NOT_SUPPORTED_ERR as per the full Opera WinTabs API specification.
+  throw {
+      name:        "Not Supported Error",
+      message:     "The current user agent does not support Tab Groups"
+  };
+  
+};
+
+BrowserTabGroupManager.prototype.getAll = function() {
+  return []; // always empty
+};
 OEX.windows = OEX.windows || new BrowserWindowsManager();
 
 OEX.tabs = OEX.tabs || new RootBrowserTabsManager();
+
+OEX.tabGroups = OEX.tabGroups || new BrowserTabGroupManager();
 
 var ToolbarContext = function() {
   
