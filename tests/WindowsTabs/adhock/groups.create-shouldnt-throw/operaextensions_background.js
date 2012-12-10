@@ -806,6 +806,12 @@ var OStorage = function () {
   
   Object.defineProperty(this, "length", { value : 0, writable:true });
   
+  // Copy all key/value pairs from localStorage on startup
+  for(var i in localStorage) {
+    this[i] = localStorage[i];
+    this.length++;
+  }
+  
   Object.defineProperty(OStorage.prototype, "getItem", { 
     value: function( key ) {
       return this._storage.getItem(key);
