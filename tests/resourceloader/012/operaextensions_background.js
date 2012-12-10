@@ -1022,7 +1022,7 @@ OWidgetObj.prototype.__defineGetter__('preferences', function() {
 // Add Widget API directly to global window
 global.widget = global.widget || new OWidgetObj();
 
-var BrowserWindowsManager = function() {
+var BrowserWindowManager = function() {
 
   OPromise.call(this);
 
@@ -1261,9 +1261,9 @@ var BrowserWindowsManager = function() {
 
 };
 
-BrowserWindowsManager.prototype = Object.create(OPromise.prototype);
+BrowserWindowManager.prototype = Object.create(OPromise.prototype);
 
-BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowProperties, obj) {
+BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProperties, obj) {
 
   browserWindowProperties = browserWindowProperties || {};
 
@@ -1381,7 +1381,7 @@ BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowPro
   return shadowBrowserWindow;
 };
 
-BrowserWindowsManager.prototype.getAll = function() {
+BrowserWindowManager.prototype.getAll = function() {
 
   var allWindows = [];
 
@@ -1393,13 +1393,13 @@ BrowserWindowsManager.prototype.getAll = function() {
 
 };
 
-BrowserWindowsManager.prototype.getLastFocused = function() {
+BrowserWindowManager.prototype.getLastFocused = function() {
 
   return this._lastFocusedWindow;
 
 };
 
-BrowserWindowsManager.prototype.close = function(browserWindow) {
+BrowserWindowManager.prototype.close = function(browserWindow) {
 
   chrome.windows.remove(browserWindow.properties.id, function() {
 
@@ -1421,7 +1421,7 @@ var BrowserWindow = function(browserWindowProperties) {
   // Create a unique browserWindow id
   this._operaId = Math.floor(Math.random() * 1e16);
 
-  this.tabs = new BrowserTabsManager(this);
+  this.tabs = new BrowserTabManager(this);
 
   this.tabGroups = new BrowserTabGroupManager(this);
 };
@@ -1568,7 +1568,7 @@ BrowserWindow.prototype.close = function() {
 
 };
 
-var BrowserTabsManager = function( parentObj ) {
+var BrowserTabManager = function( parentObj ) {
 
   OPromise.call( this );
 
@@ -1667,9 +1667,9 @@ var BrowserTabsManager = function( parentObj ) {
 
 };
 
-BrowserTabsManager.prototype = Object.create( OPromise.prototype );
+BrowserTabManager.prototype = Object.create( OPromise.prototype );
 
-BrowserTabsManager.prototype.create = function( browserTabProperties, before, obj ) {
+BrowserTabManager.prototype.create = function( browserTabProperties, before, obj ) {
 
   browserTabProperties = browserTabProperties || {};
 
@@ -1789,7 +1789,7 @@ BrowserTabsManager.prototype.create = function( browserTabProperties, before, ob
 
 };
 
-BrowserTabsManager.prototype.getAll = function() {
+BrowserTabManager.prototype.getAll = function() {
 
   var allTabs = [];
 
@@ -1801,15 +1801,15 @@ BrowserTabsManager.prototype.getAll = function() {
 
 };
 
-BrowserTabsManager.prototype.getSelected = function() {
+BrowserTabManager.prototype.getSelected = function() {
 
   return this._lastFocusedTab || this[ 0 ];
 
 };
 // Alias of .getSelected()
-BrowserTabsManager.prototype.getFocused = BrowserTabsManager.prototype.getSelected;
+BrowserTabManager.prototype.getFocused = BrowserTabManager.prototype.getSelected;
 
-BrowserTabsManager.prototype.close = function( browserTab ) {
+BrowserTabManager.prototype.close = function( browserTab ) {
 
   if( !browserTab ) {
     return;
@@ -1829,9 +1829,9 @@ BrowserTabsManager.prototype.close = function( browserTab ) {
 
 };
 
-var RootBrowserTabsManager = function() {
+var RootBrowserTabManager = function() {
 
-  BrowserTabsManager.call(this);
+  BrowserTabManager.call(this);
 
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
@@ -2162,7 +2162,7 @@ var RootBrowserTabsManager = function() {
 
 };
 
-RootBrowserTabsManager.prototype = Object.create( BrowserTabsManager.prototype );
+RootBrowserTabManager.prototype = Object.create( BrowserTabManager.prototype );
 
 var BrowserTab = function(browserTabProperties, windowParent) {
 
@@ -2403,9 +2403,9 @@ BrowserTabGroupManager.prototype.create = function() {
 BrowserTabGroupManager.prototype.getAll = function() {
   return []; // always empty
 };
-OEX.windows = OEX.windows || new BrowserWindowsManager();
+OEX.windows = OEX.windows || new BrowserWindowManager();
 
-OEX.tabs = OEX.tabs || new RootBrowserTabsManager();
+OEX.tabs = OEX.tabs || new RootBrowserTabManager();
 
 OEX.tabGroups = OEX.tabGroups || new BrowserTabGroupManager();
 

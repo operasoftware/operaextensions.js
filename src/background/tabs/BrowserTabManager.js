@@ -1,5 +1,5 @@
 
-var BrowserTabsManager = function( parentObj ) {
+var BrowserTabManager = function( parentObj ) {
 
   OPromise.call( this );
 
@@ -98,9 +98,9 @@ var BrowserTabsManager = function( parentObj ) {
 
 };
 
-BrowserTabsManager.prototype = Object.create( OPromise.prototype );
+BrowserTabManager.prototype = Object.create( OPromise.prototype );
 
-BrowserTabsManager.prototype.create = function( browserTabProperties, before, obj ) {
+BrowserTabManager.prototype.create = function( browserTabProperties, before, obj ) {
 
   browserTabProperties = browserTabProperties || {};
 
@@ -220,7 +220,7 @@ BrowserTabsManager.prototype.create = function( browserTabProperties, before, ob
 
 };
 
-BrowserTabsManager.prototype.getAll = function() {
+BrowserTabManager.prototype.getAll = function() {
 
   var allTabs = [];
 
@@ -232,15 +232,15 @@ BrowserTabsManager.prototype.getAll = function() {
 
 };
 
-BrowserTabsManager.prototype.getSelected = function() {
+BrowserTabManager.prototype.getSelected = function() {
 
   return this._lastFocusedTab || this[ 0 ];
 
 };
 // Alias of .getSelected()
-BrowserTabsManager.prototype.getFocused = BrowserTabsManager.prototype.getSelected;
+BrowserTabManager.prototype.getFocused = BrowserTabManager.prototype.getSelected;
 
-BrowserTabsManager.prototype.close = function( browserTab ) {
+BrowserTabManager.prototype.close = function( browserTab ) {
 
   if( !browserTab ) {
     return;

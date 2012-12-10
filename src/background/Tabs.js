@@ -1,2 +1,2 @@
 
-OEX.tabs = OEX.tabs || new RootBrowserTabsManager();
+OEX.tabs = OEX.tabs || new RootBrowserTabManager();
