@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserTabManager-004",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Events for moving a tab between windows",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
