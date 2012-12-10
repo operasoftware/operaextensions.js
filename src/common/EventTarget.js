@@ -15,15 +15,15 @@ OEventTarget.prototype.removeEventListener = function(eventName, callback, useCa
   this.off(eventName, callback); // no useCapture
 }
 
-OEventTarget.prototype.fireEvent = function( oexEventObj ) {
+OEventTarget.prototype.dispatchEvent = function( eventObj ) {
 
-  var eventName = oexEventObj.type;
+  var eventName = eventObj.type;
 
   // Register an onX functions registered for this event, if any
   if(typeof this[ 'on' + eventName.toLowerCase() ] === 'function') {
     this.on( eventName, this[ 'on' + eventName.toLowerCase() ] );
   }
 
-  this.trigger( eventName, oexEventObj );
+  this.trigger( eventName, eventObj );
 
 };

@@ -1,5 +1,5 @@
 
-  if (window.opera) {
+  if (global.opera) {
     isReady = true;
 
     // Make scripts also work in Opera <= version 12
@@ -27,14 +27,14 @@
       var hasFired_DOMContentLoaded = false,
           hasFired_Load = false;
 
-      document.addEventListener("DOMContentLoaded", function handle_DomContentLoaded() {
+      global.document.addEventListener("DOMContentLoaded", function handle_DomContentLoaded() {
         hasFired_DOMContentLoaded = true;
-        document.removeEventListener("DOMContentLoaded", handle_DomContentLoaded, true);
+        global.document.removeEventListener("DOMContentLoaded", handle_DomContentLoaded, true);
       }, true);
     
-      window.addEventListener("load", function handle_Load() {
+      global.addEventListener("load", function handle_Load() {
         hasFired_Load = true;
-        window.removeEventListener("load", handle_Load, true);
+        global.removeEventListener("load", handle_Load, true);
       }, true);
 
       function interceptAddEventListener(target, _name) {
@@ -50,7 +50,7 @@
             }
           
             if (isReady) {
-              fn.call(window);
+              fn.call(global);
             } else {
               fns[_name.toLowerCase()].push(fn);
             }
@@ -68,9 +68,9 @@
 
       }
 
-      interceptAddEventListener(window, 'load');
-      interceptAddEventListener(document, 'domcontentloaded');
-      interceptAddEventListener(window, 'domcontentloaded'); // handled bubbled DOMContentLoaded
+      interceptAddEventListener(global, 'load');
+      interceptAddEventListener(global.document, 'domcontentloaded');
+      interceptAddEventListener(global, 'domcontentloaded'); // handled bubbled DOMContentLoaded
 
       function fireEvent(name, target) {
         var evtName = name.toLowerCase();
@@ -84,7 +84,7 @@
       }
 
       function ready() {
-        window.setTimeout(function() {
+        global.setTimeout(function() {
 
           if (isReady) {
             return;
@@ -92,7 +92,7 @@
 
           // Handle queued opera 'isReady' event functions
           for (var i = 0, len = fns['isready'].length; i < len; i++) {
-            fns['isready'][i].call(window);
+            fns['isready'][i].call(global);
           }
           fns['isready'] = []; // clear
           
@@ -108,7 +108,7 @@
             // (always synthesized in Chromium Content Scripts)
             if (hasFired_DOMContentLoaded || hasFired_Load || currentTime >= domContentLoadedTimeoutOverride) {
               
-              fireEvent('domcontentloaded', document);
+              fireEvent('domcontentloaded', global.document);
               
               if(currentTime >= domContentLoadedTimeoutOverride) {
                 console.warn('document.domcontentloaded event fired on check timeout');
@@ -139,7 +139,7 @@
                   _delayedExecuteEvents = [];
 
                 } else {
-                  window.setTimeout(function() {
+                  global.setTimeout(function() {
                     fireLoad();
                   }, 50);
                 }
@@ -147,7 +147,7 @@
               })();
               
             } else {
-              window.setTimeout(function() {
+              global.setTimeout(function() {
                 fireDOMContentLoaded();
               }, 50);
             }
@@ -178,7 +178,7 @@
             // spin the loop until everything is working
             // or we receive a timeout override (handled
             // in next loop, above)
-            window.setTimeout(function() {
+            global.setTimeout(function() {
               holdReady();
             }, 20);
             return;
@@ -195,7 +195,7 @@
         // execute the function immediately.
         // otherwise, queue it up until isReady
         if (isReady) {
-          fn.call(window);
+          fn.call(global);
         } else {
           fns['isready'].push(fn);
         }

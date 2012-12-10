@@ -14,7 +14,7 @@ var OBackgroundMessagePort = function() {
       
       this._allPorts.splice( portIndex - 1, 1 );
       
-      this.fireEvent( new OEvent('disconnect', { "source": _remotePort }) );
+      this.dispatchEvent( new OEvent('disconnect', { "source": _remotePort }) );
       
     }.bind(this));
     
@@ -25,7 +25,7 @@ var OBackgroundMessagePort = function() {
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
 
         // Fire controlmessage events *immediately*
-        this.fireEvent( new OEvent(
+        this.dispatchEvent( new OEvent(
           'controlmessage', 
           { 
             "data": _message,
@@ -43,7 +43,7 @@ var OBackgroundMessagePort = function() {
         // Fire 'message' event once we have all the initial listeners setup on the page
         // so we don't miss any .onconnect call from the extension page.
         // Or immediately if the shim isReady
-        addDelayedEvent(this, 'fireEvent', [ new OEvent(
+        addDelayedEvent(this, 'dispatchEvent', [ new OEvent(
           'message', 
           { 
             "data": _message,
@@ -60,7 +60,7 @@ var OBackgroundMessagePort = function() {
 
     }.bind(this) );
   
-    this.fireEvent( new OEvent('connect', { "source": _remotePort }) );
+    this.dispatchEvent( new OEvent('connect', { "source": _remotePort }) );
   
   }.bind(this));
   

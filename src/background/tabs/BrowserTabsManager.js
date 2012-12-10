@@ -1,5 +1,5 @@
 
-BrowserTabsManager = function( parentObj ) {
+var BrowserTabsManager = function( parentObj ) {
 
   OPromise.call( this );
 
@@ -198,7 +198,7 @@ BrowserTabsManager.prototype.create = function( browserTabProperties, before, ob
       shadowBrowserTab.resolve( _tab );
 
       // Dispatch oncreate event to all attached event listeners
-      this.fireEvent( new OEvent('create', {
+      this.dispatchEvent( new OEvent('create', {
           "tab": shadowBrowserTab,
           "prevWindow": shadowBrowserTab._windowParent,
           "prevTabGroup": null,
