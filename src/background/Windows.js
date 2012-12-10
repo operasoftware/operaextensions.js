@@ -1,2 +1,2 @@
 
-OEX.windows = OEX.windows || new BrowserWindowsManager();
+OEX.windows = OEX.windows || new BrowserWindowManager();

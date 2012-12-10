@@ -1,7 +1,7 @@
 
-var RootBrowserTabsManager = function() {
+var RootBrowserTabManager = function() {
 
-  BrowserTabsManager.call(this);
+  BrowserTabManager.call(this);
 
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
@@ -332,4 +332,4 @@ var RootBrowserTabsManager = function() {
 
 };
 
-RootBrowserTabsManager.prototype = Object.create( BrowserTabsManager.prototype );
+RootBrowserTabManager.prototype = Object.create( BrowserTabManager.prototype );

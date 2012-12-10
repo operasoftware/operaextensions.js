@@ -1,5 +1,5 @@
 
-var BrowserWindowsManager = function() {
+var BrowserWindowManager = function() {
 
   OPromise.call(this);
 
@@ -238,9 +238,9 @@ var BrowserWindowsManager = function() {
 
 };
 
-BrowserWindowsManager.prototype = Object.create(OPromise.prototype);
+BrowserWindowManager.prototype = Object.create(OPromise.prototype);
 
-BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowProperties, obj) {
+BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProperties, obj) {
 
   browserWindowProperties = browserWindowProperties || {};
 
@@ -358,7 +358,7 @@ BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowPro
   return shadowBrowserWindow;
 };
 
-BrowserWindowsManager.prototype.getAll = function() {
+BrowserWindowManager.prototype.getAll = function() {
 
   var allWindows = [];
 
@@ -370,13 +370,13 @@ BrowserWindowsManager.prototype.getAll = function() {
 
 };
 
-BrowserWindowsManager.prototype.getLastFocused = function() {
+BrowserWindowManager.prototype.getLastFocused = function() {
 
   return this._lastFocusedWindow;
 
 };
 
-BrowserWindowsManager.prototype.close = function(browserWindow) {
+BrowserWindowManager.prototype.close = function(browserWindow) {
 
   chrome.windows.remove(browserWindow.properties.id, function() {
 

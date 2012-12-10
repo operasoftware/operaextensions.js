@@ -10,7 +10,7 @@ var BrowserWindow = function(browserWindowProperties) {
   // Create a unique browserWindow id
   this._operaId = Math.floor(Math.random() * 1e16);
 
-  this.tabs = new BrowserTabsManager(this);
+  this.tabs = new BrowserTabManager(this);
 
   this.tabGroups = new BrowserTabGroupManager(this);
 };

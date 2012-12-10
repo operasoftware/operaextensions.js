@@ -20,10 +20,10 @@
   "../src/common/WidgetObj.js",
   "../src/Widget.js",
 
-  "../src/background/windows/BrowserWindowsManager.js",
+  "../src/background/windows/BrowserWindowManager.js",
   "../src/background/windows/BrowserWindow.js",
-  "../src/background/tabs/BrowserTabsManager.js",
-  "../src/background/tabs/RootBrowserTabsManager.js",
+  "../src/background/tabs/BrowserTabManager.js",
+  "../src/background/tabs/RootBrowserTabManager.js",
   "../src/background/tabs/BrowserTab.js",
   "../src/background/tabs/BrowserTabGroupManager.js",
   "../src/background/Windows.js",
