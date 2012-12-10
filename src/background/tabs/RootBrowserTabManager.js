@@ -173,9 +173,9 @@ var RootBrowserTabManager = function() {
     }
 
   }.bind(this));
-
-  chrome.tabs.onMoved.addListener(function(tabId, moveInfo) {
-
+  
+  function moveHandler(tabId, moveInfo) {
+    
     // Find tab object
     var moveIndex = -1;
     for (var i = 0, l = this.length; i < l; i++) {
@@ -193,6 +193,8 @@ var RootBrowserTabManager = function() {
     var moveTabWindowParent = moveTab ? moveTab._windowParent : null;
 
     if(moveTab) {
+      
+      var oldPosition = moveTab.properties.position;
 
       // Detach from current _windowParent and attach to new BrowserWindow parent
       if (moveTabWindowParent) {
@@ -219,16 +221,16 @@ var RootBrowserTabManager = function() {
         }
 
       }
-    
+
       // Find new BrowserWindow parent and attach moveTab
       for (var i = 0, l = OEX.windows.length; i < l; i++) {
-        if (OEX.windows[i].properties.id == moveInfo.windowId) {
+        if (OEX.windows[i].properties.id == (moveInfo.windowId || moveInfo.newWindowId)) {
           // Attach tab to new parent
-          OEX.windows[i].tabs.addTabs([moveTab], moveInfo.toIndex);
-          
+          OEX.windows[i].tabs.addTabs([moveTab], (moveInfo.toIndex || moveInfo.newPosition));
+      
           // Reassign moveTab's _windowParent
           moveTab._windowParent = OEX.windows[i];
-          
+      
           break;
         }
       }
@@ -237,19 +239,25 @@ var RootBrowserTabManager = function() {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
-        "prevPosition": moveInfo.fromIndex
+        "prevPosition": oldPosition
       }));
 
       this.dispatchEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
-        "prevPosition": moveInfo.fromIndex
+        "prevPosition": oldPosition
       }));
-    
+
     }
 
-  }.bind(this));
+  }
+
+  // Fired when a tab is moved within a window
+  chrome.tabs.onMoved.addListener(moveHandler.bind(this));
+  
+  // Fired when a tab is moved between windows
+  chrome.tabs.onAttached.addListener(moveHandler.bind(this));
 
   chrome.tabs.onActivated.addListener(function(activeInfo) {
     
@@ -330,3 +338,11 @@ var RootBrowserTabManager = function() {
 };
 
 RootBrowserTabManager.prototype = Object.create( BrowserTabManager.prototype );
+
+// Make sure .__proto__ object gets setup correctly
+for(var i in BrowserTabManager.prototype) {
+  if(BrowserTabManager.prototype.hasOwnProperty(i)) {
+    RootBrowserTabManager.prototype[i] = BrowserTabManager.prototype[i];
+  }
+}
+

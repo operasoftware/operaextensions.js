@@ -113,6 +113,9 @@ var BrowserWindowManager = function() {
       for (var i = 0, l = this.length; i < l; i++) {
         if (this[i].properties.id == _window.id) {
           windowFound = true;
+          if(this[i].focused) {
+            this._lastFocusedWindow = this[i];
+          }
           break;
         }
       }
@@ -135,6 +138,10 @@ var BrowserWindowManager = function() {
 
         this[this.length] = newBrowserWindow;
         this.length += 1;
+        
+        if(newBrowserWindow.focused) {
+          this._lastFocusedWindow = newBrowserWindow;
+        }
 
         // Resolve objects.
         //
@@ -152,9 +159,9 @@ var BrowserWindowManager = function() {
         this.dispatchEvent(new OEvent('create', {
           browserWindow: newBrowserWindow
         }));
-
+        
       }
-
+      
     }.bind(this), 200);
 
   }.bind(this));
@@ -197,42 +204,47 @@ var BrowserWindowManager = function() {
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
     
-    // Find and fire blur event on currently focused window
-    for (var i = 0, l = this.length; i < l; i++) {
-
-      if (this[i] == this._lastFocusedWindow && this[i].properties.id != windowId) {
-        
-        // Fire a new 'blur' event on this manager object
-        this.dispatchEvent(new OEvent('blur', {
-          browserWindow: this[i]
-        }));
-        
-        break;
-      }
-
-    }
+    // Delay enough so that the create callback can run first in o.e.windows.create() function
+    window.setTimeout(function() {
     
-    // If no new window is focused, abort here
-    if( windowId !== chrome.windows.WINDOW_ID_NONE ) {
-    
-      // Find and fire focus event on newly focused window
+      // Find and fire blur event on currently focused window
       for (var i = 0, l = this.length; i < l; i++) {
 
-        if (this[i].properties.id == windowId && this[i] !== this._lastFocusedWindow) {
-          
-          this._lastFocusedWindow = this[i];
-          
-          // Fire a new 'focus' event on this manager object
-          this.dispatchEvent(new OEvent('focus', {
+        if (this[i] == this._lastFocusedWindow && this[i].properties.id != windowId) {
+        
+          // Fire a new 'blur' event on this manager object
+          this.dispatchEvent(new OEvent('blur', {
             browserWindow: this[i]
           }));
-          
+        
           break;
         }
 
       }
+    
+      // If no new window is focused, abort here
+      if( windowId !== chrome.windows.WINDOW_ID_NONE ) {
+    
+        // Find and fire focus event on newly focused window
+        for (var i = 0, l = this.length; i < l; i++) {
 
-    }
+          if (this[i].properties.id == windowId && this[i] !== this._lastFocusedWindow) {
+          
+            this._lastFocusedWindow = this[i];
+          
+            // Fire a new 'focus' event on this manager object
+            this.dispatchEvent(new OEvent('focus', {
+              browserWindow: this[i]
+            }));
+          
+            break;
+          }
+
+        }
+
+      }
+    
+    }.bind(this), 200);
 
   }.bind(this));
 
