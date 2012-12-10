@@ -1,51 +1,55 @@
-var tab = null,
-    win = windows.getLastFocused(),
-    allwindows = [];
+opera.isReady(function() {
 
-test(function() {
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create() }, "no tabs, no properties");
+  var tab = null,
+      win = windows.getLastFocused(),
+      allwindows = [];
 
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(null) },            "null tabs, no properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(null, null) },      "null tabs, null properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(null, undefined) }, "null tabs, undefined properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(null, {}) },        "null tabs, empty properties");
+  test(function() {
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create() }, "no tabs, no properties");
 
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(undefined) },            "undefined tabs, no properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(undefined, null) },      "undefined tabs, null properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(undefined, undefined) }, "undefined tabs, undefined properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(undefined, {}) },        "undefined tabs, empty properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(null) },            "null tabs, no properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(null, null) },      "null tabs, null properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(null, undefined) }, "null tabs, undefined properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(null, {}) },        "null tabs, empty properties");
 
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([]) },            "empty tabs, no properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([], null) },      "empty tabs, null properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([], undefined) }, "empty tabs, undefined properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([], {}) },        "empty tabs, empty properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(undefined) },            "undefined tabs, no properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(undefined, null) },      "undefined tabs, null properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(undefined, undefined) }, "undefined tabs, undefined properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create(undefined, {}) },        "undefined tabs, empty properties");
 
-}, "Creating default windows throws NOT_SUPPORTED_ERR");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([]) },            "empty tabs, no properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([], null) },      "empty tabs, null properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([], undefined) }, "empty tabs, undefined properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([], {}) },        "empty tabs, empty properties");
 
-allwindows = windows.getAll();
-for (var i = 0; i < allwindows.length; i++) {
-	if (allwindows[i] != null && allwindows[i] != win)
-		allwindows[i].close();
-}
+  }, "Creating default windows throws NOT_SUPPORTED_ERR");
 
-tab = createTab({url: 'data:text/plain,lonelytab'})
+  allwindows = windows.getAll();
+  for (var i = 0; i < allwindows.length; i++) {
+  	if (allwindows[i] != null && allwindows[i] != win)
+  		allwindows[i].close();
+  }
 
-test(function() {
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}]) },                         "empty tab, no properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}, {}]) },                     "empty tabs, no properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{url: 'data:text/plain,1'}]) }, "adressed tab, no properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([tab]) },                        "existing tab, no properties");
+  tab = createTab({url: 'data:text/plain,lonelytab'})
 
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}], null) },           "empty tab, null properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}], undefined) },      "empty tab, undefined properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}], {}) },             "empty tab, empty properties");
-	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}], {focused:true}) }, "empty tab, with properties");
+  test(function() {
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}]) },                         "empty tab, no properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}, {}]) },                     "empty tabs, no properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{url: 'data:text/plain,1'}]) }, "adressed tab, no properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([tab]) },                        "existing tab, no properties");
 
-}, "Creating windows with tabs throws NOT_SUPPORTED_ERR");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}], null) },           "empty tab, null properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}], undefined) },      "empty tab, undefined properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}], {}) },             "empty tab, empty properties");
+  	assert_throws('NOT_SUPPORTED_ERR', function() { windows.create([{}], {focused:true}) }, "empty tab, with properties");
 
-tab.close()
-allwindows = windows.getAll();
-for (var i = 0; i < allwindows.length; i++) {
-	if (allwindows[i] != null && allwindows[i] != win)
-		allwindows[i].close();
-}
+  }, "Creating windows with tabs throws NOT_SUPPORTED_ERR");
+
+  tab.close()
+  allwindows = windows.getAll();
+  for (var i = 0; i < allwindows.length; i++) {
+  	if (allwindows[i] != null && allwindows[i] != win)
+  		allwindows[i].close();
+  }
+
+});

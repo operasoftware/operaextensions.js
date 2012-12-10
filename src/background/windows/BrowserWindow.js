@@ -121,7 +121,7 @@ BrowserWindow.prototype.focus = function() {
     }, 
     function() {
       this.dequeue();
-    }
+    }.bind(this)
   );
 
 };

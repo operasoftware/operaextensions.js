@@ -185,14 +185,13 @@ BrowserTabsManager.prototype.create = function( browserTabProperties, before, ob
       if( noParentWindow ) {
         shadowBrowserTab._windowParent = OEX.windows.getLastFocused();
       }
-
-      // Add this object to the current tabs collection
-      this.addTabs([ shadowBrowserTab ], shadowBrowserTab.properties.index);
-
-      // Add this object to the root tab manager (if this is not the root tab manager)
-      if(this !== OEX.tabs) {
-        OEX.tabs.addTabs([ shadowBrowserTab ]);
-      }
+      
+      // Move this object to the correct position within the current tabs collection
+      // (but don't worry about doing this for the global tabs manager)
+      /*if(this !== OEX.tabs) {
+        this.removeTab( shadowBrowserTab );
+        this.addTabs([ shadowBrowserTab ], shadowBrowserTab.properties.index);
+      }*/
 
       // Resolve new tab, if it hasn't been resolved already
       shadowBrowserTab.resolve( _tab );
@@ -208,6 +207,14 @@ BrowserTabsManager.prototype.create = function( browserTabProperties, before, ob
       this.dequeue();
 
   }.bind(this));
+  
+  // Add this object to the end of the current tabs collection
+  this.addTabs([ shadowBrowserTab ]);
+
+  // Add this object to the root tab manager (if this is not the root tab manager)
+  if(this !== OEX.tabs) {
+    OEX.tabs.addTabs([ shadowBrowserTab ]);
+  }
 
   return shadowBrowserTab;
 
