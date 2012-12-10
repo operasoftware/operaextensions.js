@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/shim/operaextensions_popup.min.js"></script>
+
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles/options.css">
+    <title id="title">To-read sites - options</title>
+    
+    <script src="/script/merged_scripts/options.js"></script>
+    <!--<script src="script/sha1.js"></script>
+    <script src="script/oauth.js"></script>
+    <script src="script/operalink.js"></script>
+    <script src="script/link.js"></script>
+    <script src="script/options.js"></script>-->
+  </head>
+  <body>
+    <header>
+      <img src="icon.png">
+      <div class="right">
+        <h1><span id="widget-name">To-Read sites</span><span class="version"
+        id="widget-version"></span></h1>
+        <h2><span data-loc="by">By </span><span id="widget-author"><a
+          href="http://www.greenpath.pl">Michał Borek</a> </span></h2>
+      </div>
+      <div class="clear"></div>
+    </header>
+    <section>
+      <fieldset id="export-import">
+        <p>
+          <span>Export</span> Click the button below to export sites to a file.
+          <br />
+          <button id="export">
+            Export
+          </button>
+        </p>
+        <p>
+          <span>Import</span> Choose a file with exported To-read sites data.
+          <br />
+          <input type="file" id="import" />
+        </p>
+      </fieldset>
+    </section>
+    <section>
+      <fieldset id="opera-link">
+        <p>
+          <span>Synchronize with Opera Link</span>You can synchronize your tabs using <a href="http://www.opera.com/link/">Opera Link</a>.
+          <br />
+          <span>Sync status: <em id="link-status" class="disabled"></em></span>
+        </p>
+        <p style="text-align: center">
+          <br/>
+          <button id="configure-link" class="disabled" onclick="handleConfigureLink()">
+            Enable synchronization
+          </button>
+          <button id="disable-link" class="disabled" onclick="handleDisableLink()">
+            Disable synchronization
+          </button>
+          <br/>
+          <label for="syncInterval">
+            Sync every: </label>
+          <input type="number" id="syncInterval" value="5" min="1"/>
+          minutes
+        </p>
+      </fieldset>
+    </section>
+    <section>
+      <fieldset id="other">
+        <p>
+          <span>Other options</span>
+          <label for="lockAutomatically">
+            Lock newly added sites by default
+          </label>
+          <input type="checkbox" id="lockAutomatically" />
+        </p>
+      </fieldset>
+    </section>
+    <footer>
+      <p data-loc="footer">
+        &copy <a href="http://www.greenpath.pl">Michał Borek</a>
+      </p>
+    </footer>
+  </body>
+</html>
