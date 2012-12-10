@@ -41,3 +41,8 @@ cp ../build/operaextensions_popup.js ../examples/catalog/close-tabs-right-of-cur
 cp ../build/operaextensions_background.js ../examples/catalog/extendtube-1.16.1/shim/operaextensions_background.min.js
 cp ../build/operaextensions_injectedscript.js ../examples/catalog/extendtube-1.16.1/shim/operaextensions_injectedscript.min.js
 cp ../build/operaextensions_popup.js ../examples/catalog/extendtube-1.16.1/shim/operaextensions_popup.min.js
+
+# To-Read Extension
+cp ../build/operaextensions_background.js ../examples/catalog/to-read-sites-4.1-3-1/shim/operaextensions_background.min.js
+cp ../build/operaextensions_injectedscript.js ../examples/catalog/to-read-sites-4.1-3-1/shim/operaextensions_injectedscript.min.js
+cp ../build/operaextensions_popup.js ../examples/catalog/to-read-sites-4.1-3-1/shim/operaextensions_popup.min.js

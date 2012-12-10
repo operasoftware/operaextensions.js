@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="styles/options.css">
+		<title id="title">To-read sites - opcje</title>
+		<script src="script/sha1.js"></script>
+		<script src="script/oauth.js"></script>
+		<script src="script/operalink.js"></script>
+		<script src="script/link.js"></script>
+		<script src="script/options.js"></script>
+	</head>
+	<body>
+		<header>
+			<img src="icon.png">
+			<div class="right">
+				<h1><span id="widget-name">To-Read sites</span><span class="version"
+				id="widget-version"></span></h1>
+				<h2><span data-loc="by">By </span><span id="widget-author"><a
+					href="http://www.greenpath.pl">Michał Borek</a> </span></h2>
+			</div>
+			<div class="clear"></div>
+		</header>
+		<section>
+			<fieldset id="export-import">
+				<p>
+					<span>Export</span> Kliknij poniższy przycisk aby wyeksportować strony do pliku.
+					<br />
+					<button id="export">
+						Eksport
+					</button>
+				</p>
+				<p>
+					<span>Import</span> Wybierz plik z którego chcesz zaimportować strony.
+					<br />
+					<input type="file" id="import" />
+				</p>
+			</fieldset>
+		</section>
+		<section>
+			<fieldset id="opera-link">
+				<p>
+					<span>Synchronizuj strony</span>Możesz synchronizować strony pomiędzy różnymi przeglądarkami, dzięki <a href="http://www.opera.com/link/">Opera Link</a>.
+					<br />
+					<span>Status synchronizacji: <em id="link-status" class="disabled"></em></span>
+				</p>
+				<p style="text-align: center">
+					<br/>
+					<button id="configure-link" class="disabled" onclick="handleConfigureLink()">
+						Włącz synchronizację
+					</button>
+					<button id="disable-link" class="disabled" onclick="handleDisableLink()">
+						Wyłącz synchronizację
+					</button>
+					<br/>
+					<label for="syncInterval">
+						Synchronizuj co:
+					</label>
+					<input type="number" id="syncInterval" value="5" min="1" />
+					minut
+				</p>
+			</fieldset>
+		</section>
+		<section>
+			<fieldset id="other">
+				<p>
+					<span>Inne</span>
+					<label for="lockAutomatically">
+						Blokuj domyślnie nowe strony przed usunięciem
+					</label>
+					<input type="checkbox" id="lockAutomatically" />
+				</p>
+			</fieldset>
+		</section>
+		</section>
+		<footer>
+			<p data-loc="footer">
+				&copy <a href="http://www.greenpath.pl">Michał Borek</a>
+			</p>
+		</footer>
+	</body>
+</html>
