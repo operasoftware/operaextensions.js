@@ -41,8 +41,7 @@ BrowserWindow.prototype.__defineGetter__("parent", function() {
 BrowserWindow.prototype.insert = function(browserTab, child) {
 
   // If current object is not resolved, then enqueue this action
-  if (!this.resolved ||
-        (this._parent && !this._parent.resolved) || !browserTab.resolved ||
+  if (!this.resolved || !browserTab.resolved ||
             (child && !child.resolved)) {
     this.enqueue('insert', browserTab, child);
     return;

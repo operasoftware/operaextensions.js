@@ -1136,6 +1136,9 @@ var BrowserWindowManager = function() {
       for (var i = 0, l = this.length; i < l; i++) {
         if (this[i].properties.id == _window.id) {
           windowFound = true;
+          if(this[i].focused) {
+            this._lastFocusedWindow = this[i];
+          }
           break;
         }
       }
@@ -1158,6 +1161,10 @@ var BrowserWindowManager = function() {
 
         this[this.length] = newBrowserWindow;
         this.length += 1;
+        
+        if(newBrowserWindow.focused) {
+          this._lastFocusedWindow = newBrowserWindow;
+        }
 
         // Resolve objects.
         //
@@ -1175,9 +1182,9 @@ var BrowserWindowManager = function() {
         this.dispatchEvent(new OEvent('create', {
           browserWindow: newBrowserWindow
         }));
-
+        
       }
-
+      
     }.bind(this), 200);
 
   }.bind(this));
@@ -1220,42 +1227,47 @@ var BrowserWindowManager = function() {
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
     
-    // Find and fire blur event on currently focused window
-    for (var i = 0, l = this.length; i < l; i++) {
-
-      if (this[i] == this._lastFocusedWindow && this[i].properties.id != windowId) {
-        
-        // Fire a new 'blur' event on this manager object
-        this.dispatchEvent(new OEvent('blur', {
-          browserWindow: this[i]
-        }));
-        
-        break;
-      }
-
-    }
+    // Delay enough so that the create callback can run first in o.e.windows.create() function
+    window.setTimeout(function() {
     
-    // If no new window is focused, abort here
-    if( windowId !== chrome.windows.WINDOW_ID_NONE ) {
-    
-      // Find and fire focus event on newly focused window
+      // Find and fire blur event on currently focused window
       for (var i = 0, l = this.length; i < l; i++) {
 
-        if (this[i].properties.id == windowId && this[i] !== this._lastFocusedWindow) {
-          
-          this._lastFocusedWindow = this[i];
-          
-          // Fire a new 'focus' event on this manager object
-          this.dispatchEvent(new OEvent('focus', {
+        if (this[i] == this._lastFocusedWindow && this[i].properties.id != windowId) {
+        
+          // Fire a new 'blur' event on this manager object
+          this.dispatchEvent(new OEvent('blur', {
             browserWindow: this[i]
           }));
-          
+        
           break;
         }
 
       }
+    
+      // If no new window is focused, abort here
+      if( windowId !== chrome.windows.WINDOW_ID_NONE ) {
+    
+        // Find and fire focus event on newly focused window
+        for (var i = 0, l = this.length; i < l; i++) {
 
-    }
+          if (this[i].properties.id == windowId && this[i] !== this._lastFocusedWindow) {
+          
+            this._lastFocusedWindow = this[i];
+          
+            // Fire a new 'focus' event on this manager object
+            this.dispatchEvent(new OEvent('focus', {
+              browserWindow: this[i]
+            }));
+          
+            break;
+          }
+
+        }
+
+      }
+    
+    }.bind(this), 200);
 
   }.bind(this));
 
@@ -1452,8 +1464,7 @@ BrowserWindow.prototype.__defineGetter__("parent", function() {
 BrowserWindow.prototype.insert = function(browserTab, child) {
 
   // If current object is not resolved, then enqueue this action
-  if (!this.resolved ||
-        (this._parent && !this._parent.resolved) || !browserTab.resolved ||
+  if (!this.resolved || !browserTab.resolved ||
             (child && !child.resolved)) {
     this.enqueue('insert', browserTab, child);
     return;
@@ -2003,9 +2014,9 @@ var RootBrowserTabManager = function() {
     }
 
   }.bind(this));
-
-  chrome.tabs.onMoved.addListener(function(tabId, moveInfo) {
-
+  
+  function moveHandler(tabId, moveInfo) {
+    
     // Find tab object
     var moveIndex = -1;
     for (var i = 0, l = this.length; i < l; i++) {
@@ -2023,6 +2034,8 @@ var RootBrowserTabManager = function() {
     var moveTabWindowParent = moveTab ? moveTab._windowParent : null;
 
     if(moveTab) {
+      
+      var oldPosition = moveTab.properties.position;
 
       // Detach from current _windowParent and attach to new BrowserWindow parent
       if (moveTabWindowParent) {
@@ -2049,16 +2062,16 @@ var RootBrowserTabManager = function() {
         }
 
       }
-    
+
       // Find new BrowserWindow parent and attach moveTab
       for (var i = 0, l = OEX.windows.length; i < l; i++) {
-        if (OEX.windows[i].properties.id == moveInfo.windowId) {
+        if (OEX.windows[i].properties.id == (moveInfo.windowId || moveInfo.newWindowId)) {
           // Attach tab to new parent
-          OEX.windows[i].tabs.addTabs([moveTab], moveInfo.toIndex);
-          
+          OEX.windows[i].tabs.addTabs([moveTab], (moveInfo.toIndex || moveInfo.newPosition));
+      
           // Reassign moveTab's _windowParent
           moveTab._windowParent = OEX.windows[i];
-          
+      
           break;
         }
       }
@@ -2067,19 +2080,25 @@ var RootBrowserTabManager = function() {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
-        "prevPosition": moveInfo.fromIndex
+        "prevPosition": oldPosition
       }));
 
       this.dispatchEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
-        "prevPosition": moveInfo.fromIndex
+        "prevPosition": oldPosition
       }));
-    
+
     }
 
-  }.bind(this));
+  }
+
+  // Fired when a tab is moved within a window
+  chrome.tabs.onMoved.addListener(moveHandler.bind(this));
+  
+  // Fired when a tab is moved between windows
+  chrome.tabs.onAttached.addListener(moveHandler.bind(this));
 
   chrome.tabs.onActivated.addListener(function(activeInfo) {
     
@@ -2160,6 +2179,14 @@ var RootBrowserTabManager = function() {
 };
 
 RootBrowserTabManager.prototype = Object.create( BrowserTabManager.prototype );
+
+// Make sure .__proto__ object gets setup correctly
+for(var i in BrowserTabManager.prototype) {
+  if(BrowserTabManager.prototype.hasOwnProperty(i)) {
+    RootBrowserTabManager.prototype[i] = BrowserTabManager.prototype[i];
+  }
+}
+
 
 var BrowserTab = function(browserTabProperties, windowParent) {
 
