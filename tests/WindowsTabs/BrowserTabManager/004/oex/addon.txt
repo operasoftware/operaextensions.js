@@ -1,0 +1,1 @@
+Events for moving a tab between windows

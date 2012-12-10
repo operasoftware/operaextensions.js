@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserTabManager-002",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Events for creating a tab in the current window",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

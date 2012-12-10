@@ -1,0 +1,1 @@
+Events for creating a tab in the current window

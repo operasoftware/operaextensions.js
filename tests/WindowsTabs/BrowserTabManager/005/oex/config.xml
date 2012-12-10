@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget xmlns="http://www.w3.org/ns/widgets" width="400" height="300" id="test-case:tc-BrowserTabManager-005">
+    <name>tc-BrowserTabManager-005</name>
+	<description><![CDATA[Events for closing a tab]]></description>
+    <access origin="http://localhost:80" subdomains="true" />
+    <access origin="http://t" subdomains="true" />
+    <content src="index.html" />
+</widget>
