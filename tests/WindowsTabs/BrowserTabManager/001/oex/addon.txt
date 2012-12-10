@@ -1,0 +1,1 @@
+Interface check for the global tab manager
