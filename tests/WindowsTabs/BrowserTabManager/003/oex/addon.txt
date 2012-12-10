@@ -1,0 +1,1 @@
+Events for creating a new window with an existing tab

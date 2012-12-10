@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserTabManager-001",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Interface check for the global tab manager",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
