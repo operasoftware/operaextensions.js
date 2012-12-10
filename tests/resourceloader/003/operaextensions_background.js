@@ -1958,7 +1958,7 @@ var RootBrowserTabManager = function() {
 
   }.bind(this));
 
-  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
+  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
     var updateIndex = -1;
     for (var i = 0, l = this.length; i < l; i++) {
@@ -1975,8 +1975,11 @@ var RootBrowserTabManager = function() {
     var updateTab = this[updateIndex];
 
     // Update tab properties in current collection
-    for (var i in changeInfo) {
-      updateTab.properties[i] = changeInfo[i];
+    for (var prop in tab) {
+      if(prop == "id" || prop == "windowId") { // ignore these
+        continue;
+      }
+      updateTab.properties[prop] = tab[prop];
     }
 
     // Update tab properties in _windowParent object
@@ -2078,34 +2081,28 @@ var RootBrowserTabManager = function() {
 
   }.bind(this));
 
-  chrome.tabs.onHighlighted.addListener(function(highlightInfo) {
-
-    // Set current tab property to active while setting everything else to inactive
-    for (var i = 0, l = OEX.windows.length; i < l; i++) {
-
-      for (var j = 0, k = OEX.windows[i].tabs.length; j < k; j++) {
-
-        for (var x = 0, z = highlightInfo.tabIds.length; x < z; x++) {
-
-          if (OEX.windows[i] == highlightInfo.windowId &&
-                OEX.windows[i].tabs[j].properties.id == highlightInfo.tabIds[x]) {
-
-            OEX.windows[i].tabs[j].properties.active = true;
-            
-            OEX.windows[i].tabs._lastFocusedTab = OEX.windows[i].tabs[j];
-            
-            this._lastFocusedTab = OEX.windows[i].tabs[j];
-
-          } else {
-
-            OEX.windows[i].tabs[j].properties.active = false;
-
-          }
-
+  chrome.tabs.onActivated.addListener(function(activeInfo) {
+    
+    if(!activeInfo.tabId) return;
+    
+    for(var i = 0, l = this.length; i < l; i++) {
+      
+      if(this[i].properties.id == activeInfo.tabId) {
+        
+        this[i].properties.active = true;
+        
+        if(this[i]._windowParent) {
+          this[i]._windowParent.tabs._lastFocusedTab = this[i];
         }
-
+        
+        this._lastFocusedTab = this[i];
+        
+      } else {
+        
+        this[i].properties.active = false;
+        
       }
-
+      
     }
 
   }.bind(this));
