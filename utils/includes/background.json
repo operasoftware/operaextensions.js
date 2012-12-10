@@ -25,6 +25,7 @@
   "../src/background/tabs/BrowserTabsManager.js",
   "../src/background/tabs/RootBrowserTabsManager.js",
   "../src/background/tabs/BrowserTab.js",
+  "../src/background/tabs/BrowserTabGroup.js",
   "../src/background/Windows.js",
   "../src/background/Tabs.js",
   "../src/background/contexts/toolbar/ToolbarContext.js",

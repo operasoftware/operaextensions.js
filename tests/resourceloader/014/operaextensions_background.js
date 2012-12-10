@@ -1,14 +1,22 @@
 !(function( global ) {
-
-  var opera = global.opera || { 
-    REVISION: '1',
-    version: function() {
-      return this.REVISION;
-    },
-    postError: function( str ) { 
-      console.log( str ); 
-    } 
+  
+  var Opera = function() {};
+  
+  Opera.prototype.REVISION = '1';
+  
+  Opera.prototype.version = function() {
+    return this.REVISION;
   };
+  
+  Opera.prototype.buildNumber = function() {
+    return this.REVISION;
+  };
+  
+  Opera.prototype.postError = function( str ) {
+    console.log( str );
+  };
+
+  var opera = global.opera || new Opera();
   
   var isReady = false;
   
@@ -36,6 +44,7 @@ var deferredComponentsLoadStatus = {
   'WIDGET_PREFERENCES_LOADED': false
   // ...etc
 };
+
 /**
  * rsvp.js
  *
@@ -261,10 +270,248 @@ var deferredComponentsLoadStatus = {
 
  EventTarget.mixin(Promise.prototype);
 
+/**
+ * GENERAL OEX SHIM UTILITY FUNCTIONS
+ */
+ 
+/**
+ * Chromium doesn't support complex colors in places so
+ * this function will convert colors from rgb, rgba, hsv,
+ * hsl and hsla in to hex colors.
+ *
+ * 'color' is the color string to convert.
+ * 'backgroundColorVal' is a background color number (0-255)
+ * with which to apply alpha blending (if any).
+ */
+function complexColorToHex(color, backgroundColorVal) {
+  
+  if(color === undefined || color === null) {
+    return color;
+  }
+  
+  // Force covert color to String
+  color = color + "";
+  
+  // X11/W3C Color Names List
+  var colorKeywords = { aliceblue: [240,248,255], antiquewhite: [250,235,215], aqua: [0,255,255], aquamarine: [127,255,212],
+  azure: [240,255,255], beige: [245,245,220], bisque: [255,228,196], black: [0,0,0], blanchedalmond: [255,235,205],
+  blue: [0,0,255], blueviolet: [138,43,226], brown: [165,42,42], burlywood: [222,184,135], cadetblue: [95,158,160],
+  chartreuse: [127,255,0], chocolate: [210,105,30], coral: [255,127,80], cornflowerblue: [100,149,237], cornsilk: [255,248,220],
+  crimson: [220,20,60], cyan: [0,255,255], darkblue: [0,0,139], darkcyan: [0,139,139], darkgoldenrod: [184,134,11],
+  darkgray: [169,169,169], darkgreen: [0,100,0], darkgrey: [169,169,169], darkkhaki: [189,183,107], darkmagenta: [139,0,139],
+  darkolivegreen: [85,107,47], darkorange: [255,140,0], darkorchid: [153,50,204], darkred: [139,0,0], darksalmon: [233,150,122],
+  darkseagreen: [143,188,143], darkslateblue: [72,61,139], darkslategray: [47,79,79], darkslategrey: [47,79,79],
+  darkturquoise: [0,206,209], darkviolet: [148,0,211], deeppink: [255,20,147], deepskyblue: [0,191,255], dimgray: [105,105,105],
+  dimgrey: [105,105,105], dodgerblue: [30,144,255], firebrick: [178,34,34], floralwhite: [255,250,240], forestgreen: [34,139,34],
+  fuchsia: [255,0,255], gainsboro: [220,220,220], ghostwhite: [248,248,255], gold: [255,215,0], goldenrod: [218,165,32],
+  gray: [128,128,128], green: [0,128,0], greenyellow: [173,255,47], grey: [128,128,128], honeydew: [240,255,240],
+  hotpink: [255,105,180], indianred: [205,92,92], indigo: [75,0,130], ivory: [255,255,240], khaki: [240,230,140],
+  lavender: [230,230,250], lavenderblush: [255,240,245], lawngreen: [124,252,0], lemonchiffon: [255,250,205],
+  lightblue: [173,216,230], lightcoral: [240,128,128], lightcyan: [224,255,255], lightgoldenrodyellow: [250,250,210],
+  lightgray: [211,211,211], lightgreen: [144,238,144], lightgrey: [211,211,211], lightpink: [255,182,193],
+  lightsalmon: [255,160,122], lightseagreen: [32,178,170], lightskyblue: [135,206,250], lightslategray: [119,136,153],
+  lightslategrey: [119,136,153], lightsteelblue: [176,196,222], lightyellow: [255,255,224], lime: [0,255,0],
+  limegreen: [50,205,50], linen: [250,240,230], magenta: [255,0,255], maroon: [128,0,0], mediumaquamarine: [102,205,170],
+  mediumblue: [0,0,205], mediumorchid: [186,85,211], mediumpurple: [147,112,219], mediumseagreen: [60,179,113],
+  mediumslateblue: [123,104,238], mediumspringgreen: [0,250,154], mediumturquoise: [72,209,204], mediumvioletred: [199,21,133],
+  midnightblue: [25,25,112], mintcream: [245,255,250], mistyrose: [255,228,225], moccasin: [255,228,181], navajowhite: [255,222,173],
+  navy: [0,0,128], oldlace: [253,245,230], olive: [128,128,0], olivedrab: [107,142,35], orange: [255,165,0], orangered: [255,69,0],
+  orchid: [218,112,214], palegoldenrod: [238,232,170], palegreen: [152,251,152], paleturquoise: [175,238,238],
+  palevioletred: [219,112,147], papayawhip: [255,239,213], peachpuff: [255,218,185], peru: [205,133,63], pink: [255,192,203],
+  plum: [221,160,221], powderblue: [176,224,230], purple: [128,0,128], red: [255,0,0], rosybrown: [188,143,143],
+  royalblue: [65,105,225], saddlebrown: [139,69,19], salmon: [250,128,114], sandybrown: [244,164,96], seagreen: [46,139,87],
+  seashell: [255,245,238], sienna: [160,82,45], silver: [192,192,192], skyblue: [135,206,235], slateblue: [106,90,205],
+  slategray: [112,128,144], slategrey: [112,128,144], snow: [255,250,250], springgreen: [0,255,127], steelblue: [70,130,180],
+  tan: [210,180,140], teal: [0,128,128], thistle: [216,191,216], tomato: [255,99,71], turquoise: [64,224,208], violet: [238,130,238],
+  wheat: [245,222,179], white: [255,255,255], whitesmoke: [245,245,245], yellow: [255,255,0], yellowgreen: [154,205,50] };
+
+  // X11/W3C Color Name check
+  var predefinedColor = colorKeywords[ color.toLowerCase() ];
+  if( predefinedColor ) {
+    return "#" + DectoHex(predefinedColor[0]) + DectoHex(predefinedColor[1]) + DectoHex(predefinedColor[2]);
+  }
+
+  // Hex color patterns
+  var hexColorTypes = {
+    "hexLong": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+    "hexShort": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
+  };
+
+  for(var colorType in hexColorTypes) {
+    if(color.match(hexColorTypes[ colorType ]))
+      return color;
+  }
+
+  // Other color patterns
+  var otherColorTypes = [
+    ["rgb", /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/],
+    ["rgb", /^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d+(?:\.\d+)?|\.\d+)\s*\)$/], // rgba
+    ["hsl", /^hsl\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%\)$/],
+    ["hsl", /^hsla\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%,\s*(\d+(?:\.\d+)?|\.\d+)\s*\)$/], // hsla
+    ["hsv", /^hsv\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%\)$/]
+  ];
+
+  function hueToRgb( p, q, t ) {
+    if ( t < 0 ) {
+      t += 1;
+    }
+    if ( t > 1 ) {
+      t -= 1;
+    }
+    if ( t < 1 / 6 ) {
+      return p + ( q - p ) * 6 * t;
+    }
+    if ( t < 1 / 2 ) {
+      return q;
+    }
+    if ( t < 2 / 3 ) {
+      return p + ( q - p ) * ( 2 / 3 - t ) * 6;
+    }
+    return p;
+  };
+
+  var toRGB = {
+    rgb: function( bits ) {
+      return [ bits[1], bits[2], bits[3], bits[4] || 1 ];
+    },
+    hsl: function( bits ) {
+      var hsl = {
+        h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
+        s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
+        l : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100,
+        a : bits[4] || 1
+      };
+
+      if ( hsl.s === 0 )
+        return [ hsl.l, hsl.l, hsl.l ];
+
+      var q = hsl.l < 0.5 ? hsl.l * ( 1 + hsl.s ) : hsl.l + hsl.s - hsl.l * hsl.s;
+      var p = 2 * hsl.l - q;
+
+      return [
+        ( hueToRgb( p, q, hsl.h + 1 / 3 ) * 256 ).toFixed( 0 ),
+        ( hueToRgb( p, q, hsl.h ) * 256 ).toFixed( 0 ),
+        ( hueToRgb( p, q, hsl.h - 1 / 3 ) * 256 ).toFixed( 0 ),
+        hsl.a
+      ];
+    },
+    hsv: function( bits ) {
+      var rgb = {},
+          hsv = {
+            h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
+            s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
+            v : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100
+          },
+          i = Math.floor( hsv.h * 6 ),
+          f = hsv.h * 6 - i,
+          p = hsv.v * ( 1 - hsv.s ),
+          q = hsv.v * ( 1 - f * hsv.s ),
+          t = hsv.v * ( 1 - ( 1 - f ) * hsv.s );
+
+      switch( i % 6 ) {
+        case 0:
+          rgb.r = hsv.v; rgb.g = t; rgb.b = p;
+          break;
+        case 1:
+          rgb.r = q; rgb.g = hsv.v; rgb.b = p;
+          break;
+        case 2:
+          rgb.r = p; rgb.g = hsv.v; rgb.b = t;
+          break;
+        case 3:
+          rgb.r = p; rgb.g = q; rgb.b = hsv.v;
+          break;
+        case 4:
+          rgb.r = t; rgb.g = p; rgb.b = hsv.v;
+          break;
+        case 5:
+          rgb.r = hsv.v; rgb.g = p; rgb.b = q;
+          break;
+      }
+
+      return [ rgb.r * 256,  rgb.g * 256, rgb.b * 256 ];
+    }
+  };
+
+  function DectoHex( dec ) {
+    var hex = parseInt( dec, 10 );
+    hex = hex.toString(16);
+    return hex == 0 ? "00" : hex;
+  }
+
+  function applySaturation( rgb ) {
+    var alpha = parseFloat(rgb[3] || 1);
+    if((alpha + "") === "NaN" || alpha < 0 || alpha >= 1) return rgb;
+    if(alpha == 0) {
+      return [ 255, 255, 255 ];
+    }
+    return [
+      alpha * parseInt(rgb[0], 10) + (1 - alpha) * (backgroundColorVal || 255),
+      alpha * parseInt(rgb[1], 10) + (1 - alpha) * (backgroundColorVal || 255),
+      alpha * parseInt(rgb[2], 10) + (1 - alpha) * (backgroundColorVal || 255)
+    ]; // assumes background is white (255)
+  }
+
+  for(var i = 0, l = otherColorTypes.length; i < l; i++) {
+    var bits = otherColorTypes[i][1].exec( color );
+    if(bits) {
+      var rgbVal = applySaturation( toRGB[ otherColorTypes[i][0] ]( bits ) );
+      return "#" + DectoHex(rgbVal[0] || 255) + DectoHex(rgbVal[1] || 255) + DectoHex(rgbVal[2] || 255);
+    }
+  }
+  
+  return "#f00"; // default in case of error
+
+};
+
+var OEvent = function(eventType, eventProperties) {
+
+  var evt = document.createEvent("Event");
+
+  evt.initEvent(eventType, true, true);
+
+  // Add custom properties or override standard event properties
+  for (var i in eventProperties) {
+    evt[i] = eventProperties[i];
+  }
+
+  return evt;
+
+};
+
+var OEventTarget = function() {
+  
+  EventTarget.mixin( this );
+  
+};
+
+OEventTarget.prototype.constructor = OEventTarget;
+
+OEventTarget.prototype.addEventListener = function(eventName, callback, useCapture) {
+  this.on(eventName, callback); // no useCapture
+};
+
+OEventTarget.prototype.removeEventListener = function(eventName, callback, useCapture) {
+  this.off(eventName, callback); // no useCapture
+}
+
+OEventTarget.prototype.dispatchEvent = function( eventObj ) {
+
+  var eventName = eventObj.type;
+
+  // Register an onX functions registered for this event, if any
+  if(typeof this[ 'on' + eventName.toLowerCase() ] === 'function') {
+    this.on( eventName, this[ 'on' + eventName.toLowerCase() ] );
+  }
+
+  this.trigger( eventName, eventObj );
+
+};
+
 var OPromise = function() {
 
   Promise.call( this );
-
+  
   // General enqueue/dequeue infrastructure
 
   this._queue = [];
@@ -283,21 +530,9 @@ var OPromise = function() {
 
 OPromise.prototype = Object.create( Promise.prototype );
 
-OPromise.prototype.addEventListener = OPromise.prototype.on;
-
-OPromise.prototype.removeEventListener = OPromise.prototype.off;
-
-OPromise.prototype.fireEvent = function( oexEventObj ) {
-
-  var eventName = oexEventObj.type;
-
-  // Register an onX functions registered for this event
-  if(typeof this[ 'on' + eventName.toLowerCase() ] === 'function') {
-    this.on( eventName, this[ 'on' + eventName.toLowerCase() ] );
-  }
-
-  this.trigger( eventName, oexEventObj );
-
+// Add OEventTarget helper functions to OPromise prototype
+for(var i in OEventTarget.prototype) {
+  OPromise.prototype[i] = OEventTarget.prototype[i];
 }
 
 OPromise.prototype.enqueue = function() {
@@ -341,24 +576,9 @@ OPromise.prototype.dequeue = function() {
   //console.log("Dequeue on obj[" + this._operaId + "] queue length = " + this._queue.length);
 };
 
-var OEvent = function(eventType, eventProperties) {
-
-  var evt = document.createEvent("Event");
-
-  evt.initEvent(eventType, true, true);
-
-  // Add custom properties or override standard event properties
-  for (var i in eventProperties) {
-    evt[i] = eventProperties[i];
-  }
-
-  return evt;
-
-};
-
 var OMessagePort = function( isBackground ) {
 
-  OPromise.call( this );
+  OEventTarget.call( this );
   
   this._isBackground = isBackground || false;
   
@@ -371,7 +591,7 @@ var OMessagePort = function( isBackground ) {
     
     this._localPort.onDisconnect.addListener(function() {
     
-      this.fireEvent( new OEvent( 'disconnect', { "source": this._localPort } ) );
+      this.dispatchEvent( new OEvent( 'disconnect', { "source": this._localPort } ) );
       
       this._localPort = null;
       
@@ -384,7 +604,7 @@ var OMessagePort = function( isBackground ) {
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
 
         // Fire controlmessage events *immediately*
-        this.fireEvent( new OEvent(
+        this.dispatchEvent( new OEvent(
           'controlmessage', 
           { 
             "data": _message,
@@ -402,7 +622,7 @@ var OMessagePort = function( isBackground ) {
         // Fire 'message' event once we have all the initial listeners setup on the page
         // so we don't miss any .onconnect call from the extension page.
         // Or immediately if the shim isReady
-        addDelayedEvent(this, 'fireEvent', [ new OEvent(
+        addDelayedEvent(this, 'dispatchEvent', [ new OEvent(
           'message', 
           { 
             "data": _message,
@@ -421,13 +641,13 @@ var OMessagePort = function( isBackground ) {
 
     // Fire 'connect' event once we have all the initial listeners setup on the page
     // so we don't miss any .onconnect call from the extension page
-    addDelayedEvent(this, 'fireEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
+    addDelayedEvent(this, 'dispatchEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
     
   }
   
 };
 
-OMessagePort.prototype = Object.create( OPromise.prototype );
+OMessagePort.prototype = Object.create( OEventTarget.prototype );
 
 OMessagePort.prototype.postMessage = function( data ) {
   
@@ -460,7 +680,7 @@ var OBackgroundMessagePort = function() {
       
       this._allPorts.splice( portIndex - 1, 1 );
       
-      this.fireEvent( new OEvent('disconnect', { "source": _remotePort }) );
+      this.dispatchEvent( new OEvent('disconnect', { "source": _remotePort }) );
       
     }.bind(this));
     
@@ -471,7 +691,7 @@ var OBackgroundMessagePort = function() {
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
 
         // Fire controlmessage events *immediately*
-        this.fireEvent( new OEvent(
+        this.dispatchEvent( new OEvent(
           'controlmessage', 
           { 
             "data": _message,
@@ -489,7 +709,7 @@ var OBackgroundMessagePort = function() {
         // Fire 'message' event once we have all the initial listeners setup on the page
         // so we don't miss any .onconnect call from the extension page.
         // Or immediately if the shim isReady
-        addDelayedEvent(this, 'fireEvent', [ new OEvent(
+        addDelayedEvent(this, 'dispatchEvent', [ new OEvent(
           'message', 
           { 
             "data": _message,
@@ -506,7 +726,7 @@ var OBackgroundMessagePort = function() {
 
     }.bind(this) );
   
-    this.fireEvent( new OEvent('connect', { "source": _remotePort }) );
+    this.dispatchEvent( new OEvent('connect', { "source": _remotePort }) );
   
   }.bind(this));
   
@@ -522,38 +742,41 @@ OBackgroundMessagePort.prototype.broadcastMessage = function( data ) {
   
 };
 
-var OExtension = function() {
+var OperaExtension = function() {
   
   OBackgroundMessagePort.call( this );
   
 };
 
-OExtension.prototype = Object.create( OBackgroundMessagePort.prototype );
+OperaExtension.prototype = Object.create( OBackgroundMessagePort.prototype );
 
 // Generate API stubs
 
-var OEX = opera.extension = opera.extension || (function() { return new OExtension(); })();
+var OEX = opera.extension = opera.extension || new OperaExtension();
 
 var OEC = opera.contexts = opera.contexts || {};
-OExtension.prototype.getFile = function(path) {
-	var response = null;
-	
-	if(typeof path != "string")return response;
-	
+
+OperaExtension.prototype.getFile = function(path) {
+  var response = null;
+
+  if(typeof path != "string")return response;
+
   try{
     var host = chrome.extension.getURL('');
-    
+
     if(path.indexOf('widget:')==0)path = path.replace('widget:','chrome-extension:');
-    
+    if(path.indexOf('/')==0)path = path.substring(1);
+
     path = (path.indexOf(host)==-1?host:'')+path;
+
     var xhr = new XMLHttpRequest();
-    
+
     xhr.onloadend = function(){
         if (xhr.readyState==xhr.DONE && xhr.status==200){
           result = xhr.response;
-          
+
           result.name = path.substring(path.lastIndexOf('/')+1);
-          
+
           result.lastModifiedDate = null;
           result.toString = function(){
             return "[object File]";
@@ -561,18 +784,19 @@ OExtension.prototype.getFile = function(path) {
           response = result;
         };
     };
-   
+
     xhr.open('GET',path,false);
     xhr.responseType = 'blob';
-  
+
     xhr.send(null);
-	
+
   } catch(e){
     return response;
   };
-  
-	return response;
+
+  return response;
 };
+
 var OStorage = function () {
   
   // All attributes and methods defined in this class must be non-enumerable, 
@@ -584,12 +808,7 @@ var OStorage = function () {
   
   Object.defineProperty(OStorage.prototype, "getItem", { 
     value: function( key ) {
-      var value = this._storage.getItem(key);
-      // We return 'undefined' rather than 'null' if the key
-      // does not exist in the Opera implementation according to
-      // http://dev.opera.com/articles/view/extensions-api-widget-preferences/
-      // so hack that return value here instead of returning null.
-      return value === null ? undefined : value;
+      return this._storage.getItem(key);
     }.bind(this)
   });
   
@@ -621,6 +840,8 @@ var OStorage = function () {
   
   Object.defineProperty(OStorage.prototype, "setItem", { 
     value: function( key, value, proxiedChange ) {
+      var oldVal = this._storage.getItem(key);
+      
       this._storage.setItem(key, value);
       
       if( !this[key] ) {
@@ -636,7 +857,18 @@ var OStorage = function () {
             "val": value
           }
         });
-      } 
+      }
+      
+      // Create and fire 'storage' event on window object
+      var storageEvt = new OEvent('storage', {
+        "key": key,
+        "oldValue": oldVal,
+        "newValue": this._storage.getItem(key),
+        "url": chrome.extension.getURL(""),
+        "storageArea": this._storage
+      });
+      global.dispatchEvent( storageEvt );
+      
     }.bind(this)
   });
   
@@ -665,47 +897,46 @@ var OStorage = function () {
 OStorage.prototype = Object.create( Storage.prototype );
 
 var OWidgetObj = function() {
-  
-  OPromise.call(this);
-  
+
+  OEventTarget.call(this);
+
   this.properties = {};
-  
+
   // LocalStorage shim
   this._preferences = new OStorage();
-  
+
   // Set WIDGET_PREFERENCES_LOADED feature to LOADED
   deferredComponentsLoadStatus['WIDGET_PREFERENCES_LOADED'] = true;
-  
+
   // Setup the widget interface
   var xhr = new XMLHttpRequest();
-  
+
   xhr.open("GET", '/manifest.json', true);
 
   xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
           this.properties = JSON.parse(xhr.responseText);
-          this.resolve();
-          
+
           // Set WIDGET_API_LOADED feature to LOADED
           deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
       }
   }.bind(this);
 
   xhr.send();
-  
-  // Setup widget object proxy listener 
+
+  // Setup widget object proxy listener
   // for injected scripts and popups to connect to
   OEX.addEventListener('controlmessage', function( msg ) {
-    
+
     if( !msg.data || !msg.data.action ) {
       return;
     }
-    
+
     switch( msg.data.action ) {
-      
+
       // Set up all storage properties
       case '___O_widget_setup_REQUEST':
-      
+
         var dataObj = {};
         for(var i in this.properties) {
           dataObj[ i ] = this.properties[ i ];
@@ -719,37 +950,37 @@ var OWidgetObj = function() {
         });
 
         break;
-        
+
       // Update a storage item
       case '___O_widgetPreferences_setItem_REQUEST':
-        
+
         this._preferences.setItem( msg.data.data.key, msg.data.data.val, true );
-        
+
         break;
-      
+
       // Remove a storage item
       case '___O_widgetPreferences_removeItem_REQUEST':
 
         this._preferences.removeItem( msg.data.data.key, true );
 
         break;
-        
+
       // Clear all storage items
       case '___O_widgetPreferences_clear_REQUEST':
 
         this._preferences.clear( true );
-        
+
         break;
-        
+
       default:
         break;
     }
-    
+
   }.bind(this), false);
-  
+
 };
 
-OWidgetObj.prototype = Object.create( OPromise.prototype );
+OWidgetObj.prototype = Object.create( OEventTarget.prototype );
 
 OWidgetObj.prototype.__defineGetter__('name', function() {
   return this.properties.name || "";
@@ -789,15 +1020,14 @@ OWidgetObj.prototype.__defineGetter__('preferences', function() {
 });
 
 // Add Widget API directly to global window
-global.widget = global.widget || (function() {
-  return new OWidgetObj();
-})();
-OEX.BrowserWindowsManager = function() {
+global.widget = global.widget || new OWidgetObj();
+
+var BrowserWindowsManager = function() {
 
   OPromise.call(this);
 
   // Set up 1 mock BrowserWindow at startup
-  this[0] = new OEX.BrowserWindow();
+  this[0] = new BrowserWindow();
   this.length = 1;
 
   this._lastFocusedWindow = this[0];
@@ -818,7 +1048,7 @@ OEX.BrowserWindowsManager = function() {
       // Replace tab properties belonging to this window with real properties
       var _tabs = [];
       for (var j = 0, k = _windows[0].tabs.length; j < k; j++) {
-        _tabs[j] = new OEX.BrowserTab(_windows[0].tabs[j], this[0]);
+        _tabs[j] = new BrowserTab(_windows[0].tabs[j], this[0]);
         
         // Set as the currently focused tab?
         if(_tabs[j].properties.active == true && this[0].properties.focused == true) {
@@ -833,13 +1063,13 @@ OEX.BrowserWindowsManager = function() {
     }
 
     for (var i = 1, l = _windows.length; i < l; i++) {
-      this[i] = new OEX.BrowserWindow(_windows[i]);
+      this[i] = new BrowserWindow(_windows[i]);
       this.length = i + 1;
 
       // Replace tab properties belonging to this window with real properties
       var _tabs = [];
       for (var j = 0, k = _windows[i].tabs.length; j < k; j++) {
-        _tabs[j] = new OEX.BrowserTab(_windows[i].tabs[j], this[i]);
+        _tabs[j] = new BrowserTab(_windows[i].tabs[j], this[i]);
         
         // Set as the currently focused tab?
         if(_tabs[j].properties.active == true && this[i].properties.focused == true) {
@@ -912,18 +1142,18 @@ OEX.BrowserWindowsManager = function() {
 
       // If window was created outside of this framework, add it in and initialize
       if (!windowFound) {
-        var newBrowserWindow = new OEX.BrowserWindow(_window);
+        var newBrowserWindow = new BrowserWindow(_window);
 
-        // Convert tab objects to OEX.BrowserTab objects
+        // Convert tab objects to BrowserTab objects
         var newBrowserTabs = [];
         for (var i in _window.tabs) {
 
-          var newBrowserTab = new OEX.BrowserTab(_window.tabs[i], newBrowserWindow);
+          var newBrowserTab = new BrowserTab(_window.tabs[i], newBrowserWindow);
 
           newBrowserTabs.push(newBrowserTab);
 
         }
-        // Add OEX.BrowserTab objects to new OEX.BrowserWindow object
+        // Add BrowserTab objects to new BrowserWindow object
         newBrowserWindow.tabs.replaceTabs(newBrowserTabs);
 
         this[this.length] = newBrowserWindow;
@@ -942,7 +1172,7 @@ OEX.BrowserWindowsManager = function() {
         }
 
         // Fire a new 'create' event on this manager object
-        this.fireEvent(new OEvent('create', {
+        this.dispatchEvent(new OEvent('create', {
           browserWindow: newBrowserWindow
         }));
 
@@ -966,12 +1196,12 @@ OEX.BrowserWindowsManager = function() {
     if (deleteIndex > -1) {
 
       // Fire a new 'close' event on the closed BrowserWindow object
-      this[deleteIndex].fireEvent(new OEvent('close', {
+      this[deleteIndex].dispatchEvent(new OEvent('close', {
         'browserWindow': this[deleteIndex]
       }));
 
       // Fire a new 'close' event on this manager object
-      this.fireEvent(new OEvent('close', {
+      this.dispatchEvent(new OEvent('close', {
         'browserWindow': this[deleteIndex]
       }));
 
@@ -989,12 +1219,40 @@ OEX.BrowserWindowsManager = function() {
   }.bind(this));
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
-
+    
+    // Find and fire blur event on currently focused window
     for (var i = 0, l = this.length; i < l; i++) {
 
-      if (this[i].properties.id == windowId) {
-        this._lastFocusedWindow = this[i];
+      if (this[i] == this._lastFocusedWindow && this[i].properties.id != windowId) {
+        
+        // Fire a new 'blur' event on this manager object
+        this.dispatchEvent(new OEvent('blur', {
+          browserWindow: this[i]
+        }));
+        
         break;
+      }
+
+    }
+    
+    // If no new window is focused, abort here
+    if( windowId !== chrome.windows.WINDOW_ID_NONE ) {
+    
+      // Find and fire focus event on newly focused window
+      for (var i = 0, l = this.length; i < l; i++) {
+
+        if (this[i].properties.id == windowId && this[i] !== this._lastFocusedWindow) {
+          
+          this._lastFocusedWindow = this[i];
+          
+          // Fire a new 'focus' event on this manager object
+          this.dispatchEvent(new OEvent('focus', {
+            browserWindow: this[i]
+          }));
+          
+          break;
+        }
+
       }
 
     }
@@ -1003,13 +1261,13 @@ OEX.BrowserWindowsManager = function() {
 
 };
 
-OEX.BrowserWindowsManager.prototype = Object.create(OPromise.prototype);
+BrowserWindowsManager.prototype = Object.create(OPromise.prototype);
 
-OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowProperties, obj) {
+BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindowProperties, obj) {
 
   browserWindowProperties = browserWindowProperties || {};
 
-  var shadowBrowserWindow = obj || new OEX.BrowserWindow(browserWindowProperties);
+  var shadowBrowserWindow = obj || new BrowserWindow(browserWindowProperties);
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved) {
@@ -1027,14 +1285,14 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
         shadowBrowserWindow.properties[i] = _window[i];
       }
 
-      // Convert tab objects to OEX.BrowserTab objects
+      // Convert tab objects to BrowserTab objects
       var browserTabs = [];
 
       if (_window.tabs) {
 
         for (var i = 0, l = _window.tabs.length; i < l; i++) {
 
-          var shadowBrowserTab = new OEX.BrowserTab(_window.tabs[i], shadowBrowserWindow);
+          var shadowBrowserTab = new BrowserTab(_window.tabs[i], shadowBrowserWindow);
 
           browserTabs.push(shadowBrowserTab);
 
@@ -1044,10 +1302,6 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
 
       //shadowBrowserWindow._parent = self;
       shadowBrowserWindow.tabs.replaceTabs(browserTabs);
-
-      // Add this object to the current collection
-      this[this.length] = shadowBrowserWindow;
-      this.length += 1;
 
       // Resolution order:
       // 1. Window
@@ -1062,7 +1316,7 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
       if (tabsToInject) {
         for (var i in tabsToInject) {
 
-          if (tabsToInject[i] instanceof OEX.BrowserTab) {
+          if (tabsToInject[i] instanceof BrowserTab) {
 
             (function(tab) {
               chrome.tabs.move(
@@ -1080,21 +1334,20 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
               );
             })(tabsToInject[i]);
 
-          } else if (tabsToInject[i] instanceof OEX.BrowserTabGroup) {
+          } else if (tabsToInject[i] instanceof BrowserTabGroup) {
 
             // TODO Implement BrowserTabGroup object handling here
             
           } else { // Treat as a BrowserTabProperties object by default
             (function(browserTabProperties) {
+              
+              var shadowBrowserTab = new BrowserTab(browserTabProperties, shadowBrowserWindow);
 
-              var shadowBrowserTab = new OEX.BrowserTab(browserTabProperties, shadowBrowserWindow);
+              //shadowBrowserTab.properties.index = -1;
+              shadowBrowserTab.properties.windowId = _window.id;
 
               chrome.tabs.create(
                 shadowBrowserTab.properties, 
-                {
-                  index: -1,
-                  windowId: _window.id
-                }, 
                 function(_tab) {
                   for (var i in _tab) {
                     shadowBrowserTab.properties[i] = _tab[i];
@@ -1116,7 +1369,7 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
       }
 
       // Fire a new 'create' event on this manager object
-      this.fireEvent(new OEvent('create', {
+      this.dispatchEvent(new OEvent('create', {
         browserWindow: shadowBrowserWindow
       }));
 
@@ -1124,11 +1377,15 @@ OEX.BrowserWindowsManager.prototype.create = function(tabsToInject, browserWindo
 
     }.bind(this)
   );
+  
+  // Add this object to the current collection
+  this[this.length] = shadowBrowserWindow;
+  this.length += 1;
 
   return shadowBrowserWindow;
 };
 
-OEX.BrowserWindowsManager.prototype.getAll = function() {
+BrowserWindowsManager.prototype.getAll = function() {
 
   var allWindows = [];
 
@@ -1140,13 +1397,13 @@ OEX.BrowserWindowsManager.prototype.getAll = function() {
 
 };
 
-OEX.BrowserWindowsManager.prototype.getLastFocused = function() {
+BrowserWindowsManager.prototype.getLastFocused = function() {
 
   return this._lastFocusedWindow;
 
 };
 
-OEX.BrowserWindowsManager.prototype.close = function(browserWindow) {
+BrowserWindowsManager.prototype.close = function(browserWindow) {
 
   chrome.windows.remove(browserWindow.properties.id, function() {
 
@@ -1157,7 +1414,7 @@ OEX.BrowserWindowsManager.prototype.close = function(browserWindow) {
 
 };
 
-OEX.BrowserWindow = function(browserWindowProperties) {
+var BrowserWindow = function(browserWindowProperties) {
 
   OPromise.call(this);
 
@@ -1170,35 +1427,35 @@ OEX.BrowserWindow = function(browserWindowProperties) {
   // Create a unique browserWindow id
   this._operaId = Math.floor(Math.random() * 1e16);
 
-  this.tabs = new OEX.BrowserTabsManager(this);
+  this.tabs = new BrowserTabsManager(this);
   // TODO Implement BrowserTabGroupsManager interface
-  //this.tabGroups = new OEX.BrowserTabGroupsManager( this );
+  //this.tabGroups = new BrowserTabGroupsManager( this );
 };
 
-OEX.BrowserWindow.prototype = Object.create(OPromise.prototype);
+BrowserWindow.prototype = Object.create(OPromise.prototype);
 
 // API
-OEX.BrowserWindow.prototype.__defineGetter__("id", function() {
+BrowserWindow.prototype.__defineGetter__("id", function() {
   return this._operaId;
 });
 
-OEX.BrowserWindow.prototype.__defineGetter__("closed", function() {
+BrowserWindow.prototype.__defineGetter__("closed", function() {
   return this.properties.closed || false;
 });
 
-OEX.BrowserWindow.prototype.__defineGetter__("focused", function() {
+BrowserWindow.prototype.__defineGetter__("focused", function() {
   return this.properties.focused || false;
 });
 
-OEX.BrowserWindow.prototype.__defineGetter__("private", function() {
+BrowserWindow.prototype.__defineGetter__("private", function() {
   return this.properties.incognito || false;
 });
 
-OEX.BrowserWindow.prototype.__defineGetter__("parent", function() {
+BrowserWindow.prototype.__defineGetter__("parent", function() {
   return this._parent;
 });
 
-OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
+BrowserWindow.prototype.insert = function(browserTab, child) {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved ||
@@ -1221,7 +1478,7 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
   };
 
   // Set insert position for the new tab from 'before' attribute, if any
-  if (child && child instanceof OEX.BrowserTab) {
+  if (child && child instanceof BrowserTab) {
 
     if (child.closed === true) {
       throw {
@@ -1244,7 +1501,7 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
 
   }
 
-  if (browserTab instanceof OEX.BrowserTab) {
+  if (browserTab instanceof BrowserTab) {
 
     // Fulfill this action against the current object
     chrome.tabs.move(
@@ -1257,7 +1514,7 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
     );
 
   }
-/* else if( browserTab instanceof OEX.BrowserTabGroup ) {
+/* else if( browserTab instanceof BrowserTabGroup ) {
 
     // TODO implement BrowserTabGroup interface
 
@@ -1265,7 +1522,7 @@ OEX.BrowserWindow.prototype.insert = function(browserTab, child) {
 
 };
 
-OEX.BrowserWindow.prototype.focus = function() {
+BrowserWindow.prototype.focus = function() {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved || (this._parent && !this._parent.resolved)) {
@@ -1279,12 +1536,12 @@ OEX.BrowserWindow.prototype.focus = function() {
     }, 
     function() {
       this.dequeue();
-    }
+    }.bind(this)
   );
 
 };
 
-OEX.BrowserWindow.prototype.update = function(browserWindowProperties) {
+BrowserWindow.prototype.update = function(browserWindowProperties) {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved || (this._parent && !this._parent.resolved)) {
@@ -1310,7 +1567,7 @@ OEX.BrowserWindow.prototype.update = function(browserWindowProperties) {
 
 }
 
-OEX.BrowserWindow.prototype.close = function() {
+BrowserWindow.prototype.close = function() {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved || (this._parent && !this._parent.resolved)) {
@@ -1322,7 +1579,7 @@ OEX.BrowserWindow.prototype.close = function() {
 
 };
 
-OEX.BrowserTabsManager = function( parentObj ) {
+var BrowserTabsManager = function( parentObj ) {
 
   OPromise.call( this );
 
@@ -1421,13 +1678,13 @@ OEX.BrowserTabsManager = function( parentObj ) {
 
 };
 
-OEX.BrowserTabsManager.prototype = Object.create( OPromise.prototype );
+BrowserTabsManager.prototype = Object.create( OPromise.prototype );
 
-OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before, obj ) {
+BrowserTabsManager.prototype.create = function( browserTabProperties, before, obj ) {
 
   browserTabProperties = browserTabProperties || {};
 
-  var shadowBrowserTab = obj || new OEX.BrowserTab();
+  var shadowBrowserTab = obj || new BrowserTab();
 
   // If current object is not resolved, then enqueue this action
   if( !this.resolved || (this._parent && !this._parent.resolved) ) {
@@ -1458,7 +1715,7 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
   browserTabProperties.windowId = this._parent ? this._parent.properties.id : undefined;
 
   // Set insert position for the new tab from 'before' attribute, if any
-  if( before && before instanceof OEX.BrowserTab ) {
+  if( before && before instanceof BrowserTab ) {
 
     if( before.closed === true ) {
       throw {
@@ -1508,20 +1765,19 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
       if( noParentWindow ) {
         shadowBrowserTab._windowParent = OEX.windows.getLastFocused();
       }
-
-      // Add this object to the current tabs collection
-      this.addTabs([ shadowBrowserTab ], shadowBrowserTab.properties.index);
-
-      // Add this object to the root tab manager (if this is not the root tab manager)
-      if(this !== OEX.tabs) {
-        OEX.tabs.addTabs([ shadowBrowserTab ]);
-      }
+      
+      // Move this object to the correct position within the current tabs collection
+      // (but don't worry about doing this for the global tabs manager)
+      /*if(this !== OEX.tabs) {
+        this.removeTab( shadowBrowserTab );
+        this.addTabs([ shadowBrowserTab ], shadowBrowserTab.properties.index);
+      }*/
 
       // Resolve new tab, if it hasn't been resolved already
       shadowBrowserTab.resolve( _tab );
 
       // Dispatch oncreate event to all attached event listeners
-      this.fireEvent( new OEvent('create', {
+      this.dispatchEvent( new OEvent('create', {
           "tab": shadowBrowserTab,
           "prevWindow": shadowBrowserTab._windowParent,
           "prevTabGroup": null,
@@ -1531,12 +1787,20 @@ OEX.BrowserTabsManager.prototype.create = function( browserTabProperties, before
       this.dequeue();
 
   }.bind(this));
+  
+  // Add this object to the end of the current tabs collection
+  this.addTabs([ shadowBrowserTab ]);
+
+  // Add this object to the root tab manager (if this is not the root tab manager)
+  if(this !== OEX.tabs) {
+    OEX.tabs.addTabs([ shadowBrowserTab ]);
+  }
 
   return shadowBrowserTab;
 
 };
 
-OEX.BrowserTabsManager.prototype.getAll = function() {
+BrowserTabsManager.prototype.getAll = function() {
 
   var allTabs = [];
 
@@ -1548,15 +1812,15 @@ OEX.BrowserTabsManager.prototype.getAll = function() {
 
 };
 
-OEX.BrowserTabsManager.prototype.getSelected = function() {
+BrowserTabsManager.prototype.getSelected = function() {
 
   return this._lastFocusedTab || this[ 0 ];
 
 };
 // Alias of .getSelected()
-OEX.BrowserTabsManager.prototype.getFocused = OEX.BrowserTabsManager.prototype.getSelected;
+BrowserTabsManager.prototype.getFocused = BrowserTabsManager.prototype.getSelected;
 
-OEX.BrowserTabsManager.prototype.close = function( browserTab ) {
+BrowserTabsManager.prototype.close = function( browserTab ) {
 
   if( !browserTab ) {
     return;
@@ -1576,14 +1840,14 @@ OEX.BrowserTabsManager.prototype.close = function( browserTab ) {
 
 };
 
-OEX.RootBrowserTabsManager = function() {
+var RootBrowserTabsManager = function() {
 
-  OEX.BrowserTabsManager.call(this);
+  BrowserTabsManager.call(this);
 
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
 
-    window.setTimeout(function() {
+    global.setTimeout(function() {
 
       // If this tab is already registered in the root tab collection then ignore
       var tabFound = false;
@@ -1596,7 +1860,7 @@ OEX.RootBrowserTabsManager = function() {
 
       if (!tabFound) {
         // Create and register a new BrowserTab object
-        var newTab = new OEX.BrowserTab(_tab);
+        var newTab = new BrowserTab(_tab);
 
         var noParentFound = true;
 
@@ -1619,7 +1883,7 @@ OEX.RootBrowserTabsManager = function() {
 
         newTab._windowParent.tabs.addTabs([newTab], newTab.properties.index);
 
-        newTab._windowParent.tabs.fireEvent(new OEvent('create', {
+        newTab._windowParent.tabs.dispatchEvent(new OEvent('create', {
           "tab": newTab,
           "prevWindow": newTab._windowParent,
           "prevTabGroup": null,
@@ -1633,7 +1897,7 @@ OEX.RootBrowserTabsManager = function() {
         newTab.resolve();
 
         // Fire a create event at RootTabsManager
-        this.fireEvent(new OEvent('create', {
+        this.dispatchEvent(new OEvent('create', {
           "tab": newTab,
           "prevWindow": newTab._windowParent,
           "prevTabGroup": null,
@@ -1675,7 +1939,7 @@ OEX.RootBrowserTabsManager = function() {
       this.removeTab( oldTab );
 
       // Fire a new 'close' event on the closed BrowserTab object
-      oldTab.fireEvent(new OEvent('close', {
+      oldTab.dispatchEvent(new OEvent('close', {
         "tab": oldTab,
         "prevWindow": oldTabWindowParent,
         "prevTabGroup": null,
@@ -1685,7 +1949,7 @@ OEX.RootBrowserTabsManager = function() {
       // Fire a new 'close' event on the closed BrowserTab's previous 
       // BrowserWindow parent object
       if(oldTabWindowParent) {
-        oldTabWindowParent.tabs.fireEvent(new OEvent('close', {
+        oldTabWindowParent.tabs.dispatchEvent(new OEvent('close', {
           "tab": oldTab,
           "prevWindow": oldTabWindowParent,
           "prevTabGroup": null,
@@ -1694,7 +1958,7 @@ OEX.RootBrowserTabsManager = function() {
       }
 
       // Fire a new 'close' event on this root tab manager object
-      this.fireEvent(new OEvent('close', {
+      this.dispatchEvent(new OEvent('close', {
         "tab": oldTab,
         "prevWindow": oldTabWindowParent,
         "prevTabGroup": null,
@@ -1807,14 +2071,14 @@ OEX.RootBrowserTabsManager = function() {
         }
       }
 
-      moveTab.fireEvent(new OEvent('move', {
+      moveTab.dispatchEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
         "prevPosition": moveInfo.fromIndex
       }));
 
-      this.fireEvent(new OEvent('move', {
+      this.dispatchEvent(new OEvent('move', {
         "tab": moveTab,
         "prevWindow": moveTabWindowParent,
         "prevTabGroup": null,
@@ -1909,9 +2173,9 @@ OEX.RootBrowserTabsManager = function() {
 
 };
 
-OEX.RootBrowserTabsManager.prototype = Object.create(OEX.BrowserTabsManager.prototype);
+RootBrowserTabsManager.prototype = Object.create( BrowserTabsManager.prototype );
 
-OEX.BrowserTab = function(browserTabProperties, windowParent) {
+var BrowserTab = function(browserTabProperties, windowParent) {
 
   OPromise.call(this);
 
@@ -1924,79 +2188,79 @@ OEX.BrowserTab = function(browserTabProperties, windowParent) {
 
 };
 
-OEX.BrowserTab.prototype = Object.create(OPromise.prototype);
+BrowserTab.prototype = Object.create(OPromise.prototype);
 
 // API
-OEX.BrowserTab.prototype.__defineGetter__("id", function() {
+BrowserTab.prototype.__defineGetter__("id", function() {
   return this._operaId;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("closed", function() {
+BrowserTab.prototype.__defineGetter__("closed", function() {
   return this.properties.closed || false;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("locked", function() {
+BrowserTab.prototype.__defineGetter__("locked", function() {
   return this.properties.pinned || false;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("focused", function() {
+BrowserTab.prototype.__defineGetter__("focused", function() {
   return this.properties.active || false;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("selected", function() {
+BrowserTab.prototype.__defineGetter__("selected", function() {
   return this.properties.active || false;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("private", function() {
+BrowserTab.prototype.__defineGetter__("private", function() {
   return this.properties.incognito || false;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("faviconUrl", function() {
+BrowserTab.prototype.__defineGetter__("faviconUrl", function() {
   if (this.properties.closed) {
     return "";
   }
   return this.properties.favIconUrl || "";
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("title", function() {
+BrowserTab.prototype.__defineGetter__("title", function() {
   if (this.properties.closed) {
     return "";
   }
   return this.properties.title || "";
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("url", function() {
+BrowserTab.prototype.__defineGetter__("url", function() {
   if (this.properties.closed) {
     return "";
   }
   return this.properties.url || "";
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("readyState", function() {
+BrowserTab.prototype.__defineGetter__("readyState", function() {
   return this.properties.status || "loading";
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("browserWindow", function() {
+BrowserTab.prototype.__defineGetter__("browserWindow", function() {
   return this._windowParent;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("tabGroup", function() {
+BrowserTab.prototype.__defineGetter__("tabGroup", function() {
   // not implemented
   return null;
 });
 
-OEX.BrowserTab.prototype.__defineGetter__("position", function() {
+BrowserTab.prototype.__defineGetter__("position", function() {
   return this.properties.index || NaN;
 });
 
 // Methods
-OEX.BrowserTab.prototype.close = function() {
+BrowserTab.prototype.close = function() {
 
   OEX.tabs.close(this);
 
 };
 
-OEX.BrowserTab.prototype.focus = function() {
+BrowserTab.prototype.focus = function() {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved) {
@@ -2012,7 +2276,7 @@ OEX.BrowserTab.prototype.focus = function() {
 
 };
 
-OEX.BrowserTab.prototype.update = function(browserTabProperties) {
+BrowserTab.prototype.update = function(browserTabProperties) {
 
   // If current object is not resolved, then enqueue this action
   if (!this.resolved) {
@@ -2043,12 +2307,12 @@ OEX.BrowserTab.prototype.update = function(browserTabProperties) {
 
 };
 
-OEX.BrowserTab.prototype.refresh = function() {
+BrowserTab.prototype.refresh = function() {
   // not implemented
 };
 
 // Web Messaging support for BrowserTab objects
-OEX.BrowserTab.prototype.postMessage = function( postData ) {
+BrowserTab.prototype.postMessage = function( postData ) {
   
   // If current object is not resolved, then enqueue this action
   if (!this.resolved ||
@@ -2065,7 +2329,7 @@ OEX.BrowserTab.prototype.postMessage = function( postData ) {
 };
 
 // Screenshot API support for BrowserTab objects
-OEX.BrowserTab.prototype.getScreenshot = function( callback ) {
+BrowserTab.prototype.getScreenshot = function( callback ) {
   
   // If current object is not resolved, then enqueue this action
   if (!this.resolved ||
@@ -2123,22 +2387,14 @@ OEX.BrowserTab.prototype.getScreenshot = function( callback ) {
   
 };
 
-OEX.windows = OEX.windows || (function() {
-  return new OEX.BrowserWindowsManager();
-})();
+var BrowserTabGroup = function(browserTabGroupProperties, windowParent) {};
+OEX.windows = OEX.windows || new BrowserWindowsManager();
 
-OEX.tabs = OEX.tabs || (function() {
-  return new OEX.RootBrowserTabsManager();
-})();
+OEX.tabs = OEX.tabs || new RootBrowserTabsManager();
 
-OEC.ToolbarContext = function() {
+var ToolbarContext = function() {
   
-  OPromise.call( this );
-  
-  // we shouldn't need this on this object since it is never checked 
-  // and nothing is enqueued
-  // (we need OPromise for its event handling capabilities only)
-  this.resolve();
+  OEventTarget.call( this );
   
   // Unfortunately, click events only fire if a popup is not supplied 
   // to a registered browser action in Chromium :(
@@ -2148,11 +2404,11 @@ OEC.ToolbarContext = function() {
   function clickEventHandler(_tab) {
     
     if( this[ 0 ] ) {
-      this[ 0 ].fireEvent( new OEvent('click', {}) );
+      this[ 0 ].dispatchEvent( new OEvent('click', {}) );
     }
     
     // Fire event also on ToolbarContext API stub
-    this.fireEvent( new OEvent('click', {}) );
+    this.dispatchEvent( new OEvent('click', {}) );
     
   }
   
@@ -2160,13 +2416,13 @@ OEC.ToolbarContext = function() {
   
 };
 
-OEC.ToolbarContext.prototype = Object.create( OPromise.prototype );
+ToolbarContext.prototype = Object.create( OEventTarget.prototype );
 
-OEC.ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
+ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
   return new ToolbarUIItem( toolbarUIItemProperties );
 };
 
-OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
+ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
   
   if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
     return;
@@ -2189,7 +2445,7 @@ OEC.ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
 
 };
 
-OEC.ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
+ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
 
   if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
     return;
@@ -2203,10 +2459,10 @@ OEC.ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
     // Disable the toolbar button
     chrome.browserAction.disable();
   
-    toolbarUIItem.fireEvent( new OEvent('remove', {}) );
+    toolbarUIItem.dispatchEvent( new OEvent('remove', {}) );
   
     // Fire event on self
-    this.fireEvent( new OEvent('remove', {}) );
+    this.dispatchEvent( new OEvent('remove', {}) );
   
   }
 
@@ -2220,8 +2476,8 @@ var ToolbarBadge = function( properties ) {
   
   // Set provided properties through object prototype setter functions
   this.properties.textContent = properties.textContent;
-  this.properties.backgroundColor = properties.backgroundColor;
-  this.properties.color = properties.color;
+  this.properties.backgroundColor = complexColorToHex(properties.backgroundColor);
+  this.properties.color = complexColorToHex(properties.color);
   this.properties.display = properties.display;
   
   //this.enqueue('apply');
@@ -2262,10 +2518,10 @@ ToolbarBadge.prototype.__defineGetter__("backgroundColor", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("backgroundColor", function( val ) {
-  this.properties.backgroundColor = "" + val;
+  this.properties.backgroundColor = complexColorToHex("" + val);
 
   if( this.resolved ) {
-    chrome.browserAction.setBadgeBackgroundColor({ "color": ("" + val) });
+    chrome.browserAction.setBadgeBackgroundColor({ "color": this.properties.backgroundColor });
   }
 });
 
@@ -2274,7 +2530,7 @@ ToolbarBadge.prototype.__defineGetter__("color", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("color", function( val ) {
-  this.properties.color = "" + val;
+  this.properties.color = complexColorToHex("" + val);
   // not implemented in chromium
 });
 
@@ -2443,11 +2699,9 @@ ToolbarUIItem.prototype.__defineGetter__("badge", function() {
   return this.properties.badge;
 });
 
-OEC.toolbar = OEC.toolbar || (function() {
-  return new OEC.ToolbarContext();
-})();
+OEC.toolbar = OEC.toolbar || new ToolbarContext();
 
-  if (window.opera) {
+  if (global.opera) {
     isReady = true;
 
     // Make scripts also work in Opera <= version 12
@@ -2475,14 +2729,14 @@ OEC.toolbar = OEC.toolbar || (function() {
       var hasFired_DOMContentLoaded = false,
           hasFired_Load = false;
 
-      document.addEventListener("DOMContentLoaded", function handle_DomContentLoaded() {
+      global.document.addEventListener("DOMContentLoaded", function handle_DomContentLoaded() {
         hasFired_DOMContentLoaded = true;
-        document.removeEventListener("DOMContentLoaded", handle_DomContentLoaded, true);
+        global.document.removeEventListener("DOMContentLoaded", handle_DomContentLoaded, true);
       }, true);
     
-      window.addEventListener("load", function handle_Load() {
+      global.addEventListener("load", function handle_Load() {
         hasFired_Load = true;
-        window.removeEventListener("load", handle_Load, true);
+        global.removeEventListener("load", handle_Load, true);
       }, true);
 
       function interceptAddEventListener(target, _name) {
@@ -2498,7 +2752,7 @@ OEC.toolbar = OEC.toolbar || (function() {
             }
           
             if (isReady) {
-              fn.call(window);
+              fn.call(global);
             } else {
               fns[_name.toLowerCase()].push(fn);
             }
@@ -2516,15 +2770,14 @@ OEC.toolbar = OEC.toolbar || (function() {
 
       }
 
-      interceptAddEventListener(window, 'load');
-      interceptAddEventListener(document, 'domcontentloaded');
-      interceptAddEventListener(window, 'domcontentloaded'); // handled bubbled DOMContentLoaded
+      interceptAddEventListener(global, 'load');
+      interceptAddEventListener(global.document, 'domcontentloaded');
+      interceptAddEventListener(global, 'domcontentloaded'); // handled bubbled DOMContentLoaded
 
       function fireEvent(name, target) {
         var evtName = name.toLowerCase();
 
-        var evt = document.createEvent('Event');
-        evt.initEvent(evtName, true, true);
+        var evt = new OEvent(evtName, {});
 
         for (var i = 0, len = fns[evtName].length; i < len; i++) {
           fns[evtName][i].call(target, evt);
@@ -2533,7 +2786,7 @@ OEC.toolbar = OEC.toolbar || (function() {
       }
 
       function ready() {
-        window.setTimeout(function() {
+        global.setTimeout(function() {
 
           if (isReady) {
             return;
@@ -2541,27 +2794,44 @@ OEC.toolbar = OEC.toolbar || (function() {
 
           // Handle queued opera 'isReady' event functions
           for (var i = 0, len = fns['isready'].length; i < len; i++) {
-            fns['isready'][i].call(window);
+            fns['isready'][i].call(global);
           }
           fns['isready'] = []; // clear
+          
+          var domContentLoadedTimeoutOverride = new Date().getTime() + 3000;
 
           // Synthesize and fire the document domcontentloaded event
           (function fireDOMContentLoaded() {
+            
+            var currentTime = new Date().getTime();
 
             // Check for hadFired_Load in case we missed DOMContentLoaded
             // event, in which case, we syntesize DOMContentLoaded here
             // (always synthesized in Chromium Content Scripts)
-            if (hasFired_DOMContentLoaded || hasFired_Load) {
+            if (hasFired_DOMContentLoaded || hasFired_Load || currentTime >= domContentLoadedTimeoutOverride) {
               
-              fireEvent('domcontentloaded', document);
+              fireEvent('domcontentloaded', global.document);
+              
+              if(currentTime >= domContentLoadedTimeoutOverride) {
+                console.warn('document.domcontentloaded event fired on check timeout');
+              }
+              
+              var loadTimeoutOverride = new Date().getTime() + 3000;
               
               // Synthesize and fire the window load event
               // after the domcontentloaded event has been
               // fired
               (function fireLoad() {
+                
+                var currentTime = new Date().getTime();
 
-                if (hasFired_Load) {
+                if (hasFired_Load || currentTime >= loadTimeoutOverride) {
+
                   fireEvent('load', window);
+                  
+                  if(currentTime >= loadTimeoutOverride) {
+                    console.warn('window.load event fired on check timeout');
+                  }
 
                   // Run delayed events (if any)
                   for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
@@ -2569,18 +2839,19 @@ OEC.toolbar = OEC.toolbar || (function() {
                     o.target[o.methodName].apply(o.target, o.args);
                   }
                   _delayedExecuteEvents = [];
+
                 } else {
-                  window.setTimeout(function() {
+                  global.setTimeout(function() {
                     fireLoad();
-                  }, 20);
+                  }, 50);
                 }
                 
               })();
               
             } else {
-              window.setTimeout(function() {
+              global.setTimeout(function() {
                 fireDOMContentLoaded();
-              }, 20);
+              }, 50);
             }
 
           })();
@@ -2593,12 +2864,13 @@ OEC.toolbar = OEC.toolbar || (function() {
       var holdTimeoutOverride = new Date().getTime() + 3000;
     
       (function holdReady() {
-
+        
         var currentTime = new Date().getTime();
 
         if (currentTime >= holdTimeoutOverride) {
           // All scripts now ready to be executed: TIMEOUT override
-          console.error('opera.isReady check timed out');
+          console.warn('opera.isReady check timed out');
+          hasFired_Load = true; // override
           ready();
           return;
         }
@@ -2608,7 +2880,7 @@ OEC.toolbar = OEC.toolbar || (function() {
             // spin the loop until everything is working
             // or we receive a timeout override (handled
             // in next loop, above)
-            window.setTimeout(function() {
+            global.setTimeout(function() {
               holdReady();
             }, 20);
             return;
@@ -2625,7 +2897,7 @@ OEC.toolbar = OEC.toolbar || (function() {
         // execute the function immediately.
         // otherwise, queue it up until isReady
         if (isReady) {
-          fn.call(window);
+          fn.call(global);
         } else {
           fns['isready'].push(fn);
         }
