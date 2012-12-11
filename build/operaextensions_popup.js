@@ -276,6 +276,15 @@ var delayedExecuteEvents = [
 
  EventTarget.mixin(Promise.prototype);
 
+function OError(name, msg) {
+  Error.call(this);
+  Error.captureStackTrace(this, arguments.callee);
+  this.name = name || "Error";
+  this.message = msg || "";
+};
+
+OError.prototype.__proto__ = Error.prototype;
+
 var OEvent = function(eventType, eventProperties) {
 
   var evt = document.createEvent("Event");

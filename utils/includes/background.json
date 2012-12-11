@@ -5,6 +5,7 @@
   "../src/common/third_party/rsvp.js",
 
   "../src/common/utils.js",
+  "../src/common/Error.js",
 
   "../src/common/Event.js",
   "../src/common/EventTarget.js",

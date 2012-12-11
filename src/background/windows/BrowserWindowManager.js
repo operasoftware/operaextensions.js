@@ -472,7 +472,7 @@ BrowserWindowManager.prototype.getLastFocused = function() {
 
 BrowserWindowManager.prototype.close = function(browserWindow) {
 
-  if(!browserWindow || !browserWindow instanceof BrowserWindow) {
+  if(!browserWindow || !(browserWindow instanceof BrowserWindow)) {
     return;
   }
   
