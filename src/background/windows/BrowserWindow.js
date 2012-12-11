@@ -23,15 +23,15 @@ BrowserWindow.prototype.__defineGetter__("id", function() {
 });
 
 BrowserWindow.prototype.__defineGetter__("closed", function() {
-  return this.properties.closed || false;
+  return this.properties.closed !== undefined ? !!this.properties.closed : false;
 });
 
 BrowserWindow.prototype.__defineGetter__("focused", function() {
-  return this.properties.focused || false;
+  return this.properties.focused !== undefined ? !!this.properties.focused : false;
 });
 
 BrowserWindow.prototype.__defineGetter__("private", function() {
-  return this.properties.incognito || false;
+  return this.properties.incognito !== undefined ? !!this.properties.incognito : false;
 });
 
 BrowserWindow.prototype.__defineGetter__("parent", function() {

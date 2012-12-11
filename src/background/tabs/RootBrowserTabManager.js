@@ -2,21 +2,43 @@
 var RootBrowserTabManager = function() {
 
   BrowserTabManager.call(this);
+  
+  // list of tab objects we should ignore
+  this._blackList = {};
 
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
 
+    // Delay so chrome.tabs.create callback gets to run first, if any
     global.setTimeout(function() {
+      
+      if( this._blackList[ _tab.id ] ) {
+        return;
+      }
       
       // If this tab is already registered in the root tab collection then ignore
       var tabFound = false;
       for (var i = 0, l = this.length; i < l; i++) {
+        // opera.extension.windows.create rewrite hack
+        if (this[i].rewriteUrl && this[i].properties.url == _tab.url) {
+          for(var j in _tab) {
+            if(j == 'url') continue;
+            this[i].properties[j] = _tab[j];
+          }
+          // now rewrite to the correct url 
+          // (which will be navigated to automatically when tab is resolved)
+          this[i].url = this[i].rewriteUrl;
+          delete this[i].rewriteUrl;
+          return;
+        }
+        
+        // Standard tab search
         if (this[i].properties.id == _tab.id) {
           tabFound = true;
           break;
         }
       }
-
+        
       if (!tabFound) {
         // Create and register a new BrowserTab object
         var newTab = new BrowserTab(_tab);
@@ -65,11 +87,15 @@ var RootBrowserTabManager = function() {
 
       }
       
-    }.bind(this), 250);
+    }.bind(this), 200);
 
   }.bind(this));
 
   chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+    
+    if( this._blackList[ tabId ] ) {
+      return;
+    }
 
     // Remove tab from current collection
     var deleteIndex = -1;
@@ -130,55 +156,55 @@ var RootBrowserTabManager = function() {
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
-    global.setTimeout(function() {
+    var updateIndex = -1;
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i].properties.id == tabId) {
+        updateIndex = i;
+        break;
+      }
+    }
 
-      var updateIndex = -1;
-      for (var i = 0, l = this.length; i < l; i++) {
-        if (this[i].properties.id == tabId) {
-          updateIndex = i;
+    if (updateIndex < 0) {
+      return; // nothing to update
+    }
+
+    var updateTab = this[updateIndex];
+
+    // Update tab properties in current collection
+    for (var prop in tab) {
+      if(prop == "id" || prop == "windowId") { // ignore these
+        continue;
+      }
+      updateTab.properties[prop] = tab[prop];
+    }
+
+    // Update tab properties in _windowParent object
+    if (updateTab._windowParent) {
+      var parentUpdateIndex = -1;
+      for (var i = 0, l = updateTab._windowParent.tabs.length; i < l; i++) {
+        if (updateTab._windowParent.tabs[i].properties.id == tabId) {
+          parentUpdateIndex = i;
           break;
         }
       }
 
-      if (updateIndex < 0) {
-        return; // nothing to update
-      }
+      if (parentUpdateIndex > -1) {
 
-      var updateTab = this[updateIndex];
-
-      // Update tab properties in current collection
-      for (var prop in tab) {
-        if(prop == "id" || prop == "windowId") { // ignore these
-          continue;
-        }
-        updateTab.properties[prop] = tab[prop];
-      }
-
-      // Update tab properties in _windowParent object
-      if (updateTab._windowParent) {
-        var parentUpdateIndex = -1;
-        for (var i = 0, l = updateTab._windowParent.tabs.length; i < l; i++) {
-          if (updateTab._windowParent.tabs[i].properties.id == tabId) {
-            parentUpdateIndex = i;
-            break;
-          }
-        }
-
-        if (parentUpdateIndex > -1) {
-
-          for (var i in changeInfo) {
-            updateTab._windowParent.tabs[parentUpdateIndex].properties[i] = changeInfo[i];
-          }
-
+        for (var i in changeInfo) {
+          updateTab._windowParent.tabs[parentUpdateIndex].properties[i] = changeInfo[i];
         }
 
       }
-    
-    }.bind(this), 250);
+
+    }
 
   }.bind(this));
   
   function moveHandler(tabId, moveInfo) {
+    
+    if( this._blackList[ tabId ] ) {
+      return;
+    }
     
     // Find tab object
     var moveIndex = -1;
@@ -264,6 +290,10 @@ var RootBrowserTabManager = function() {
   chrome.tabs.onAttached.addListener(moveHandler.bind(this));
 
   chrome.tabs.onActivated.addListener(function(activeInfo) {
+    
+    if( this._blackList[ activeInfo.tabId ] ) {
+      return;
+    }
     
     if(!activeInfo.tabId) return;
     
