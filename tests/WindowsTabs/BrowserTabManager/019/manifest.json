@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserTabManager-019",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Events for focussing tabs",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
