@@ -922,6 +922,9 @@ var OWidgetObj = function() {
   xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
           this.properties = JSON.parse(xhr.responseText);
+          
+          // Set extension id from base URL
+          this.properties.id = /^chrome\-extension\:\/\/(.*)\/$/.exec(chrome.extension.getURL(""))[1];
 
           // Set WIDGET_API_LOADED feature to LOADED
           deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
@@ -1006,7 +1009,7 @@ OWidgetObj.prototype.__defineGetter__('description', function() {
 });
 
 OWidgetObj.prototype.__defineGetter__('author', function() {
-  return this.properties.author || "";
+  return this.properties.author ? this.properties.author.name || "" : "";
 });
 
 OWidgetObj.prototype.__defineGetter__('authorHref', function() {
