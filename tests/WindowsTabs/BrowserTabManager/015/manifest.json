@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserTabManager-015",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Updating tabs",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
