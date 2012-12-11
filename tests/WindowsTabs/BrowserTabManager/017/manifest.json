@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserTabManager-017",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Refreshing tabs and ready state",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
