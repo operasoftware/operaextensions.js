@@ -65,7 +65,7 @@ var RootBrowserTabManager = function() {
 
       }
       
-    }.bind(this), 200);
+    }.bind(this), 250);
 
   }.bind(this));
 
@@ -174,7 +174,7 @@ var RootBrowserTabManager = function() {
 
       }
     
-    }.bind(this), 200);
+    }.bind(this), 250);
 
   }.bind(this));
   

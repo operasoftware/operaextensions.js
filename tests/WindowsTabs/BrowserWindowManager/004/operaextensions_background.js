@@ -1048,6 +1048,11 @@ var BrowserWindowManager = function() {
       this[i] = new BrowserWindow(_windows[i]);
       this.length = i + 1;
       
+      // First run
+      if(this._lastFocusedWindow === null) {
+        this._lastFocusedWindow = this[i];
+      }
+      
       if(this[i].properties.focused == true) {
         this._lastFocusedWindow = this[i];
       }
@@ -1195,6 +1200,8 @@ var BrowserWindowManager = function() {
       /*this[deleteIndex].dispatchEvent(new OEvent('close', {
         'browserWindow': this[deleteIndex]
       }));*/
+      
+      this[deleteIndex].properties.closed = true;
 
       // Fire a new 'close' event on this manager object
       this.dispatchEvent(new OEvent('close', {
@@ -1217,20 +1224,7 @@ var BrowserWindowManager = function() {
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
     
-      // Find and fire blur event on currently focused window
-      for (var i = 0, l = this.length; i < l; i++) {
-
-        if (this[i] == this._lastFocusedWindow && this[i].properties.id != windowId) {
-        
-          // Fire a new 'blur' event on this manager object
-          this.dispatchEvent(new OEvent('blur', {
-            browserWindow: this[i]
-          }));
-        
-          break;
-        }
-
-      }
+      var _prevFocusedWindow = this._lastFocusedWindow;
     
       // If no new window is focused, abort here
       if( windowId !== chrome.windows.WINDOW_ID_NONE ) {
@@ -1239,17 +1233,67 @@ var BrowserWindowManager = function() {
         for (var i = 0, l = this.length; i < l; i++) {
 
           if (this[i].properties.id == windowId && this[i] !== this._lastFocusedWindow) {
+            
+            this[i].properties.focused = true;
           
             this._lastFocusedWindow = this[i];
-          
-            // Fire a new 'focus' event on this manager object
-            this.dispatchEvent(new OEvent('focus', {
-              browserWindow: this[i]
-            }));
+            
+            // Setup the current focused tab on window focus change event
+            // since Chromium doesn't fire the chrome.tabs.onActivated function
+            // when we just switch between browser windows
+            for(var j = 0, k = this._lastFocusedWindow.tabs.length; j < k; j++) {
+              if(this._lastFocusedWindow.tabs[j].properties.active == true) {
+                OEX.tabs._lastFocusedTab = this._lastFocusedWindow.tabs[j];
+                break;
+              }
+            }
           
             break;
           }
 
+        }
+
+      }
+      
+      // Find and fire blur event on currently focused window
+      for (var i = 0, l = this.length; i < l; i++) {
+
+        if (this[i].properties.id !== windowId && this[i] == _prevFocusedWindow) {
+        
+          this[i].properties.focused = false;
+        
+          // Fire a new 'blur' event on the window object
+          this[i].dispatchEvent(new OEvent('blur', {
+            // browserWindow should refer to the new foreground window
+            // see: /tests/BrowserWindowManager/004/
+            browserWindow: this._lastFocusedWindow
+          }));
+          
+          // Fire a new 'blur' event on this manager object
+          this.dispatchEvent(new OEvent('blur', {
+            // browserWindow should refer to the new foreground window
+            // see: /tests/BrowserWindowManager/004/
+            browserWindow: this._lastFocusedWindow
+          }));
+          
+          // If something is blurring then we should also fire the
+          // corresponding 'focus' events
+          
+          // Fire a new 'focus' event on the window object
+          this._lastFocusedWindow.dispatchEvent(new OEvent('focus', {
+            // browserWindow should refer to the old background window
+            // see: /tests/BrowserWindowManager/004/
+            browserWindow: _prevFocusedWindow
+          }));
+          
+          // Fire a new 'focus' event on this manager object
+          this.dispatchEvent(new OEvent('focus', {
+            // browserWindow should refer to the old background window
+            // see: /tests/BrowserWindowManager/004/
+            browserWindow: _prevFocusedWindow
+          }));
+        
+          break;
         }
 
       }
@@ -1287,24 +1331,6 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
       for (var i in _window) {
         shadowBrowserWindow.properties[i] = _window[i];
       }
-
-      // Convert tab objects to BrowserTab objects
-      var browserTabs = [];
-
-      if (_window.tabs) {
-
-        for (var i = 0, l = _window.tabs.length; i < l; i++) {
-
-          var shadowBrowserTab = new BrowserTab(_window.tabs[i], shadowBrowserWindow);
-
-          browserTabs.push(shadowBrowserTab);
-
-        }
-
-      }
-
-      //shadowBrowserWindow._parent = self;
-      shadowBrowserWindow.tabs.replaceTabs(browserTabs);
 
       // Resolution order:
       // 1. Window
@@ -1896,7 +1922,7 @@ var RootBrowserTabManager = function() {
 
       }
       
-    }.bind(this), 200);
+    }.bind(this), 250);
 
   }.bind(this));
 
@@ -2005,7 +2031,7 @@ var RootBrowserTabManager = function() {
 
       }
     
-    }.bind(this), 200);
+    }.bind(this), 250);
 
   }.bind(this));
   
@@ -2241,6 +2267,14 @@ BrowserTab.prototype.__defineGetter__("url", function() {
     return "";
   }
   return this.properties.url || "";
+});
+
+BrowserTab.prototype.__defineSetter__("url", function(val) {
+  this.properties.url = val + "";
+  
+  this.enqueue(chrome.tabs.update, this.properties.id, { url: this.properties.url }, function() {
+    this.dequeue();
+  }.bind(this));
 });
 
 BrowserTab.prototype.__defineGetter__("readyState", function() {
