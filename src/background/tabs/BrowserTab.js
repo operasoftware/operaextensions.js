@@ -20,23 +20,23 @@ BrowserTab.prototype.__defineGetter__("id", function() {
 });
 
 BrowserTab.prototype.__defineGetter__("closed", function() {
-  return this.properties.closed || false;
+  return this.properties.closed !== undefined ? !!this.properties.closed : false;
 });
 
 BrowserTab.prototype.__defineGetter__("locked", function() {
-  return this.properties.pinned || false;
+  return this.properties.pinned !== undefined ? !!this.properties.pinned : false;
 });
 
 BrowserTab.prototype.__defineGetter__("focused", function() {
-  return this.properties.active || false;
+  return this.properties.active !== undefined ? !!this.properties.active : false;
 });
 
 BrowserTab.prototype.__defineGetter__("selected", function() {
-  return this.properties.active || false;
+  return this.properties.active !== undefined ? !!this.properties.active : false;
 });
 
 BrowserTab.prototype.__defineGetter__("private", function() {
-  return this.properties.incognito || false;
+  return this.properties.incognito !== undefined ? !!this.properties.incognito : false;
 });
 
 BrowserTab.prototype.__defineGetter__("faviconUrl", function() {
@@ -69,7 +69,7 @@ BrowserTab.prototype.__defineSetter__("url", function(val) {
 });
 
 BrowserTab.prototype.__defineGetter__("readyState", function() {
-  return this.properties.status || "loading";
+  return this.properties.status !== undefined ? this.properties.status : "loading";
 });
 
 BrowserTab.prototype.__defineGetter__("browserWindow", function() {
@@ -82,7 +82,7 @@ BrowserTab.prototype.__defineGetter__("tabGroup", function() {
 });
 
 BrowserTab.prototype.__defineGetter__("position", function() {
-  return this.properties.index || NaN;
+  return this.properties.index !== undefined ? this.properties.index : NaN;
 });
 
 // Methods

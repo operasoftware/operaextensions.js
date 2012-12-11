@@ -22,7 +22,6 @@ var BrowserTabManager = function( parentObj ) {
       if(this !== OEX.tabs) {
         browserTabs[ i ].properties.index = i;
       }
-      browserTabs[ i ].properties.closed = false;
       this[ i ] = browserTabs[ i ];
     }
     this.length = browserTabs.length;
@@ -35,9 +34,11 @@ var BrowserTabManager = function( parentObj ) {
     for(var i = 0, l = this.length; i < l; i++) {
       allTabs[ i ] = this[ i ];
     }
-
+    
+    var position = startPosition !== undefined ? startPosition : allTabs.length - 1;
+    
     // Add new browserTabs to allTabs array
-    var spliceArgs = [startPosition || allTabs.length - 1, 0].concat( browserTabs );
+    var spliceArgs = [this !== OEX.tabs ? position : this.length, 0].concat( browserTabs );
     Array.prototype.splice.apply(allTabs, spliceArgs);
 
     // Rewrite the current tabs collection in order
@@ -46,7 +47,6 @@ var BrowserTabManager = function( parentObj ) {
         // Update all tab indexes to the current tabs collection order
         allTabs[ i ].properties.index = i;
       }
-      allTabs[ i ].properties.closed = false;
       this[ i ] = allTabs[ i ];
     }
     this.length = allTabs.length;
@@ -72,9 +72,7 @@ var BrowserTabManager = function( parentObj ) {
     if(removeTabIndex > -1) {
       allTabs.splice(removeTabIndex, 1);
     }
-    
-    // Indicate that this tab is now closed
-    browserTab.properties.closed = true;
+
     // Detach _windowParent from removed tab
     browserTab._windowParent = null;
 
@@ -167,6 +165,9 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
 
   }
   
+  // Set up tab's BrowserWindow parent
+  shadowBrowserTab._windowParent = this._parent || OEX.windows.getLastFocused();
+  
   // Set up tab index on start
   shadowBrowserTab.properties.index = browserTabProperties.index || this !== OEX.tabs ? this.length : OEX.windows.getLastFocused().tabs.length;
   
@@ -187,43 +188,24 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
       for(var i in _tab) {
         shadowBrowserTab.properties[i] = _tab[i];
       }
-
-      // Set up the shadowBrowserTab's parent BrowserWindow relationship
-      var noParentWindow = true;
-
-      if(_tab.windowId) {
-        var _windows = opera.extension.windows;
-        for(var i = 0, l = _windows.length; i < l; i++ ) {
-          if( _windows[ i ].properties.id === _tab.windowId ) {
-            noParentWindow = false;
-            shadowBrowserTab._windowParent = _windows[ i ];
-            break;
-          }
-        }
-      }
-
-      // Add to the default window if there is no other parent to use
-      if( noParentWindow ) {
-        shadowBrowserTab._windowParent = OEX.windows.getLastFocused();
-      }
     
-      // TODO check what correct behavior should be for this
       // Move this object to the correct position within the current tabs collection
       // (but don't worry about doing this for the global tabs manager)
-      /*if(this !== OEX.tabs) {
+      // TODO check if this is the correct behavior here
+      if(this !== OEX.tabs) {
         this.removeTab( shadowBrowserTab );
         this.addTabs([ shadowBrowserTab ], shadowBrowserTab.properties.index);
-      }*/
+      }
 
       // Resolve new tab, if it hasn't been resolved already
-      shadowBrowserTab.resolve( _tab );
+      shadowBrowserTab.resolve(true);
 
       // Dispatch oncreate event to all attached event listeners
       this.dispatchEvent( new OEvent('create', {
           "tab": shadowBrowserTab,
-          "prevWindow": shadowBrowserTab._windowParent,
+          "prevWindow": shadowBrowserTab._windowParent, // same as current window
           "prevTabGroup": null,
-          "prevPosition": -1
+          "prevPosition": NaN
       }) );
 
       this.dequeue();
