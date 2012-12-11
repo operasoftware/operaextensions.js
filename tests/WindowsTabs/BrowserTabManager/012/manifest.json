@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserTabManager-012",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Creating positioned Tabs within the currently selected window",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
