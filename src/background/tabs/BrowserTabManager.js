@@ -102,10 +102,15 @@ BrowserTabManager.prototype = Object.create( OPromise.prototype );
 
 BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
 
+  if(before && !before instanceof BrowserTab) {
+    throw {
+        name:        "TYPE_MISMATCH_ERR",
+        message:     "Could not create BrowserTab object with invalid before attribute provided"
+    };
+  }
+
   browserTabProperties = browserTabProperties || {};
 
-  var shadowBrowserTab = new BrowserTab();
-  
   // Parameter mappings
   if(browserTabProperties.focused !== undefined) {
     browserTabProperties.active = !!browserTabProperties.focused;
@@ -121,12 +126,10 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
     delete browserTabProperties.locked;
   }
   
-  for (var i in browserTabProperties) {
-    shadowBrowserTab.properties[i] = browserTabProperties[i];
-  }
-
   // TODO handle private tab insertion differently in Chromium
   //browserTabProperties.incognito = browserTabProperties.private || false;
+  
+  delete browserTabProperties.closed;
 
   // Set parent window to create the tab in
 
@@ -136,6 +139,9 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
         message:     "Parent window is in the closed state and therefore is invalid"
     };
   }
+  
+  var shadowBrowserTab = new BrowserTab( Object.create(browserTabProperties), this._parent || OEX.windows.getLastFocused() );
+  
   // no windowId will default to adding the tab to the current window
   browserTabProperties.windowId = this._parent ? this._parent.properties.id : OEX.windows.getLastFocused().properties.id;
 
@@ -161,6 +167,9 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
 
   }
   
+  // Set up tab index on start
+  shadowBrowserTab.properties.index = browserTabProperties.index || this !== OEX.tabs ? this.length : OEX.windows.getLastFocused().tabs.length;
+  
   // Add this object to the end of the current tabs collection
   this.addTabs([ shadowBrowserTab ]);
 
@@ -168,6 +177,8 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
   if(this !== OEX.tabs) {
     OEX.tabs.addTabs([ shadowBrowserTab ]);
   }
+  
+  delete browserTabProperties.closed;
 
   // Queue platform action or fire immediately if this object is resolved
   this.enqueue( chrome.tabs.create, browserTabProperties, function( _tab ) {
@@ -245,8 +256,11 @@ BrowserTabManager.prototype.getFocused = BrowserTabManager.prototype.getSelected
 
 BrowserTabManager.prototype.close = function( browserTab ) {
 
-  if( !browserTab || !browserTab instanceof BrowserTab ) {
-    return;
+  if( !browserTab || !browserTab instanceof BrowserTab) {
+    throw {
+            name:        "TYPE_MISMATCH_ERR",
+            message:     "Expected BrowserTab object"
+    };
   }
   
   browserTab.close();

@@ -38,13 +38,13 @@ ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
   this[ 0 ] = toolbarUIItem;
   this.length = 1;
 
-  toolbarUIItem.resolve();
+  toolbarUIItem.resolve(true);
   toolbarUIItem.apply();
   
-  toolbarUIItem.badge.resolve();
+  toolbarUIItem.badge.resolve(true);
   toolbarUIItem.badge.apply();
   
-  toolbarUIItem.popup.resolve();
+  toolbarUIItem.popup.resolve(true);
   toolbarUIItem.popup.apply();
   
   // Enable the toolbar button

@@ -6,6 +6,8 @@ var RootBrowserTabManager = function() {
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
 
+    global.setTimeout(function() {
+      
       // If this tab is already registered in the root tab collection then ignore
       var tabFound = false;
       for (var i = 0, l = this.length; i < l; i++) {
@@ -51,7 +53,7 @@ var RootBrowserTabManager = function() {
         this.addTabs([newTab]);
 
         // Resolve new tab, if it hasn't been resolved already
-        newTab.resolve();
+        newTab.resolve(true);
 
         // Fire a create event at RootTabsManager
         this.dispatchEvent(new OEvent('create', {
@@ -62,6 +64,8 @@ var RootBrowserTabManager = function() {
         }));
 
       }
+      
+    }.bind(this), 200);
 
   }.bind(this));
 
@@ -94,12 +98,12 @@ var RootBrowserTabManager = function() {
       this.removeTab( oldTab );
 
       // Fire a new 'close' event on the closed BrowserTab object
-      oldTab.dispatchEvent(new OEvent('close', {
+      /*oldTab.dispatchEvent(new OEvent('close', {
         "tab": oldTab,
         "prevWindow": oldTabWindowParent,
         "prevTabGroup": null,
         "prevPosition": oldTabPosition
-      }));
+      }));*/
       
       // Fire a new 'close' event on the closed BrowserTab's previous 
       // BrowserWindow parent object
@@ -126,47 +130,51 @@ var RootBrowserTabManager = function() {
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
-    var updateIndex = -1;
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i].properties.id == tabId) {
-        updateIndex = i;
-        break;
-      }
-    }
+    global.setTimeout(function() {
 
-    if (updateIndex < 0) {
-      return; // nothing to update
-    }
-
-    var updateTab = this[updateIndex];
-
-    // Update tab properties in current collection
-    for (var prop in tab) {
-      if(prop == "id" || prop == "windowId") { // ignore these
-        continue;
-      }
-      updateTab.properties[prop] = tab[prop];
-    }
-
-    // Update tab properties in _windowParent object
-    if (updateTab._windowParent) {
-      var parentUpdateIndex = -1;
-      for (var i = 0, l = updateTab._windowParent.tabs.length; i < l; i++) {
-        if (updateTab._windowParent.tabs[i].properties.id == tabId) {
-          parentUpdateIndex = i;
+      var updateIndex = -1;
+      for (var i = 0, l = this.length; i < l; i++) {
+        if (this[i].properties.id == tabId) {
+          updateIndex = i;
           break;
         }
       }
 
-      if (parentUpdateIndex > -1) {
+      if (updateIndex < 0) {
+        return; // nothing to update
+      }
 
-        for (var i in changeInfo) {
-          updateTab._windowParent.tabs[parentUpdateIndex].properties[i] = changeInfo[i];
+      var updateTab = this[updateIndex];
+
+      // Update tab properties in current collection
+      for (var prop in tab) {
+        if(prop == "id" || prop == "windowId") { // ignore these
+          continue;
+        }
+        updateTab.properties[prop] = tab[prop];
+      }
+
+      // Update tab properties in _windowParent object
+      if (updateTab._windowParent) {
+        var parentUpdateIndex = -1;
+        for (var i = 0, l = updateTab._windowParent.tabs.length; i < l; i++) {
+          if (updateTab._windowParent.tabs[i].properties.id == tabId) {
+            parentUpdateIndex = i;
+            break;
+          }
+        }
+
+        if (parentUpdateIndex > -1) {
+
+          for (var i in changeInfo) {
+            updateTab._windowParent.tabs[parentUpdateIndex].properties[i] = changeInfo[i];
+          }
+
         }
 
       }
-
-    }
+    
+    }.bind(this), 200);
 
   }.bind(this));
   

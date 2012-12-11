@@ -327,13 +327,8 @@ var OPromise = function() {
   // General enqueue/dequeue infrastructure
 
   this._queue = [];
-  this.resolved = false;
 
   this.on('promise:resolved', function() {
-
-    // Mark this object as resolved
-    this.resolved = true;
-
     // Run next enqueued action on this object, if any
     this.dequeue();
   }.bind(this));
@@ -363,7 +358,7 @@ OPromise.prototype.enqueue = function() {
     }
   }
   
-  if(this.resolved) {
+  if(this.isResolved) {
     // Call immediately if object is resolved
     methodObj.apply(this, methodArgs);
   } else {
