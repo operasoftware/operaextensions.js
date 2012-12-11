@@ -3,6 +3,11 @@
   "version": "1.16.1",
   "manifest_version": 2,
   "description": "OPERA PORT: ExtendTube adds few options to control YouTube videos, download video, customise page...",
+  "author": {
+    "name": "Darko Pantić",
+    "href": "http://my.opera.com/pdarko",
+    "email": "pdarko@myopera.com"
+	},
   "icons": { "128": "/share/image/icon.png" },
   "background": {
       "page": "index.html"

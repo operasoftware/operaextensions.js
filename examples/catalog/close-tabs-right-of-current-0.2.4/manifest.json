@@ -3,6 +3,10 @@
   "version": "0.2.4",
   "manifest_version": 2,
   "description": "OPERA PORT: Closes tabs right/left of current (focused) tab",
+  "author": {
+    "name": "schizunio",
+    "href": "mailto:schizunio@gmail.com"
+	},
   "icons": { "16": "/icons/icon_left_18.png",
              "48": "/icons/icon_64.png",
              "128": "/icons/icon_64.png" },
