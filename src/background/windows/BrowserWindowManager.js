@@ -3,11 +3,9 @@ var BrowserWindowManager = function() {
 
   OPromise.call(this);
 
-  // Set up 1 mock BrowserWindow at startup
-  this[0] = new BrowserWindow();
-  this.length = 1;
+  this.length = 0;
 
-  this._lastFocusedWindow = this[0];
+  this._lastFocusedWindow = null;
 
   // Set up the real BrowserWindow (& BrowserTab) objects currently available
   chrome.windows.getAll({
@@ -16,32 +14,13 @@ var BrowserWindowManager = function() {
 
     var _allTabs = [];
 
-    // Treat the first window specially
-    if (_windows.length > 0) {
-      for (var i in _windows[0]) {
-        this[0].properties[i] = _windows[0][i];
-      }
-
-      // Replace tab properties belonging to this window with real properties
-      var _tabs = [];
-      for (var j = 0, k = _windows[0].tabs.length; j < k; j++) {
-        _tabs[j] = new BrowserTab(_windows[0].tabs[j], this[0]);
-        
-        // Set as the currently focused tab?
-        if(_tabs[j].properties.active == true && this[0].properties.focused == true) {
-          this[0].tabs._lastFocusedTab = _tabs[j];
-          OEX.tabs._lastFocusedTab = _tabs[j];
-        }
-        
-      }
-      this[0].tabs.replaceTabs(_tabs);
-
-      _allTabs = _allTabs.concat(_tabs);
-    }
-
-    for (var i = 1, l = _windows.length; i < l; i++) {
+    for (var i = 0, l = _windows.length; i < l; i++) {
       this[i] = new BrowserWindow(_windows[i]);
       this.length = i + 1;
+      
+      if(this[i].properties.focused == true) {
+        this._lastFocusedWindow = this[i];
+      }
 
       // Replace tab properties belonging to this window with real properties
       var _tabs = [];
@@ -49,9 +28,12 @@ var BrowserWindowManager = function() {
         _tabs[j] = new BrowserTab(_windows[i].tabs[j], this[i]);
         
         // Set as the currently focused tab?
-        if(_tabs[j].properties.active == true && this[i].properties.focused == true) {
-          this[i].tabs._lastFocusedTab = _tabs[j];
-          OEX.tabs._lastFocusedTab = _tabs[j];
+        if(_tabs[j].properties.active == true) {
+          this[i].tabs._lastFocusedTab = _tabs[j]; // window-focused tab
+          
+          if(this[i].properties.focused == true) {
+            OEX.tabs._lastFocusedTab = _tabs[j]; // gloval-focused tab
+          }
         }
         
       }
@@ -65,7 +47,7 @@ var BrowserWindowManager = function() {
     OEX.tabs.replaceTabs(_allTabs);
 
     // Set up the correct lastFocused window object
-    chrome.windows.getLastFocused(
+    /*chrome.windows.getLastFocused(
       { populate: false }, 
       function(_window) {
         for (var i = 0, l = this.length; i < l; i++) {
@@ -75,12 +57,12 @@ var BrowserWindowManager = function() {
           }
         }
       }.bind(this)
-    );
+    );*/
 
     // Resolve root window manager
-    this.resolve();
+    this.resolve(true);
     // Resolve root tabs manager
-    OEX.tabs.resolve();
+    OEX.tabs.resolve(true);
 
     // Resolve objects.
     //
@@ -89,10 +71,10 @@ var BrowserWindowManager = function() {
     // 2. Window's Tab Manager
     // 3. Window's Tab Manager's Tabs
     for (var i = 0, l = this.length; i < l; i++) {
-      this[i].resolve();
-      this[i].tabs.resolve();
+      this[i].resolve(true);
+      this[i].tabs.resolve(true);
       for (var j = 0, k = this[i].tabs.length; j < k; j++) {
-        this[i].tabs[j].resolve();
+        this[i].tabs[j].resolve(true);
       }
     }
     
@@ -103,14 +85,16 @@ var BrowserWindowManager = function() {
 
   // Monitor ongoing window events
   chrome.windows.onCreated.addListener(function(_window) {
-
+    
+    global.setTimeout(function() {
+      
       var windowFound = false;
 
       // If this window is already registered in the collection then ignore
       for (var i = 0, l = this.length; i < l; i++) {
         if (this[i].properties.id == _window.id) {
           windowFound = true;
-          if(this[i].focused) {
+          if(this[i].properties.focused == true) {
             this._lastFocusedWindow = this[i];
           }
           break;
@@ -119,6 +103,7 @@ var BrowserWindowManager = function() {
 
       // If window was created outside of this framework, add it in and initialize
       if (!windowFound) {
+
         var newBrowserWindow = new BrowserWindow(_window);
 
         // Convert tab objects to BrowserTab objects
@@ -146,10 +131,10 @@ var BrowserWindowManager = function() {
         // 1. Window
         // 2. Window's Tab Manager
         // 3. Window's Tab Manager's Tabs
-        newBrowserWindow.resolve();
-        newBrowserWindow.tabs.resolve();
+        newBrowserWindow.resolve(true);
+        newBrowserWindow.tabs.resolve(true);
         for (var i = 0, l = newBrowserWindow.tabs.length; i < l; i++) {
-          newBrowserWindow.tabs[i].resolve();
+          newBrowserWindow.tabs[i].resolve(true);
         }
 
         // Fire a new 'create' event on this manager object
@@ -158,6 +143,8 @@ var BrowserWindowManager = function() {
         }));
         
       }
+      
+    }.bind(this), 200);
 
   }.bind(this));
 
@@ -175,9 +162,9 @@ var BrowserWindowManager = function() {
     if (deleteIndex > -1) {
 
       // Fire a new 'close' event on the closed BrowserWindow object
-      this[deleteIndex].dispatchEvent(new OEvent('close', {
+      /*this[deleteIndex].dispatchEvent(new OEvent('close', {
         'browserWindow': this[deleteIndex]
-      }));
+      }));*/
 
       // Fire a new 'close' event on this manager object
       this.dispatchEvent(new OEvent('close', {
@@ -188,9 +175,10 @@ var BrowserWindowManager = function() {
       for (var i = deleteIndex, l = this.length; i < l; i++) {
         if (this[i + 1]) {
           this[i] = this[i + 1];
+        } else {
+          delete this[i]; // remove last item
         }
       }
-      delete this[this.length - 1];
       this.length -= 1;
 
     }
@@ -245,10 +233,15 @@ BrowserWindowManager.prototype = Object.create(OPromise.prototype);
 BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProperties) {
 
   browserWindowProperties = browserWindowProperties || {};
+  
+  delete browserWindowProperties.closed;
+  
+  if(browserWindowProperties.private !== undefined) {
+    browserWindowProperties.incognito = !!browserWindowProperties.private;
+    delete browserWindowProperties.private;
+  }
 
   var shadowBrowserWindow = new BrowserWindow(browserWindowProperties);
-
-  browserWindowProperties.incognito = browserWindowProperties.private || false;
 
   // Add this object to the current collection
   this[this.length] = shadowBrowserWindow;
@@ -259,6 +252,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
     chrome.windows.create,
     browserWindowProperties, 
     function(_window) {
+
       // Update BrowserWindow properties
       for (var i in _window) {
         shadowBrowserWindow.properties[i] = _window[i];
@@ -286,9 +280,9 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
       // 1. Window
       // 2. Window's Tab Manager
       // 3. Window's Tab Manager's Tabs
-      shadowBrowserWindow.resolve();
+      shadowBrowserWindow.resolve(true);
 
-      shadowBrowserWindow.tabs.resolve();
+      shadowBrowserWindow.tabs.resolve(true);
 
       // Add tabs included in the create() call to the newly created
       // window, if any, based on type
@@ -308,7 +302,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
                     tab.properties[i] = _tab[i];
                   }
 
-                  tab.resolve();
+                  tab.resolve(true);
                 }
               );
             })(tabsToInject[i]);
@@ -328,7 +322,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
                     shadowBrowserTab.properties[i] = _tab[i];
                   }
 
-                  shadowBrowserTab.resolve();
+                  shadowBrowserTab.resolve(true);
                 }
               );
 

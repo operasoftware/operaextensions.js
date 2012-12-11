@@ -212,6 +212,13 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
 
 BrowserTab.prototype.close = function() {
   
+  if(this.properties.closed == true) {
+    throw {
+        name:        "Invalid State Error",
+        message:     "BrowserTab is already closed so cannot call close on this object"
+    };
+  }
+  
   // Set BrowserTab object to closed state
   this.properties.closed = true;
 

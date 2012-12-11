@@ -37,10 +37,8 @@ ToolbarBadge.prototype.__defineGetter__("textContent", function() {
 
 ToolbarBadge.prototype.__defineSetter__("textContent", function( val ) {
   this.properties.textContent = "" + val;
-  if( this.resolved ) {
-    if( this.properties.display === "block" ) {
-      chrome.browserAction.setBadgeText({ "text": ("" + val) });
-    }
+  if( this.properties.display === "block" ) {
+    this.enqueue(chrome.browserAction.setBadgeText, { "text": ("" + val) });
   }
 });
 
@@ -51,9 +49,7 @@ ToolbarBadge.prototype.__defineGetter__("backgroundColor", function() {
 ToolbarBadge.prototype.__defineSetter__("backgroundColor", function( val ) {
   this.properties.backgroundColor = complexColorToHex("" + val);
 
-  if( this.resolved ) {
-    chrome.browserAction.setBadgeBackgroundColor({ "color": this.properties.backgroundColor });
-  }
+  this.enqueue(chrome.browserAction.setBadgeBackgroundColor, { "color": this.properties.backgroundColor });
 });
 
 ToolbarBadge.prototype.__defineGetter__("color", function() {
@@ -72,13 +68,9 @@ ToolbarBadge.prototype.__defineGetter__("display", function() {
 ToolbarBadge.prototype.__defineSetter__("display", function( val ) {
   if(("" + val).toLowerCase() === "block") {
     this.properties.display = "block";
-    if( this.resolved ) {
-      chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
-    }
+    this.enqueue(chrome.browserAction.setBadgeText, { "text": this.properties.textContent });
   } else {
     this.properties.display = "none";
-    if( this.resolved ) {
-      chrome.browserAction.setBadgeText({ "text": "" });
-    }
+    this.enqueue(chrome.browserAction.setBadgeText, { "text": "" });
   }
 });

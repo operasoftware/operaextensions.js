@@ -30,9 +30,7 @@ ToolbarPopup.prototype.__defineGetter__("href", function() {
 
 ToolbarPopup.prototype.__defineSetter__("href", function( val ) {
   this.properties.href = "" + val;
-  if( this.resolved ) {
-    chrome.browserAction.setPopup({ "popup": ("" + val) });
-  }
+  this.enqueue(chrome.browserAction.setPopup, { "popup": ("" + val) });
 });
 
 ToolbarPopup.prototype.__defineGetter__("width", function() {

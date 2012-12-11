@@ -44,14 +44,10 @@ ToolbarUIItem.prototype.__defineSetter__("disabled", function( val ) {
   if( this.properties.disabled !== val ) {
     if( val === true || val === "true" || val === 1 || val === "1" ) {
       this.properties.disabled = true;
-      if( this.resolved ) {
-        chrome.browserAction.disable();
-      }
+      this.enqueue(chrome.browserAction.disable);
     } else {
       this.properties.disabled = false;
-      if( this.resolved ) {
-        chrome.browserAction.enable();
-      }
+      this.enqueue(chrome.browserAction.enable);
     }
   }
 });
@@ -63,9 +59,7 @@ ToolbarUIItem.prototype.__defineGetter__("title", function() {
 ToolbarUIItem.prototype.__defineSetter__("title", function( val ) {
   this.properties.title = "" + val;
   
-  if( this.resolved ) {
-    chrome.browserAction.setTitle({ "title": (this.title) });
-  }
+  this.enqueue(chrome.browserAction.setTitle, { "title": (this.title) });
 });
 
 ToolbarUIItem.prototype.__defineGetter__("icon", function() {
@@ -75,9 +69,7 @@ ToolbarUIItem.prototype.__defineGetter__("icon", function() {
 ToolbarUIItem.prototype.__defineSetter__("icon", function( val ) {
   this.properties.icon = "" + val;
   
-  if( this.resolved ) {
-    chrome.browserAction.setIcon({ "path": this.icon });
-  }
+  this.enqueue(chrome.browserAction.setIcon,{ "path": this.icon });
 });
 
 ToolbarUIItem.prototype.__defineGetter__("popup", function() {
