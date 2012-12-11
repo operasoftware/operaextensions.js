@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserTabManager-007",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Events objects for tab events",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

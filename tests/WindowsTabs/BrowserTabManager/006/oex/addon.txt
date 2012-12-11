@@ -1,0 +1,1 @@
+Events for creating, moving and closing a tab

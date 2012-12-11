@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserTabManager-008",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Private tabs",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
