@@ -104,9 +104,6 @@ var BrowserWindowManager = function() {
   // Monitor ongoing window events
   chrome.windows.onCreated.addListener(function(_window) {
 
-    // Delay enough so that the create callback can run first in o.e.windows.create() function
-    window.setTimeout(function() {
-
       var windowFound = false;
 
       // If this window is already registered in the collection then ignore
@@ -161,8 +158,6 @@ var BrowserWindowManager = function() {
         }));
         
       }
-      
-    }.bind(this), 200);
 
   }.bind(this));
 
@@ -204,9 +199,6 @@ var BrowserWindowManager = function() {
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
     
-    // Delay enough so that the create callback can run first in o.e.windows.create() function
-    window.setTimeout(function() {
-    
       // Find and fire blur event on currently focused window
       for (var i = 0, l = this.length; i < l; i++) {
 
@@ -243,8 +235,6 @@ var BrowserWindowManager = function() {
         }
 
       }
-    
-    }.bind(this), 200);
 
   }.bind(this));
 
@@ -252,21 +242,21 @@ var BrowserWindowManager = function() {
 
 BrowserWindowManager.prototype = Object.create(OPromise.prototype);
 
-BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProperties, obj) {
+BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProperties) {
 
   browserWindowProperties = browserWindowProperties || {};
 
-  var shadowBrowserWindow = obj || new BrowserWindow(browserWindowProperties);
-
-  // If current object is not resolved, then enqueue this action
-  if (!this.resolved) {
-    this.enqueue('create', tabsToInject, browserWindowProperties, shadowBrowserWindow);
-    return shadowBrowserWindow;
-  }
+  var shadowBrowserWindow = new BrowserWindow(browserWindowProperties);
 
   browserWindowProperties.incognito = browserWindowProperties.private || false;
 
-  chrome.windows.create(
+  // Add this object to the current collection
+  this[this.length] = shadowBrowserWindow;
+  this.length += 1;
+  
+  // Queue platform action or fire immediately if this object is resolved
+  this.enqueue(
+    chrome.windows.create,
     browserWindowProperties, 
     function(_window) {
       // Update BrowserWindow properties
@@ -362,10 +352,6 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
 
     }.bind(this)
   );
-  
-  // Add this object to the current collection
-  this[this.length] = shadowBrowserWindow;
-  this.length += 1;
 
   return shadowBrowserWindow;
 };
@@ -390,11 +376,10 @@ BrowserWindowManager.prototype.getLastFocused = function() {
 
 BrowserWindowManager.prototype.close = function(browserWindow) {
 
-  chrome.windows.remove(browserWindow.properties.id, function() {
-
-    browserWindow.properties.closed = true;
-    browserWindow.dequeue();
-
-  });
+  if(!browserWindow || !browserWindow instanceof BrowserWindow) {
+    return;
+  }
+  
+  browserWindow.close();
 
 };

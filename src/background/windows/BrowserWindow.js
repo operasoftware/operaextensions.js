@@ -40,14 +40,11 @@ BrowserWindow.prototype.__defineGetter__("parent", function() {
 
 BrowserWindow.prototype.insert = function(browserTab, child) {
 
-  // If current object is not resolved, then enqueue this action
-  if (!this.resolved || !browserTab.resolved ||
-            (child && !child.resolved)) {
-    this.enqueue('insert', browserTab, child);
+  if (!browserTab || !browserTab instanceof BrowserTab) { 
     return;
   }
 
-  if (this.closed === true) {
+  if (this.properties.closed === true) {
     throw {
       name: "Invalid State Error",
       message: "Current window is in the closed state and therefore is invalid"
@@ -55,7 +52,7 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
     return;
   }
 
-  var browserTabProperties = {
+  var moveProperties = {
     windowId: this.properties.id
   };
 
@@ -77,38 +74,34 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
       };
       return;
     }
-    browserTabProperties.windowId = child._windowParent ?
-                                      child._windowParent.properties.id : browserTabProperties.windowId;
-    browserTabProperties.index = child.position;
+    moveProperties.windowId = child._windowParent ?
+                                      child._windowParent.properties.id : moveProperties.windowId;
+    moveProperties.index = child.position;
 
   }
 
-  if (browserTab instanceof BrowserTab) {
-
-    // Fulfill this action against the current object
-    chrome.tabs.move(
-      browserTab.properties.id, 
-      browserTabProperties, 
-      function(_tab) {
-        // Run next enqueued action on this object, if any
-        this.dequeue();
-      }.bind(this)
-    );
-
-  }
+  // Queue platform action or fire immediately if this object is resolved
+  this.enqueue(
+    chrome.tabs.move,
+    browserTab.properties.id, 
+    moveProperties, 
+    function(_tab) {
+      this.dequeue();
+    }.bind(this)
+  );
 
 };
 
 BrowserWindow.prototype.focus = function() {
 
-  // If current object is not resolved, then enqueue this action
-  if (!this.resolved || (this._parent && !this._parent.resolved)) {
-    this.enqueue('focus');
-    return;
-  }
+  // Set BrowserWindow object to focused state
+  this.properties.focused = true;
 
-  chrome.windows.update(
-    this.properties.id, {
+  // Queue platform action or fire immediately if this object is resolved
+  this.enqueue(
+    chrome.windows.update,
+    this.properties.id, 
+    {
       focused: true
     }, 
     function() {
@@ -120,38 +113,42 @@ BrowserWindow.prototype.focus = function() {
 
 BrowserWindow.prototype.update = function(browserWindowProperties) {
 
-  // If current object is not resolved, then enqueue this action
-  if (!this.resolved || (this._parent && !this._parent.resolved)) {
-    this.enqueue('update', browserWindowProperties);
-    return;
-  }
+  // Remove invalid parameters if present:
+  delete browserWindowProperties.closed; // cannot set closed state via update
+
+  // TODO enforce incognito because we can't make a tab incognito once it has been added to a non-incognito window.
+  //browserWindowProperties.incognito = browserWindowProperties.private || false;
 
   for (var i in browserWindowProperties) {
     this.properties[i] = browserWindowProperties[i];
   }
 
-  // TODO enforce incognito because we can't make a tab incognito once it has been added to a non-incognito window.
-  //browserWindowProperties.incognito = browserWindowProperties.private || false;
-  
-  // Make any requested changes take effect in the user agent
-  chrome.windows.update(
+  // Queue platform action or fire immediately if this object is resolved
+  this.enqueue(
+    chrome.windows.update,
     this.properties.id, 
     browserWindowProperties, 
     function() {
       this.dequeue();
-    }
+    }.bind(this)
   );
 
 }
 
 BrowserWindow.prototype.close = function() {
+  
+  // Set BrowserWindow object to closed state
+  this.properties.closed = true;
 
-  // If current object is not resolved, then enqueue this action
-  if (!this.resolved || (this._parent && !this._parent.resolved)) {
-    this.enqueue('close');
-    return;
-  }
-
-  OEX.windows.close(this);
+  // Queue platform action or fire immediately if this object is resolved
+  this.enqueue(function() {
+    chrome.windows.remove(
+      this.properties.id,
+      function() {
+        this.dequeue();
+        OEX.windows.dequeue();
+      }.bind(this)
+    );
+  }.bind(this));
 
 };

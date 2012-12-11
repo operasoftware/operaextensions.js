@@ -100,24 +100,30 @@ var BrowserTabManager = function( parentObj ) {
 
 BrowserTabManager.prototype = Object.create( OPromise.prototype );
 
-BrowserTabManager.prototype.create = function( browserTabProperties, before, obj ) {
+BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
 
   browserTabProperties = browserTabProperties || {};
 
-  var shadowBrowserTab = obj || new BrowserTab();
-
-  // If current object is not resolved, then enqueue this action
-  if( !this.resolved || (this._parent && !this._parent.resolved) ) {
-    this.enqueue( 'create', browserTabProperties, before, shadowBrowserTab );
-    return shadowBrowserTab;
-  }
-
+  var shadowBrowserTab = new BrowserTab();
+  
   // Parameter mappings
-  browserTabProperties.pinned = browserTabProperties.locked || false;
-  browserTabProperties.active = browserTabProperties.focused || false;
-
-  // Not allowed in Chromium API
-  delete browserTabProperties.focused;
+  if(browserTabProperties.focused !== undefined) {
+    browserTabProperties.active = !!browserTabProperties.focused;
+    // Not allowed in Chromium API
+    delete browserTabProperties.focused;
+  } else {
+    // Explicitly set active to false by default in Opera implementation
+    browserTabProperties.active = false;
+  }
+  
+  if(browserTabProperties.locked !== undefined) {
+    browserTabProperties.pinned = !!browserTabProperties.locked;
+    delete browserTabProperties.locked;
+  }
+  
+  for (var i in browserTabProperties) {
+    shadowBrowserTab.properties[i] = browserTabProperties[i];
+  }
 
   // TODO handle private tab insertion differently in Chromium
   //browserTabProperties.incognito = browserTabProperties.private || false;
@@ -129,7 +135,6 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before, obj
         name:        "Invalid State Error",
         message:     "Parent window is in the closed state and therefore is invalid"
     };
-    return;
   }
   // no windowId will default to adding the tab to the current window
   browserTabProperties.windowId = this._parent ? this._parent.properties.id : OEX.windows.getLastFocused().properties.id;
@@ -142,7 +147,6 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before, obj
           name:        "Invalid State Error",
           message:     "'before' attribute is in the closed state and therefore is invalid"
       };
-      return;
     }
 
     if(before._windowParent && before._windowParent.closed === true ) {
@@ -150,17 +154,23 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before, obj
           name:        "Invalid State Error",
           message:     "Parent window of 'before' attribute is in the closed state and therefore is invalid"
       };
-      return;
     }
     browserTabProperties.windowId = before._windowParent ?
                                       before._windowParent.properties.id : browserTabProperties.windowId;
     browserTabProperties.index = before.position;
 
   }
+  
+  // Add this object to the end of the current tabs collection
+  this.addTabs([ shadowBrowserTab ]);
 
-  chrome.tabs.create(
-    browserTabProperties,
-    function( _tab ) {
+  // Add this object to the root tab manager (if this is not the root tab manager)
+  if(this !== OEX.tabs) {
+    OEX.tabs.addTabs([ shadowBrowserTab ]);
+  }
+
+  // Queue platform action or fire immediately if this object is resolved
+  this.enqueue( chrome.tabs.create, browserTabProperties, function( _tab ) {
 
       // Update BrowserTab properties
       for(var i in _tab) {
@@ -185,7 +195,8 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before, obj
       if( noParentWindow ) {
         shadowBrowserTab._windowParent = OEX.windows.getLastFocused();
       }
-      
+    
+      // TODO check what correct behavior should be for this
       // Move this object to the correct position within the current tabs collection
       // (but don't worry about doing this for the global tabs manager)
       /*if(this !== OEX.tabs) {
@@ -207,14 +218,6 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before, obj
       this.dequeue();
 
   }.bind(this));
-  
-  // Add this object to the end of the current tabs collection
-  this.addTabs([ shadowBrowserTab ]);
-
-  // Add this object to the root tab manager (if this is not the root tab manager)
-  if(this !== OEX.tabs) {
-    OEX.tabs.addTabs([ shadowBrowserTab ]);
-  }
 
   return shadowBrowserTab;
 
@@ -242,20 +245,10 @@ BrowserTabManager.prototype.getFocused = BrowserTabManager.prototype.getSelected
 
 BrowserTabManager.prototype.close = function( browserTab ) {
 
-  if( !browserTab ) {
+  if( !browserTab || !browserTab instanceof BrowserTab ) {
     return;
   }
-
-  // If current object is not resolved, then enqueue this action
-  if( !this.resolved || (this._parent && !this._parent.resolved) || !browserTab.resolved ) {
-    this.enqueue( 'close', browserTab );
-    return;
-  }
-
-  chrome.tabs.remove(browserTab.properties.id, function() {
-    browserTab.dequeue();
-
-    this.dequeue();
-  }.bind(this));
+  
+  browserTab.close();
 
 };

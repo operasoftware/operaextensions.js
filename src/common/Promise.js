@@ -32,7 +32,7 @@ OPromise.prototype.enqueue = function() {
   if(arguments.length < 1) {
     return;
   }
-  var methodName = arguments[0];
+  var methodObj = arguments[0];
 
   var methodArgs = [];
 
@@ -41,11 +41,15 @@ OPromise.prototype.enqueue = function() {
       methodArgs.push( arguments[i] );
     }
   }
+  
+  if(this.resolved) {
+    // Call immediately if object is resolved
+    methodObj.apply(this, methodArgs);
+  } else {
+    // Otherwise add provided action item to this object's queue
+    this._queue.push( { 'action': methodObj, 'args': methodArgs } );
+  }
 
-  // Add provided action item to the queue
-  this._queue.push( { 'action': methodName, 'args': methodArgs } );
-
-  //console.log("Enqueue on obj[" + this._operaId + "] queue length = " + this._queue.length);
 };
 
 OPromise.prototype.dequeue = function() {
@@ -56,13 +60,12 @@ OPromise.prototype.dequeue = function() {
     return;
   }
 
-  // Remove fulfilled action from the queue
+  // Remove fulfilled action from this object's queue
   this._queue.splice(0, 1);
 
   // Fulfil action item
-  if( this[ queueItem.action ] ) {
-    this[ queueItem.action ].apply( this, queueItem.args );
+  if( queueItem.action ) {
+    queueItem.action.apply( this, queueItem.args );
   }
 
-  //console.log("Dequeue on obj[" + this._operaId + "] queue length = " + this._queue.length);
 };
