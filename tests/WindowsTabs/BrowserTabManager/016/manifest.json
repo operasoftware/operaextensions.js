@@ -1,0 +1,12 @@
+{
+  "name": "tc-BrowserTabManager-016",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Favicon URL",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
