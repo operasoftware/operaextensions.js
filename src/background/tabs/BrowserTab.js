@@ -78,23 +78,14 @@ BrowserTab.prototype.__defineGetter__("position", function() {
 });
 
 // Methods
-BrowserTab.prototype.close = function() {
-
-  OEX.tabs.close(this);
-
-};
 
 BrowserTab.prototype.focus = function() {
+  
+  // Set BrowserTab object to active state
+  this.properties.active = true;
 
-  // If current object is not resolved, then enqueue this action
-  if (!this.resolved) {
-    this.enqueue('focus');
-    return;
-  }
-
-  chrome.tabs.update(this.properties.id, {
-    active: true
-  }, function() {
+  // Queue platform action or fire immediately if this object is resolved
+  this.enqueue(chrome.tabs.update, this.properties.id, { active: true }, function() {
     this.dequeue();
   }.bind(this));
 
@@ -102,31 +93,35 @@ BrowserTab.prototype.focus = function() {
 
 BrowserTab.prototype.update = function(browserTabProperties) {
 
-  // If current object is not resolved, then enqueue this action
-  if (!this.resolved) {
-    this.enqueue('update', browserTabProperties);
-    return;
+  // Parameter mappings 
+  
+  if(browserTabProperties.focused !== undefined) {
+    // Cannot set BrowserTab object focused to false! 
+    // See: /tests/WindowsTabs/BrowserTabManager/010/ test#5
+    if(browserTabProperties.focused !== false) {
+      browserTabProperties.active = !!browserTabProperties.focused;
+    }
+    // Not allowed in Chromium API
+    delete browserTabProperties.focused;
   }
+  if(browserTabProperties.locked !== undefined) {
+    browserTabProperties.pinned = !!browserTabProperties.locked;
+    delete browserTabProperties.locked;
+  }
+  
+  // TODO handle private tab insertion differently in Chromium
+  //browserTabProperties.incognito = browserTabProperties.private || false;
+  
+  // Remove invalid parameters if present:
+  delete browserTabProperties.closed; // cannot set closed state via update
 
   for (var i in browserTabProperties) {
     this.properties[i] = browserTabProperties[i];
   }
-
-  // Parameter mappings
-  browserTabProperties.active = browserTabProperties.focused || false;
-  browserTabProperties.pinned = browserTabProperties.locked || false;
-
-  // Not allowed in Chromium API
-  delete browserTabProperties.focused;
-
-  // TODO handle private tab insertion differently in Chromium
-  //browserTabProperties.incognito = browserTabProperties.private || false;
-
-  // Make any requested changes take effect in the user agent
-  chrome.tabs.update(this.properties.id, browserTabProperties, function() {
-    
+  
+  // Queue platform action or fire immediately if this object is resolved
+  this.enqueue(chrome.tabs.update, this.properties.id, browserTabProperties, function() {
     this.dequeue();
-
   }.bind(this));
 
 };
@@ -138,29 +133,30 @@ BrowserTab.prototype.refresh = function() {
 // Web Messaging support for BrowserTab objects
 BrowserTab.prototype.postMessage = function( postData ) {
   
-  // If current object is not resolved, then enqueue this action
-  if (!this.resolved ||
-        (this._windowParent && !this._windowParent.resolved) ||
-            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
-    this.enqueue('postMessage', postData);
-    return;
+  // Cannot send messages if tab is in the closed state
+  if(this.properties.closed === true) {
+    throw {
+        name:        "Invalid State Error",
+        message:     "BrowserTab is in the closed state"
+    };
   }
   
-  chrome.tabs.sendMessage( this.properties.id, postData );
-  
-  this.dequeue();
+  // Queue platform action or fire immediately if this object is resolved
+  this.enqueue(chrome.tabs.sendMessage, this.properties.id, postData, function() {
+    this.dequeue();
+  }.bind(this));
   
 };
 
 // Screenshot API support for BrowserTab objects
 BrowserTab.prototype.getScreenshot = function( callback ) {
   
-  // If current object is not resolved, then enqueue this action
-  if (!this.resolved ||
-        (this._windowParent && !this._windowParent.resolved) ||
-            (this._windowParent && this._windowParent._parent && !this._windowParent._parent.resolved)) {
-    this.enqueue('getScreenshot', callback);
-    return;
+  // Cannot get a screenshot if tab is in the closed state
+  if(this.properties.closed === true) {
+    throw {
+        name:        "Invalid State Error",
+        message:     "BrowserTab is in the closed state"
+    };
   }
   
   if( !this._windowParent || this._windowParent.properties.closed === true) {
@@ -170,8 +166,9 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
   
   try {
   
-    // Get screenshot of requesting tab
-    chrome.tabs.captureVisibleTab(
+    // Queue platform action or fire immediately if this object is resolved
+    this.enqueue(
+      chrome.tabs.captureVisibleTab,
       this._windowParent.properties.id, 
       {}, 
       function( nativeCallback ) {
@@ -203,10 +200,33 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
           callback.call( this, undefined );
         
         }
+        
+        this.dequeue();
     
       }.bind(this)
     );
   
   } catch(e) {} 
   
+};
+
+BrowserTab.prototype.close = function() {
+  
+  // Set BrowserTab object to closed state
+  this.properties.closed = true;
+
+  // Queue platform action or fire immediately if this object is resolved
+  this.enqueue(function() {
+    chrome.tabs.remove(
+      this.properties.id,
+      function() {
+        this.dequeue();
+        if(this._parent) {
+          this._parent.dequeue();
+        }
+        OEX.tabs.dequeue();
+      }.bind(this)
+    );
+  }.bind(this));
+
 };

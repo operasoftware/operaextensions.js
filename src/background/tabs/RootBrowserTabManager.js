@@ -6,8 +6,6 @@ var RootBrowserTabManager = function() {
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
 
-    global.setTimeout(function() {
-
       // If this tab is already registered in the root tab collection then ignore
       var tabFound = false;
       for (var i = 0, l = this.length; i < l; i++) {
@@ -64,8 +62,6 @@ var RootBrowserTabManager = function() {
         }));
 
       }
-
-    }.bind(this), 200);
 
   }.bind(this));
 
