@@ -60,6 +60,14 @@ BrowserTab.prototype.__defineGetter__("url", function() {
   return this.properties.url || "";
 });
 
+BrowserTab.prototype.__defineSetter__("url", function(val) {
+  this.properties.url = val + "";
+  
+  this.enqueue(chrome.tabs.update, this.properties.id, { url: this.properties.url }, function() {
+    this.dequeue();
+  }.bind(this));
+});
+
 BrowserTab.prototype.__defineGetter__("readyState", function() {
   return this.properties.status || "loading";
 });
