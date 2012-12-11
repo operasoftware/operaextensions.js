@@ -143,10 +143,10 @@ BrowserTab.prototype.postMessage = function( postData ) {
   
   // Cannot send messages if tab is in the closed state
   if(this.properties.closed === true) {
-    throw {
-        name:        "Invalid State Error",
-        message:     "BrowserTab is in the closed state"
-    };
+    throw new OError(
+      "Invalid state",
+      "The current BrowserTab object is in the closed state and therefore is invalid."
+    );
   }
   
   // Queue platform action or fire immediately if this object is resolved
@@ -161,10 +161,10 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
   
   // Cannot get a screenshot if tab is in the closed state
   if(this.properties.closed === true) {
-    throw {
-        name:        "Invalid State Error",
-        message:     "BrowserTab is in the closed state"
-    };
+    throw new OError(
+      "Invalid state",
+      "The current BrowserTab object is in the closed state and therefore is invalid."
+    );
   }
   
   if( !this._windowParent || this._windowParent.properties.closed === true) {
@@ -221,10 +221,10 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
 BrowserTab.prototype.close = function() {
   
   if(this.properties.closed == true) {
-    throw {
-        name:        "Invalid State Error",
-        message:     "BrowserTab is already closed so cannot call close on this object"
-    };
+    throw new OError(
+      "Invalid state",
+      "The current BrowserTab object is already closed. Cannot call close on this object."
+    );
   }
   
   // Set BrowserTab object to closed state

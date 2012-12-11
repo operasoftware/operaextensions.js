@@ -100,11 +100,12 @@ BrowserTabManager.prototype = Object.create( OPromise.prototype );
 
 BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
 
-  if(before && !before instanceof BrowserTab) {
-    throw {
-        name:        "TYPE_MISMATCH_ERR",
-        message:     "Could not create BrowserTab object with invalid before attribute provided"
-    };
+  if(before && !(before instanceof BrowserTab)) {
+    throw new OError(
+      "Type mismatch",
+      "Could not create BrowserTab object. 'before' attribute provided is invalid."
+    );
+    console.log('here');
   }
 
   browserTabProperties = browserTabProperties || {};
@@ -132,10 +133,10 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
   // Set parent window to create the tab in
 
   if(this._parent && this._parent.closed === true ) {
-    throw {
-        name:        "Invalid State Error",
-        message:     "Parent window is in the closed state and therefore is invalid"
-    };
+    throw new OError(
+      "Invalid state",
+      "Parent window of the current BrowserTab object is in the closed state and therefore is invalid."
+    );
   }
   
   var shadowBrowserTab = new BrowserTab( Object.create(browserTabProperties), this._parent || OEX.windows.getLastFocused() );
@@ -144,20 +145,20 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
   browserTabProperties.windowId = this._parent ? this._parent.properties.id : OEX.windows.getLastFocused().properties.id;
 
   // Set insert position for the new tab from 'before' attribute, if any
-  if( before && before instanceof BrowserTab ) {
+  if( before && (before instanceof BrowserTab) ) {
 
     if( before.closed === true ) {
-      throw {
-          name:        "Invalid State Error",
-          message:     "'before' attribute is in the closed state and therefore is invalid"
-      };
+      throw new OError(
+        "Invalid state",
+        "'before' BrowserTab object is in the closed state and therefore is invalid."
+      );
     }
 
     if(before._windowParent && before._windowParent.closed === true ) {
-      throw {
-          name:        "Invalid State Error",
-          message:     "Parent window of 'before' attribute is in the closed state and therefore is invalid"
-      };
+      throw new OError(
+        "Invalid state",
+        "Parent window of 'before' BrowserTab object is in the closed state and therefore is invalid."
+      );
     }
     browserTabProperties.windowId = before._windowParent ?
                                       before._windowParent.properties.id : browserTabProperties.windowId;
@@ -238,11 +239,11 @@ BrowserTabManager.prototype.getFocused = BrowserTabManager.prototype.getSelected
 
 BrowserTabManager.prototype.close = function( browserTab ) {
 
-  if( !browserTab || !browserTab instanceof BrowserTab) {
-    throw {
-            name:        "TYPE_MISMATCH_ERR",
-            message:     "Expected BrowserTab object"
-    };
+  if( !browserTab || !(browserTab instanceof BrowserTab)) {
+    throw new OError(
+      "Type mismatch",
+      "Expected browserTab argument to be of type BrowserTab."
+    );
   }
   
   browserTab.close();

@@ -16,10 +16,10 @@ BrowserTabGroupManager.prototype.create = function() {
   
   // When this feature is not supported in the current user agent then we must
   // throw a NOT_SUPPORTED_ERR as per the full Opera WinTabs API specification.
-  throw {
-      name:        "Not Supported Error",
-      message:     "The current user agent does not support Tab Groups"
-  };
+  throw new OError(
+    "Not supported",
+    "The current user agent does not support the Tab Groups feature."
+  );
   
 };
 

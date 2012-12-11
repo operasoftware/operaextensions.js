@@ -40,16 +40,15 @@ BrowserWindow.prototype.__defineGetter__("parent", function() {
 
 BrowserWindow.prototype.insert = function(browserTab, child) {
 
-  if (!browserTab || !browserTab instanceof BrowserTab) { 
+  if (!browserTab || !(browserTab instanceof BrowserTab)) { 
     return;
   }
 
   if (this.properties.closed === true) {
-    throw {
-      name: "Invalid State Error",
-      message: "Current window is in the closed state and therefore is invalid"
-    };
-    return;
+    throw new OError(
+      "Invalid state",
+      "Current window is in the closed state and therefore is invalid"
+    );
   }
 
   var moveProperties = {
@@ -57,22 +56,20 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
   };
 
   // Set insert position for the new tab from 'before' attribute, if any
-  if (child && child instanceof BrowserTab) {
+  if (child && (child instanceof BrowserTab)) {
 
     if (child.closed === true) {
-      throw {
-        name: "Invalid State Error",
-        message: "'child' attribute is in the closed state and therefore is invalid"
-      };
-      return;
+      throw new OError(
+        "Invalid state",
+        "'child' parameter is in the closed state and therefore is invalid"
+      );
     }
 
     if (child._windowParent && child._windowParent.closed === true) {
-      throw {
-        name: "Invalid State Error",
-        message: "Parent window of 'child' attribute is in the closed state and therefore is invalid"
-      };
-      return;
+      throw new OError(
+        "Invalid state",
+        "Parent window of 'child' parameter is in the closed state and therefore is invalid"
+      );
     }
     moveProperties.windowId = child._windowParent ?
                                       child._windowParent.properties.id : moveProperties.windowId;
