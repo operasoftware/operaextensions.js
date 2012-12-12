@@ -13,6 +13,21 @@ var BrowserWindow = function(browserWindowProperties) {
   this.tabs = new BrowserTabManager(this);
 
   this.tabGroups = new BrowserTabGroupManager(this);
+  
+  // Set global focused window is focused property is true
+  if(this.properties.focused == true) {
+    OEX.windows._lastFocusedWindow = this;
+  }
+  
+  if(this.properties.private !== undefined) {
+    this.properties.incognito = !!this.properties.private;
+    delete this.properties.private;
+  }
+  
+  // Not allowed when creating a new window object
+  if(this.properties.closed !== undefined) {
+    delete this.properties.closed;
+  }
 };
 
 BrowserWindow.prototype = Object.create(OPromise.prototype);
