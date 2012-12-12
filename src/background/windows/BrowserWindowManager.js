@@ -5,7 +5,15 @@ var BrowserWindowManager = function() {
 
   this.length = 0;
 
-  this._lastFocusedWindow = null;
+  this._focusedWin = null;
+  this.__defineGetter__('_lastFocusedWindow', function() {
+    return this._focusedWin;
+  });
+  this.__defineSetter__('_lastFocusedWindow', function(val) {
+    console.log( "Focused window:");
+    console.debug(val);
+    this._focusedWin = val;
+  });
 
   // Set up the real BrowserWindow (& BrowserTab) objects currently available
   chrome.windows.getAll({
@@ -30,17 +38,7 @@ var BrowserWindowManager = function() {
       // Replace tab properties belonging to this window with real properties
       var _tabs = [];
       for (var j = 0, k = _windows[i].tabs.length; j < k; j++) {
-        _tabs[j] = new BrowserTab(_windows[i].tabs[j], this[i]);
-        
-        // Set as the currently focused tab?
-        if(_tabs[j].properties.active == true) {
-          this[i].tabs._lastFocusedTab = _tabs[j]; // window-focused tab
-          
-          if(this[i].properties.focused == true) {
-            OEX.tabs._lastFocusedTab = _tabs[j]; // gloval-focused tab
-          }
-        }
-        
+        _tabs[j] = new BrowserTab(_windows[i].tabs[j], this[i], true);
       }
       this[i].tabs.replaceTabs(_tabs);
 
@@ -144,57 +142,18 @@ var BrowserWindowManager = function() {
     }.bind(this), 200);
 
   }.bind(this));
-
-  chrome.windows.onRemoved.addListener(function(windowId) {
-
-    // Remove window from current collection
-    var deleteIndex = -1;
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i].properties.id == windowId) {
-        deleteIndex = i;
-        break;
-      }
-    }
-
-    if (deleteIndex > -1) {
-
-      // Fire a new 'close' event on the closed BrowserWindow object
-      /*this[deleteIndex].dispatchEvent(new OEvent('close', {
-        'browserWindow': this[deleteIndex]
-      }));*/
-      
-      this[deleteIndex].properties.closed = true;
-
-      // Fire a new 'close' event on this manager object
-      this.dispatchEvent(new OEvent('close', {
-        'browserWindow': this[deleteIndex]
-      }));
-
-      // Manually splice the deleteIndex_th_ item from the current collection
-      for (var i = deleteIndex, l = this.length; i < l; i++) {
-        if (this[i + 1]) {
-          this[i] = this[i + 1];
-        } else {
-          delete this[i]; // remove last item
-        }
-      }
-      this.length -= 1;
-
-    }
-
-  }.bind(this));
-
+  
   chrome.windows.onFocusChanged.addListener(function(windowId) {
-    
+      
       var _prevFocusedWindow = this._lastFocusedWindow;
-    
+
       // If no new window is focused, abort here
       if( windowId !== chrome.windows.WINDOW_ID_NONE ) {
     
         // Find and fire focus event on newly focused window
         for (var i = 0, l = this.length; i < l; i++) {
 
-          if (this[i].properties.id == windowId && this[i] !== this._lastFocusedWindow) {
+          if (this[i].properties.id == windowId && this._lastFocusedWindow !== this[i] ) {
             
             this[i].properties.focused = true;
           
@@ -205,6 +164,7 @@ var BrowserWindowManager = function() {
             // when we just switch between browser windows
             for(var j = 0, k = this._lastFocusedWindow.tabs.length; j < k; j++) {
               if(this._lastFocusedWindow.tabs[j].properties.active == true) {
+                this._lastFocusedWindow.tabs._lastFocusedTab = this._lastFocusedWindow.tabs[j];
                 OEX.tabs._lastFocusedTab = this._lastFocusedWindow.tabs[j];
                 break;
               }
@@ -262,33 +222,67 @@ var BrowserWindowManager = function() {
 
   }.bind(this));
 
+  chrome.windows.onRemoved.addListener(function(windowId) {
+
+    // Remove window from current collection
+    var deleteIndex = -1;
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i].properties.id == windowId) {
+        deleteIndex = i;
+        break;
+      }
+    }
+
+    if (deleteIndex > -1) {
+
+      // Fire a new 'close' event on the closed BrowserWindow object
+      /*this[deleteIndex].dispatchEvent(new OEvent('close', {
+        'browserWindow': this[deleteIndex]
+      }));*/
+      
+      this[deleteIndex].properties.closed = true;
+
+      // Fire a new 'close' event on this manager object
+      this.dispatchEvent(new OEvent('close', {
+        'browserWindow': this[deleteIndex]
+      }));
+
+      // Manually splice the deleteIndex_th_ item from the current collection
+      for (var i = deleteIndex, l = this.length; i < l; i++) {
+        if (this[i + 1]) {
+          this[i] = this[i + 1];
+        } else {
+          delete this[i]; // remove last item
+        }
+      }
+      this.length -= 1;
+
+    }
+
+  }.bind(this));
+
 };
 
 BrowserWindowManager.prototype = Object.create(OPromise.prototype);
 
 BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProperties) {
 
-  browserWindowProperties = browserWindowProperties || {};
-  
-  delete browserWindowProperties.closed;
-  
-  if(browserWindowProperties.private !== undefined) {
-    browserWindowProperties.incognito = !!browserWindowProperties.private;
-    delete browserWindowProperties.private;
-  }
-
+  // Create new BrowserWindow object (+ sanitize browserWindowProperties values)
   var shadowBrowserWindow = new BrowserWindow(browserWindowProperties);
   
   // Add tabs included in the create() call to the newly created
   // window, if any, based on type
   var hasTabsToInject = false;
   
-  if (tabsToInject) {
-    for (var i in tabsToInject) {
+  if (tabsToInject &&
+        Object.prototype.toString.call(tabsToInject) === "[object Array]" && 
+          tabsToInject.length > 0) {
+          
+    hasTabsToInject = true;
+
+    for (var i = 0, l = tabsToInject.length; i < l; i++) {
 
       if (tabsToInject[i] instanceof BrowserTab) {
-        
-        hasTabsToInject = true;
 
         (function(existingBrowserTab) {
           
@@ -324,37 +318,35 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           // Rewrite tab's index position in collection
           existingBrowserTab.properties.index = shadowBrowserWindow.tabs.length;
           
-          shadowBrowserWindow.tabs.addTabs([existingBrowserTab]);
+          shadowBrowserWindow.tabs.addTab( existingBrowserTab, existingBrowserTab.properties.index);
+          
+          // move events etc will fire in onMoved listener of RootBrowserTabManager
           
         })(tabsToInject[i]);
 
       } else { // Treat as a BrowserTabProperties object by default
-        hasTabsToInject = true;
-        
+
         (function(browserTabProperties) {
           
           var newBrowserTab = new BrowserTab(browserTabProperties, shadowBrowserWindow);
-          
+
           // Register BrowserTab object with the current BrowserWindow object
-          shadowBrowserWindow.tabs.addTabs([newBrowserTab]);
+          shadowBrowserWindow.tabs.addTab( newBrowserTab, newBrowserTab.properties.index);
           
           // Add object to root store
-          OEX.tabs.addTabs([newBrowserTab]);
+          OEX.tabs.addTab( newBrowserTab );
 
           // Delay this so we pick up the id property of the shadowBrowserWindow once
           // it's been created :)
           shadowBrowserWindow.tabs.enqueue(function() {
-            // newBrowserTab.properties.index = -1;
             newBrowserTab.properties.windowId = shadowBrowserWindow.properties.id;
-            
-            // Pass the identity of this tab through the Chromium Tabs API via the URL field
-            newBrowserTab.rewriteUrl = newBrowserTab.properties.url;
-            newBrowserTab.properties.url = "chrome://newtab#" + newBrowserTab._operaId;
             
             var tabProps = newBrowserTab.properties;
             
-            delete tabProps.rewriteUrl;
-            delete tabProps.closed;
+            // remove invalid parameters if they exist
+            if(tabProps.closed !== undefined) {
+              delete tabProps.closed;
+            }
             
             chrome.tabs.create(
               tabProps, 
@@ -391,6 +383,24 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
 
     }
 
+  } else { // we only have one default chrome://newtab tab to set up
+    
+    // setup single new tab and tell onCreated to ignore this item
+    var defaultBrowserTab = new BrowserTab({ active: true }, shadowBrowserWindow);
+    
+    // Register BrowserTab object with the current BrowserWindow object
+    shadowBrowserWindow.tabs.addTab( defaultBrowserTab, defaultBrowserTab.properties.index );
+    
+    // Add object to root store
+    OEX.tabs.addTab( defaultBrowserTab );
+    
+    // Set tab focus
+    shadowBrowserWindow.tabs._lastFocusedTab = defaultBrowserTab;
+    // Set global tab focus if shadowBrowserWindow is also currently focused
+    if(OEX.windows._lastFocusedWindow == shadowBrowserWindow) {
+      OEX.tabs._lastFocusedTab = defaultBrowserTab;
+    }
+
   }
 
   // Add this object to the current collection
@@ -400,7 +410,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
   // Queue platform action or fire immediately if this object is resolved
   this.enqueue(
     chrome.windows.create,
-    browserWindowProperties, 
+    shadowBrowserWindow.properties, 
     function(_window) {
 
       // Update BrowserWindow properties
@@ -432,6 +442,13 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
               this.dequeue();
             }.bind(shadowBrowserWindow.tabs)
           );
+        }
+      } else {
+        // consolidate the one default tab with the lazy loaded tab object above
+        if(_window.tabs[0] !== undefined && _window.tabs[0] !== null) {
+          for(var i in _window.tabs[0]) {
+            shadowBrowserWindow.tabs[0].properties[i] = _window.tabs[0][i];
+          }
         }
       }
       

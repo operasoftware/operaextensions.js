@@ -1,14 +1,68 @@
 
-var BrowserTab = function(browserTabProperties, windowParent) {
+var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) {
+
+  if(!windowParent) {
+    throw new OError('Parent missing', 'BrowserTab objects can only be created with a window parent provided');
+  }
 
   OPromise.call(this);
-
-  this.properties = browserTabProperties || {};
-
+  
   this._windowParent = windowParent;
+
+  this.sanitizeProperties = function( props ) {
+    if(props.focused !== undefined) {
+      props.active = !!props.focused;
+      // Not allowed in Chromium API
+      delete props.focused;
+    } else if( props.active != true ) {
+      // Explicitly set active to false by default in Opera implementation
+      props.active = false;
+    }
+
+    if(props.locked !== undefined) {
+      props.pinned = !!props.locked;
+      delete props.locked;
+    }
+
+    if(props.url === undefined || props.url === null) {
+      props.url = "chrome://newtab";
+    }
+    
+    if(props.position !== undefined) {
+      props.index = props.position;
+      delete props.position;
+    }
+    
+    if(props.index === undefined || props.index === null) {
+      props.index = this._windowParent.tabs.length;
+    }
+    
+    // TODO handle private tab insertion differently in Chromium
+    //browserTabProperties.incognito = browserTabProperties.private || false;
+    
+    // Properties disallowed when creating a new object or updating an existing object
+    if(props.closed !== undefined) {
+      delete props.closed;
+    }
+    
+    return props;
+  };
+  
+  this.properties = this.sanitizeProperties(browserTabProperties || {});
 
   // Create a unique browserTab id
   this._operaId = Math.floor(Math.random() * 1e16);
+  
+  // Pass the identity of this tab through the Chromium Tabs API via the URL field
+  if(!bypassRewriteUrl) {
+    this.rewriteUrl = this.properties.url;
+    this.properties.url = "chrome://newtab/#" + this._operaId;
+  }
+  
+  // Set tab focused if active
+  if(this.properties.active == true) {
+    this.focus();
+  }
 
 };
 
@@ -91,6 +145,22 @@ BrowserTab.prototype.focus = function() {
   
   // Set BrowserTab object to active state
   this.properties.active = true;
+  
+  if(this._windowParent) {
+    // Set tab focused
+    this._windowParent.tabs._lastFocusedTab = this;
+    // Set global tab focus if window is also currently focused
+    if(OEX.windows._lastFocusedWindow === this._windowParent) {
+      OEX.tabs._lastFocusedTab = this;
+    }
+    
+    // unset active state of all other tabs in this collection
+    for(var i = 0, l = this._windowParent.tabs.length; i < l; i++) {
+      if(this._windowParent.tabs[i] !== this) {
+        this._windowParent.tabs[i].properties.active = false;
+      }
+    }
+  }
 
   // Queue platform action or fire immediately if this object is resolved
   this.enqueue(chrome.tabs.update, this.properties.id, { active: true }, function() {
@@ -101,27 +171,7 @@ BrowserTab.prototype.focus = function() {
 
 BrowserTab.prototype.update = function(browserTabProperties) {
 
-  // Parameter mappings 
-  
-  if(browserTabProperties.focused !== undefined) {
-    // Cannot set BrowserTab object focused to false! 
-    // See: /tests/WindowsTabs/BrowserTabManager/010/ test#5
-    if(browserTabProperties.focused !== false) {
-      browserTabProperties.active = !!browserTabProperties.focused;
-    }
-    // Not allowed in Chromium API
-    delete browserTabProperties.focused;
-  }
-  if(browserTabProperties.locked !== undefined) {
-    browserTabProperties.pinned = !!browserTabProperties.locked;
-    delete browserTabProperties.locked;
-  }
-  
-  // TODO handle private tab insertion differently in Chromium
-  //browserTabProperties.incognito = browserTabProperties.private || false;
-  
-  // Remove invalid parameters if present:
-  delete browserTabProperties.closed; // cannot set closed state via update
+  browserTabProperties = this.sanitizeProperties(browserTabProperties || {});
 
   for (var i in browserTabProperties) {
     this.properties[i] = browserTabProperties[i];
