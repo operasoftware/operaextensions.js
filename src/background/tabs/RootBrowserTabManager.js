@@ -224,6 +224,11 @@ var RootBrowserTabManager = function() {
       if(prop == "id" || prop == "windowId") { // ignore these
         continue;
       }
+      // if rewriteUrl hasn't been handled yet, don't set readyState to completed
+      if(updateTab.rewriteUrl && prop == "status" && tab[prop] == "complete") {
+        continue;
+      }
+      
       updateTab.properties[prop] = tab[prop];
     }
     

@@ -132,6 +132,12 @@ BrowserTab.prototype.__defineGetter__("url", function() {
   if (this.properties.closed) {
     return "";
   }
+  
+  // URL rewrite hack
+  if (this.rewriteUrl) {
+    return this.rewriteUrl;
+  }
+  
   return this.properties.url || "";
 }); // read-only
 
@@ -198,8 +204,17 @@ BrowserTab.prototype.update = function(browserTabProperties) {
   
   if( this.properties.closed == true ) {
     throw new OError(
-      "Invalid state",
-      "The current BrowserTab object is closed. Cannot call 'update' on this object."
+      "InvalidStateError",
+      "The current BrowserTab object is closed. Cannot call 'update' on this object.",
+      DOMException.INVALID_STATE_ERR
+    );
+  }
+  
+  if( isObjectEmpty(browserTabProperties || {}) ) {
+    throw new OError(
+      'TypeMismatchError',
+      'You must provide some valid properties to update a BrowserTab object',
+      DOMException.TYPE_MISMATCH_ERR
     );
   }
   
@@ -215,18 +230,40 @@ BrowserTab.prototype.update = function(browserTabProperties) {
   }
   
   if(browserTabProperties.url !== undefined && browserTabProperties.url !== null) {
-    this.propeerties.url = updateProperties.url = browserTabProperties.url;
+    if(this.rewriteUrl) {
+      this.rewriteUrl = updateProperties.url = browserTabProperties.url;
+    } else {
+      this.properties.url = updateProperties.url = browserTabProperties.url;
+    }
   }
   
-  // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(chrome.tabs.update, this.properties.id, updateProperties, function() {
-    this.dequeue();
-  }.bind(this));
+  if( !isObjectEmpty(updateProperties) ) {
+  
+    // Queue platform action or fire immediately if this object is resolved
+    this.enqueue(chrome.tabs.update, this.properties.id, updateProperties, function() {
+      this.dequeue();
+    }.bind(this));
+  
+  }
 
 };
 
 BrowserTab.prototype.refresh = function() {
-  // not implemented
+  
+  // Cannot refresh if the tab is in the closed state
+  if(this.properties.closed === true) {
+    return;
+  }
+  
+  this.enqueue(
+    chrome.tabs.reload, 
+    this.properties.id, 
+    { "bypassCache": true }, 
+    function() {
+      this.dequeue();
+    }.bind(this)
+  );
+  
 };
 
 // Web Messaging support for BrowserTab objects
@@ -235,8 +272,9 @@ BrowserTab.prototype.postMessage = function( postData ) {
   // Cannot send messages if tab is in the closed state
   if(this.properties.closed === true) {
     throw new OError(
-      "Invalid state",
-      "The current BrowserTab object is in the closed state and therefore is invalid."
+      "InvalidStateError",
+      "The current BrowserTab object is in the closed state and therefore is invalid.",
+      DOMException.INVALID_STATE_ERR
     );
   }
   
@@ -253,8 +291,9 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
   // Cannot get a screenshot if tab is in the closed state
   if(this.properties.closed === true) {
     throw new OError(
-      "Invalid state",
-      "The current BrowserTab object is in the closed state and therefore is invalid."
+      "InvalidStateError",
+      "The current BrowserTab object is in the closed state and therefore is invalid.",
+      DOMException.INVALID_STATE_ERR
     );
   }
   
@@ -313,8 +352,9 @@ BrowserTab.prototype.close = function() {
   
   if(this.properties.closed == true) {
     /*throw new OError(
-      "Invalid state",
-      "The current BrowserTab object is already closed. Cannot call 'close' on this object."
+      "InvalidStateError",
+      "The current BrowserTab object is already closed. Cannot call 'close' on this object.",
+      DOMException.INVALID_STATE_ERR
     );*/
     return;
   }
