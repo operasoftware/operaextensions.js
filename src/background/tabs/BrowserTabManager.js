@@ -12,7 +12,7 @@ var BrowserTabManager = function( parentObj ) {
   });
   this.__defineSetter__('_lastFocusedTab', function(val) {
     if(this == OEX.tabs) {
-      console.log( "Focused tab: " + val.url );
+      //console.log( "Focused tab: " + val.url );
     }
     this._focusedTab = val;
   });
@@ -69,7 +69,7 @@ var BrowserTabManager = function( parentObj ) {
       browserTab.focus();
     }
     
-    var position = startPosition !== undefined ? startPosition : allTabs.length - 1;
+    var position = startPosition !== undefined ? startPosition : allTabs.length;
     
     // Add new browserTab to allTabs array
     allTabs.splice(this !== OEX.tabs ? position : this.length, 0, browserTab);
@@ -105,9 +105,6 @@ var BrowserTabManager = function( parentObj ) {
     if(removeTabIndex > -1) {
       allTabs.splice(removeTabIndex, 1);
     }
-
-    // Detach _windowParent from removed tab
-    browserTab._windowParent = null;
 
     // Rewrite the current tabs collection
     for( var i = 0, l = allTabs.length; i < l; i++ ) {
@@ -157,6 +154,9 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
   // Sanitized tab properties
   browserTabProperties = shadowBrowserTab.properties;
   
+  // By default, tab will be created at end of current collection
+  shadowBrowserTab.properties.index = browserTabProperties.index = shadowBrowserTab._windowParent.tabs.length;
+  
   // no windowId will default to adding the tab to the current window
   browserTabProperties.windowId = this._parent ? this._parent.properties.id : OEX.windows.getLastFocused().properties.id;
 
@@ -183,10 +183,14 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
   }
   
   // Set up tab index on start
-  shadowBrowserTab.properties.index = browserTabProperties.index !== undefined ? browserTabProperties.index : (this !== OEX.tabs ? this.length : OEX.windows.getLastFocused().tabs.length);
+  if(this === OEX.tabs) {
+    shadowBrowserTab.properties.index = browserTabProperties.index = OEX.windows.getLastFocused().tabs.length;
+  }
+  
+  console.log( shadowBrowserTab.properties.index );
   
   // Add this object to the end of the current tabs collection
-  shadowBrowserTab._windowParent.tabs.addTab( shadowBrowserTab, shadowBrowserTab.properties.index);
+  shadowBrowserTab._windowParent.tabs.addTab(shadowBrowserTab, shadowBrowserTab.properties.index);
 
   // Add this object to the root tab manager
   OEX.tabs.addTab( shadowBrowserTab );
