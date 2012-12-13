@@ -11,9 +11,9 @@ var BrowserTabManager = function( parentObj ) {
     return this._focusedTab;
   });
   this.__defineSetter__('_lastFocusedTab', function(val) {
-    if(this == OEX.tabs) {
-      //console.log( "Focused tab: " + val.url );
-    }
+    /*if(this == OEX.tabs) {
+      console.log( "Focused tab: " + val.url );
+    }*/
     this._focusedTab = val;
   });
 
@@ -146,8 +146,12 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
     );
   }
   
+  browserTabProperties = browserTabProperties || {};
+  
   // Remove parameters not allowed from create properties
-  delete browserTabProperties.closed;
+  if(browserTabProperties.closed) {
+    delete browserTabProperties.closed;
+  }
   
   var shadowBrowserTab = new BrowserTab( browserTabProperties, this._parent || OEX.windows.getLastFocused() );
   

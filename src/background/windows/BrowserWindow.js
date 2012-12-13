@@ -174,6 +174,14 @@ BrowserWindow.prototype.update = function(browserWindowProperties) {
 
 BrowserWindow.prototype.close = function() {
   
+  if( this.properties.closed == true) {
+    /*throw new OError(
+      "Invalid state",
+      "The current BrowserWindow object is already closed. Cannot call close on this object."
+    );*/
+    return;
+  }
+  
   // Set BrowserWindow object to closed state
   this.properties.closed = true;
 

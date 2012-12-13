@@ -39,6 +39,7 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
     }
     
     // TODO handle private tab insertion differently in Chromium
+    if()
     //browserTabProperties.incognito = browserTabProperties.private || false;
     
     // Properties disallowed when creating a new object or updating an existing object
@@ -64,6 +65,10 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
   if(this.properties.active == true) {
     this.focus();
   }
+  
+  // Add this object to the permanent management collection
+  OEX.tabs._allTabs.push( this );
+  
 
 };
 
@@ -192,10 +197,22 @@ BrowserTab.prototype.focus = function() {
 
 BrowserTab.prototype.update = function(browserTabProperties) {
   
+  if( this.properties.closed == true ) {
+    throw new OError(
+      "Invalid state",
+      "The current BrowserTab object is closed. Cannot call 'update' on this object."
+    );
+  }
+  
   var updateProperties = {};
   
-  if(browserTabProperties.focused !== undefined) {
+  // Cannot set focused = false in update
+  if(browserTabProperties.focused !== undefined && browserTabProperties.focused == true) {
     this.properties.active = updateProperties.active = !!browserTabProperties.focused;
+  }
+  
+  if(browserTabProperties.locked !== undefined && browserTabProperties.locked !== null) {
+    this.properties.pinned = updateProperties.pinned = !!browserTabProperties.locked;
   }
   
   if(browserTabProperties.url !== undefined && browserTabProperties.url !== null) {
@@ -296,10 +313,16 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
 BrowserTab.prototype.close = function() {
   
   if(this.properties.closed == true) {
-    throw new OError(
+    /*throw new OError(
       "Invalid state",
-      "The current BrowserTab object is already closed. Cannot call close on this object."
-    );
+      "The current BrowserTab object is already closed. Cannot call 'close' on this object."
+    );*/
+    return;
+  }
+  
+  // Cannot close pinned tab
+  if(this.properties.pinned == true) {
+    return;
   }
   
   // Set BrowserTab object to closed state
