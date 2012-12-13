@@ -10,8 +10,8 @@ var BrowserWindowManager = function() {
     return this._focusedWin;
   });
   this.__defineSetter__('_lastFocusedWindow', function(val) {
-    console.log( "Focused window:");
-    console.debug(val);
+    //console.log( "Focused window:");
+    //console.debug(val);
     this._focusedWin = val;
   });
 

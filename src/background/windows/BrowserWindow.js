@@ -67,7 +67,8 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
   }
 
   var moveProperties = {
-    windowId: this.properties.id
+    windowId: this.properties.id,
+    index: this.length // by default, add to the end of the current window
   };
 
   // Set insert position for the new tab from 'before' attribute, if any
@@ -90,6 +91,30 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
                                       child._windowParent.properties.id : moveProperties.windowId;
     moveProperties.index = child.position;
 
+  } else {
+    // IF we're moving within the same window then index will be length - 1
+    moveProperties.index = moveProperties.index > 0 ? moveProperties.index - 1 : moveProperties.index;
+  }
+  
+  // Detach tab from existing BrowserWindow parent (if any)
+  if (browserTab._windowParent) {
+    browserTab._oldWindowParent = browserTab._windowParent;
+    browserTab._oldIndex = browserTab.properties.index;
+    
+    if(browserTab._oldWindowParent !== this) {
+      browserTab._windowParent.tabs.removeTab( browserTab );
+    }
+  }
+  
+  // Attach tab to new BrowserWindow parent 
+  browserTab._windowParent = this;
+  
+  // Update index within new parent
+  browserTab.properties.index = moveProperties.index;
+  
+  if(this !== browserTab._oldWindowParent) {
+    // Attach tab to new parent
+    this.tabs.addTab( browserTab, browserTab.properties.index );
   }
 
   // Queue platform action or fire immediately if this object is resolved
