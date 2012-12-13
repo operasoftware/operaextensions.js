@@ -270,6 +270,15 @@ var deferredComponentsLoadStatus = {
 
  EventTarget.mixin(Promise.prototype);
 
+function isObjectEmpty(obj) {
+  for(var prop in obj) {
+    if(obj.hasOwnProperty(prop)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /**
  * GENERAL OEX SHIM UTILITY FUNCTIONS
  */
@@ -464,10 +473,11 @@ function complexColorToHex(color, backgroundColorVal) {
 
 };
 
-function OError(name, msg) {
+function OError(name, msg, code) {
   Error.call(this);
   Error.captureStackTrace(this, arguments.callee);
   this.name = name || "Error";
+  this.code = code || -1;
   this.message = msg || "";
 };
 
@@ -1310,6 +1320,39 @@ var BrowserWindowManager = function() {
 BrowserWindowManager.prototype = Object.create(OPromise.prototype);
 
 BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProperties) {
+  
+  /*
+  // Support tc-BrowserWindowManager-015 test
+  
+  var isEmpty_TabsToInject = true;
+  
+  if(tabsToInject && Object.prototype.toString.call(tabsToInject) === "[object Array]") {
+    for(var i = 0, l = tabsToInject.length; i < l; i++) {
+      if( !isObjectEmpty(tabsToInject[i]) ) {
+        isEmpty_TabsToInject = false;
+        break;
+      }
+    }
+  }
+  
+  var isEmpty_BrowserWindowProperties = isObjectEmpty(browserWindowProperties || {});
+  
+  // undefined/null tabsToInject w/ non-empty window properties is ok
+  if( !isEmpty_BrowserWindowProperties && (tabsToInject === undefined || tabsToInject === null)) {
+    noTabsToInject = false;
+  }
+
+  if(isEmpty_TabsToInject && isEmpty_BrowserWindowProperties) {
+    throw new OError("NotSupportedError", "Cannot create a new window without providing at least one method parameter.", 9);
+  }
+  
+  if(!isEmpty_TabsToInject && isEmpty_BrowserWindowProperties) {
+    throw new OError("NotSupportedError", "Cannot create a new window without providing at least one window property parameter.", 9);
+  }
+  
+  if(isEmpty_TabsToInject && !isEmpty_BrowserWindowProperties) {
+    throw new OError("NotSupportedError", "Cannot create a new window without providing at least one object (or 'null')", 9);
+  }*/
 
   // Create new BrowserWindow object (+ sanitize browserWindowProperties values)
   var shadowBrowserWindow = new BrowserWindow(browserWindowProperties);
@@ -1891,8 +1934,12 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
   browserTabProperties = browserTabProperties || {};
   
   // Remove parameters not allowed from create properties
-  if(browserTabProperties.closed) {
+  if(browserTabProperties.closed !== undefined) {
     delete browserTabProperties.closed;
+  }
+  
+  if(browserTabProperties.private !== undefined) {
+    delete browserTabProperties.private;
   }
   
   var shadowBrowserTab = new BrowserTab( browserTabProperties, this._parent || OEX.windows.getLastFocused() );
