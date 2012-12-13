@@ -10,8 +10,8 @@ var BrowserWindowManager = function() {
     return this._focusedWin;
   });
   this.__defineSetter__('_lastFocusedWindow', function(val) {
-    //console.log( "Focused window:");
-    //console.debug(val);
+    /*console.log( "Focused window:");
+    console.debug(val);*/
     this._focusedWin = val;
   });
 
@@ -106,6 +106,11 @@ var BrowserWindowManager = function() {
         for (var i in _window.tabs) {
 
           var newBrowserTab = new BrowserTab(_window.tabs[i], newBrowserWindow);
+          
+          // Focus the window if this tab is created as focused
+          if(newBrowserTab.properties.active) {
+            this._lastFocusedWindow = newBrowserWindow;
+          }
 
           newBrowserTabs.push(newBrowserTab);
 
@@ -415,16 +420,9 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
 
       // Update BrowserWindow properties
       for (var i in _window) {
+        if(i == 'tabs') continue; // don't overwrite!
         shadowBrowserWindow.properties[i] = _window[i];
       }
-      
-      // Resolution order:
-      // 1. Window
-      // 2. Window's Tab Manager
-      // 3. Window's Tab Manager's Tabs (after tabs cleanup below)
-      shadowBrowserWindow.resolve(true);
-
-      shadowBrowserWindow.tabs.resolve(true);
       
       // remove starting tab if we have been asked to add at least 
       // one tabsToInject. Otherwise, ignore this and keep the newly
@@ -451,6 +449,14 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           }
         }
       }
+      
+      // Resolution order:
+      // 1. Window
+      // 2. Window's Tab Manager
+      // 3. Window's Tab Manager's Tabs (after tabs cleanup below)
+      shadowBrowserWindow.resolve(true);
+
+      shadowBrowserWindow.tabs.resolve(true);
       
       for(var i = 0, l = shadowBrowserWindow.tabs.length; i < l; i++) {
         shadowBrowserWindow.tabs[i].resolve(true);

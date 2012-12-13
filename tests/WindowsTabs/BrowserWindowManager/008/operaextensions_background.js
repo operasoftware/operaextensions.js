@@ -1049,8 +1049,8 @@ var BrowserWindowManager = function() {
     return this._focusedWin;
   });
   this.__defineSetter__('_lastFocusedWindow', function(val) {
-    //console.log( "Focused window:");
-    //console.debug(val);
+    /*console.log( "Focused window:");
+    console.debug(val);*/
     this._focusedWin = val;
   });
 
@@ -1145,6 +1145,11 @@ var BrowserWindowManager = function() {
         for (var i in _window.tabs) {
 
           var newBrowserTab = new BrowserTab(_window.tabs[i], newBrowserWindow);
+          
+          // Focus the window if this tab is created as focused
+          if(newBrowserTab.properties.active) {
+            this._lastFocusedWindow = newBrowserWindow;
+          }
 
           newBrowserTabs.push(newBrowserTab);
 
@@ -1454,16 +1459,9 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
 
       // Update BrowserWindow properties
       for (var i in _window) {
+        if(i == 'tabs') continue; // don't overwrite!
         shadowBrowserWindow.properties[i] = _window[i];
       }
-      
-      // Resolution order:
-      // 1. Window
-      // 2. Window's Tab Manager
-      // 3. Window's Tab Manager's Tabs (after tabs cleanup below)
-      shadowBrowserWindow.resolve(true);
-
-      shadowBrowserWindow.tabs.resolve(true);
       
       // remove starting tab if we have been asked to add at least 
       // one tabsToInject. Otherwise, ignore this and keep the newly
@@ -1490,6 +1488,14 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           }
         }
       }
+      
+      // Resolution order:
+      // 1. Window
+      // 2. Window's Tab Manager
+      // 3. Window's Tab Manager's Tabs (after tabs cleanup below)
+      shadowBrowserWindow.resolve(true);
+
+      shadowBrowserWindow.tabs.resolve(true);
       
       for(var i = 0, l = shadowBrowserWindow.tabs.length; i < l; i++) {
         shadowBrowserWindow.tabs[i].resolve(true);
@@ -1711,6 +1717,14 @@ BrowserWindow.prototype.update = function(browserWindowProperties) {
 
 BrowserWindow.prototype.close = function() {
   
+  if( this.properties.closed == true) {
+    /*throw new OError(
+      "Invalid state",
+      "The current BrowserWindow object is already closed. Cannot call close on this object."
+    );*/
+    return;
+  }
+  
   // Set BrowserWindow object to closed state
   this.properties.closed = true;
 
@@ -1739,9 +1753,9 @@ var BrowserTabManager = function( parentObj ) {
     return this._focusedTab;
   });
   this.__defineSetter__('_lastFocusedTab', function(val) {
-    if(this == OEX.tabs) {
-      //console.log( "Focused tab: " + val.url );
-    }
+    /*if(this == OEX.tabs) {
+      console.log( "Focused tab: " + val.url );
+    }*/
     this._focusedTab = val;
   });
 
@@ -1874,8 +1888,12 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
     );
   }
   
+  browserTabProperties = browserTabProperties || {};
+  
   // Remove parameters not allowed from create properties
-  delete browserTabProperties.closed;
+  if(browserTabProperties.closed) {
+    delete browserTabProperties.closed;
+  }
   
   var shadowBrowserTab = new BrowserTab( browserTabProperties, this._parent || OEX.windows.getLastFocused() );
   
@@ -1996,6 +2014,9 @@ var RootBrowserTabManager = function() {
   
   // list of tab objects we should ignore
   this._blackList = {};
+  
+  // global permanaent tabs collection manager
+  this._allTabs = [];
 
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
@@ -2009,24 +2030,24 @@ var RootBrowserTabManager = function() {
       
       // If this tab is already registered in the root tab collection then ignore
       var tabFoundIndex = -1;
-      for (var i = 0, l = this.length; i < l; i++) {
+      for (var i = 0, l = this._allTabs.length; i < l; i++) {
 
         // opera.extension.windows.create rewrite hack
-        if (this[i].rewriteUrl && this[i].properties.url == _tab.url) {
+        if (this._allTabs[i].rewriteUrl && this._allTabs[i].properties.url == _tab.url) {
 
-          if(this[i]._windowParent) {
+          if(this._allTabs[i]._windowParent) {
 
             // If the window ids don't match then silently move the tab to the correct parent
             // e.g. this happens if we create a new tab from the background page's console.
-            if(this[i]._windowParent.properties.id !== _tab.windowId) {
+            if(this._allTabs[i]._windowParent.properties.id !== _tab.windowId) {
               for(var j = 0, k = OEX.windows.length; j < k; j++) {
                 if(OEX.windows[j].properties.id == _tab.windowId) {
-                  this[i]._windowParent.tabs.removeTab(this[i]);
-                  this[i].properties.index = this[i]._windowParent.tabs.length;
-                  this[i]._windowParent = OEX.windows[j];
-                  this[i].properties.windowId = _tab.windowId;
+                  this._allTabs[i]._windowParent.tabs.removeTab(this._allTabs[i]);
+                  this._allTabs[i].properties.index = this._allTabs[i]._windowParent.tabs.length;
+                  this._allTabs[i]._windowParent = OEX.windows[j];
+                  this._allTabs[i].properties.windowId = _tab.windowId;
                 
-                  OEX.windows[j].tabs.addTab( this[i], this[i].properties.index);
+                  OEX.windows[j].tabs.addTab( this._allTabs[i], this._allTabs[i].properties.index);
                 }
               }
             }
@@ -2035,18 +2056,18 @@ var RootBrowserTabManager = function() {
           
           for(var j in _tab) {
             if(j == 'url' || j == 'windowId') continue;
-            this[i].properties[j] = _tab[j];
+            this._allTabs[i].properties[j] = _tab[j];
           }
           // now rewrite to the correct url 
           // (which will be navigated to automatically when tab is resolved)
-          this[i].url = this[i].rewriteUrl;
-          delete this[i].rewriteUrl;
+          this._allTabs[i].url = this._allTabs[i].rewriteUrl;
+          delete this._allTabs[i].rewriteUrl;
           
           return;
         }
         
         // Standard tab search
-        if (this[i].properties.id == _tab.id) {
+        if (this._allTabs[i].properties.id == _tab.id) {
           tabFoundIndex = i;
           break;
         }
@@ -2120,8 +2141,8 @@ var RootBrowserTabManager = function() {
     
     // Remove tab from current collection
     var deleteIndex = -1;
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i].properties.id == tabId) {
+    for (var i = 0, l = this._allTabs.length; i < l; i++) {
+      if (this._allTabs[i].properties.id == tabId) {
         deleteIndex = i;
         break;
       }
@@ -2131,7 +2152,7 @@ var RootBrowserTabManager = function() {
       return;
     }
 
-    var oldTab = this[deleteIndex];
+    var oldTab = this._allTabs[deleteIndex];
     
     var oldTabWindowParent = oldTab._oldWindowParent;
     var oldTabPosition = oldTab._oldIndex || oldTab.properties.index;
@@ -2194,8 +2215,8 @@ var RootBrowserTabManager = function() {
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
     var updateIndex = -1;
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i].properties.id == tabId) {
+    for (var i = 0, l = this._allTabs.length; i < l; i++) {
+      if (this._allTabs[i].properties.id == tabId) {
         updateIndex = i;
         break;
       }
@@ -2205,7 +2226,7 @@ var RootBrowserTabManager = function() {
       return; // nothing to update
     }
     
-    var updateTab = this[updateIndex];
+    var updateTab = this._allTabs[updateIndex];
     
     // Update tab properties in current collection
     for (var prop in tab) {
@@ -2231,8 +2252,8 @@ var RootBrowserTabManager = function() {
     
     // Find tab object
     var moveIndex = -1;
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i].properties.id == tabId) {
+    for (var i = 0, l = this._allTabs.length; i < l; i++) {
+      if (this._allTabs[i].properties.id == tabId) {
         moveIndex = i;
         break;
       }
@@ -2242,7 +2263,7 @@ var RootBrowserTabManager = function() {
       return; // nothing to update
     }
 
-    var moveTab = this[moveIndex];
+    var moveTab = this._allTabs[moveIndex];
     
     if(moveTab) {
       
@@ -2285,8 +2306,8 @@ var RootBrowserTabManager = function() {
     
     // Find tab object
     var attachIndex = -1;
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i].properties.id == tabId) {
+    for (var i = 0, l = this._allTabs.length; i < l; i++) {
+      if (this._allTabs[i].properties.id == tabId) {
         attachIndex = i;
         break;
       }
@@ -2296,7 +2317,7 @@ var RootBrowserTabManager = function() {
       return; // nothing to update
     }
 
-    var attachedTab = this[attachIndex];
+    var attachedTab = this._allTabs[attachIndex];
     
     // Detach tab from existing BrowserWindow parent (if any)
     if (attachedTab._oldWindowParent) {
@@ -2337,8 +2358,8 @@ var RootBrowserTabManager = function() {
     
     // Find tab object
     var detachIndex = -1;
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i].properties.id == tabId) {
+    for (var i = 0, l = this._allTabs.length; i < l; i++) {
+      if (this._allTabs[i].properties.id == tabId) {
         detachIndex = i;
         break;
       }
@@ -2348,7 +2369,7 @@ var RootBrowserTabManager = function() {
       return; // nothing to update
     }
 
-    var detachedTab = this[detachIndex];
+    var detachedTab = this._allTabs[detachIndex];
     
     if(detachedTab) {
       detachedTab._oldWindowParent = detachedTab._windowParent;
@@ -2374,25 +2395,25 @@ var RootBrowserTabManager = function() {
     
     if(!activeInfo.tabId) return;
     
-    for(var i = 0, l = this.length; i < l; i++) {
+    for(var i = 0, l = this._allTabs.length; i < l; i++) {
       
-      if(this[i].properties.id == activeInfo.tabId) {
+      if(this._allTabs[i].properties.id == activeInfo.tabId) {
         
         // Set BrowserTab object to active state
-        this[i].properties.active = true;
+        this._allTabs[i].properties.active = true;
 
-        if(this[i]._windowParent) {
+        if(this._allTabs[i]._windowParent) {
           // Set tab focused
-          this[i]._windowParent.tabs._lastFocusedTab = this[i];
+          this._allTabs[i]._windowParent.tabs._lastFocusedTab = this._allTabs[i];
           // Set global tab focus if window is also currently focused
-          if(OEX.windows._lastFocusedWindow === this[i]._windowParent) {
-            OEX.tabs._lastFocusedTab = this[i];
+          if(OEX.windows._lastFocusedWindow === this._allTabs[i]._windowParent) {
+            OEX.tabs._lastFocusedTab = this._allTabs[i];
           }
 
           // unset active state of all other tabs in this collection
-          for(var i = 0, l = this[i]._windowParent.tabs.length; i < l; i++) {
-            if(this[i]._windowParent.tabs[i] !== this[i]) {
-              this[i]._windowParent.tabs[i].properties.active = false;
+          for(var i = 0, l = this._allTabs[i]._windowParent.tabs.length; i < l; i++) {
+            if(this._allTabs[i]._windowParent.tabs[i] !== this._allTabs[i]) {
+              this._allTabs[i]._windowParent.tabs[i].properties.active = false;
             }
           }
         }
@@ -2412,9 +2433,9 @@ var RootBrowserTabManager = function() {
     
     // Resolve tabId to BrowserTab object
     var sourceBrowserTab = null
-    for(var i = 0, l = this.length; i < l; i++) {
-      if( this[ i ].properties.id == msg.source.tabId ) {
-        sourceBrowserTab = this[ i ];
+    for(var i = 0, l = this._allTabs.length; i < l; i++) {
+      if( this._allTabs[ i ].properties.id == msg.source.tabId ) {
+        sourceBrowserTab = this._allTabs[ i ];
         break;
       }
     }
@@ -2505,6 +2526,7 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
     }
     
     // TODO handle private tab insertion differently in Chromium
+    if()
     //browserTabProperties.incognito = browserTabProperties.private || false;
     
     // Properties disallowed when creating a new object or updating an existing object
@@ -2530,6 +2552,10 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
   if(this.properties.active == true) {
     this.focus();
   }
+  
+  // Add this object to the permanent management collection
+  OEX.tabs._allTabs.push( this );
+  
 
 };
 
@@ -2658,10 +2684,22 @@ BrowserTab.prototype.focus = function() {
 
 BrowserTab.prototype.update = function(browserTabProperties) {
   
+  if( this.properties.closed == true ) {
+    throw new OError(
+      "Invalid state",
+      "The current BrowserTab object is closed. Cannot call 'update' on this object."
+    );
+  }
+  
   var updateProperties = {};
   
-  if(browserTabProperties.focused !== undefined) {
+  // Cannot set focused = false in update
+  if(browserTabProperties.focused !== undefined && browserTabProperties.focused == true) {
     this.properties.active = updateProperties.active = !!browserTabProperties.focused;
+  }
+  
+  if(browserTabProperties.locked !== undefined && browserTabProperties.locked !== null) {
+    this.properties.pinned = updateProperties.pinned = !!browserTabProperties.locked;
   }
   
   if(browserTabProperties.url !== undefined && browserTabProperties.url !== null) {
@@ -2762,10 +2800,16 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
 BrowserTab.prototype.close = function() {
   
   if(this.properties.closed == true) {
-    throw new OError(
+    /*throw new OError(
       "Invalid state",
-      "The current BrowserTab object is already closed. Cannot call close on this object."
-    );
+      "The current BrowserTab object is already closed. Cannot call 'close' on this object."
+    );*/
+    return;
+  }
+  
+  // Cannot close pinned tab
+  if(this.properties.pinned == true) {
+    return;
   }
   
   // Set BrowserTab object to closed state
