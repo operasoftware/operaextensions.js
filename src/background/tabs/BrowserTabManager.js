@@ -132,8 +132,9 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
 
   if(before && !(before instanceof BrowserTab)) {
     throw new OError(
-      "Type mismatch",
-      "Could not create BrowserTab object. 'before' attribute provided is invalid."
+      "TypeMismatchError",
+      "Could not create BrowserTab object. 'before' attribute provided is invalid.",
+      DOMException.TYPE_MISMATCH_ERR
     );
   }
   
@@ -141,8 +142,9 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
 
   if(this._parent && this._parent.closed === true ) {
     throw new OError(
-      "Invalid state",
-      "Parent window of the current BrowserTab object is in the closed state and therefore is invalid."
+      "InvalidStateError",
+      "Parent window of the current BrowserTab object is in the closed state and therefore is invalid.",
+      DOMException.INVALID_STATE_ERR
     );
   }
   
@@ -173,15 +175,17 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
 
     if( before.closed === true ) {
       throw new OError(
-        "Invalid state",
-        "'before' BrowserTab object is in the closed state and therefore is invalid."
+        "InvalidStateError",
+        "'before' BrowserTab object is in the closed state and therefore is invalid.",
+        DOMException.INVALID_STATE_ERR
       );
     }
 
     if(before._windowParent && before._windowParent.closed === true ) {
       throw new OError(
-        "Invalid state",
-        "Parent window of 'before' BrowserTab object is in the closed state and therefore is invalid."
+        "InvalidStateError",
+        "Parent window of 'before' BrowserTab object is in the closed state and therefore is invalid.",
+        DOMException.INVALID_STATE_ERR
       );
     }
     browserTabProperties.windowId = before._windowParent ?
@@ -261,8 +265,9 @@ BrowserTabManager.prototype.close = function( browserTab ) {
 
   if( !browserTab || !(browserTab instanceof BrowserTab)) {
     throw new OError(
-      "Type mismatch",
-      "Expected browserTab argument to be of type BrowserTab."
+      "TypeMismatchError",
+      "Expected browserTab argument to be of type BrowserTab.",
+      DOMException.TYPE_MISMATCH_ERR
     );
   }
   

@@ -49,6 +49,22 @@ BrowserWindow.prototype.__defineGetter__("private", function() {
   return this.properties.incognito !== undefined ? !!this.properties.incognito : false;
 });
 
+BrowserWindow.prototype.__defineGetter__("top", function() {
+  return this.properties.top !== undefined ? this.properties.top : -1;
+}); // read-only
+
+BrowserWindow.prototype.__defineGetter__("left", function() {
+  return this.properties.left !== undefined ? this.properties.left : -1;
+}); // read-only
+
+BrowserWindow.prototype.__defineGetter__("height", function() {
+  return this.properties.height !== undefined ? this.properties.height : -1;
+}); // read-only
+
+BrowserWindow.prototype.__defineGetter__("width", function() {
+  return this.properties.width !== undefined ? this.properties.width : -1;
+}); // read-only
+
 BrowserWindow.prototype.__defineGetter__("parent", function() {
   return this._parent;
 });
@@ -61,8 +77,9 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
 
   if (this.properties.closed === true) {
     throw new OError(
-      "Invalid state",
-      "Current window is in the closed state and therefore is invalid"
+      "InvalidStateError",
+      "Current window is in the closed state and therefore is invalid",
+      DOMException.INVALID_STATE_ERR
     );
   }
 
@@ -76,15 +93,17 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
 
     if (child.closed === true) {
       throw new OError(
-        "Invalid state",
-        "'child' parameter is in the closed state and therefore is invalid"
+        "InvalidStateError",
+        "'child' parameter is in the closed state and therefore is invalid",
+        DOMException.INVALID_STATE_ERR
       );
     }
 
     if (child._windowParent && child._windowParent.closed === true) {
       throw new OError(
-        "Invalid state",
-        "Parent window of 'child' parameter is in the closed state and therefore is invalid"
+        "InvalidStateError",
+        "Parent window of 'child' parameter is in the closed state and therefore is invalid",
+        DOMException.INVALID_STATE_ERR
       );
     }
     moveProperties.windowId = child._windowParent ?
@@ -149,26 +168,57 @@ BrowserWindow.prototype.focus = function() {
 };
 
 BrowserWindow.prototype.update = function(browserWindowProperties) {
-
-  // Remove invalid parameters if present:
-  delete browserWindowProperties.closed; // cannot set closed state via update
-
-  // TODO enforce incognito because we can't make a tab incognito once it has been added to a non-incognito window.
-  //browserWindowProperties.incognito = browserWindowProperties.private || false;
-
-  for (var i in browserWindowProperties) {
-    this.properties[i] = browserWindowProperties[i];
+  
+  var updateProperties = {};
+  
+  if(browserWindowProperties.focused !== undefined && browserWindowProperties.focused == true) {
+    this.properties.focused = updateProperties.focused = !!browserWindowProperties.focused;
   }
+  
+  if(browserWindowProperties.top !== undefined && browserWindowProperties.top !== null) {
+    this.properties.top = updateProperties.top = parseInt(browserWindowProperties.top, 10);
+  }
+  
+  if(browserWindowProperties.left !== undefined && browserWindowProperties.left !== null) {
+    this.properties.left = updateProperties.left = parseInt(browserWindowProperties.left, 10);
+  }
+  
+  if(browserWindowProperties.height !== undefined && browserWindowProperties.height !== null) {
+    this.properties.height = updateProperties.height = parseInt(browserWindowProperties.height, 10);
+  }
+  
+  if(browserWindowProperties.width !== undefined && browserWindowProperties.width !== null) {
+      this.properties.width = updateProperties.width = parseInt(browserWindowProperties.width, 10);
+    }
 
-  // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(
-    chrome.windows.update,
-    this.properties.id, 
-    browserWindowProperties, 
-    function() {
-      this.dequeue();
-    }.bind(this)
-  );
+  if( !isObjectEmpty(updateProperties) ) {
+
+    // TODO replicate this structure elsewhere in the code
+    (function submitWhenReady() {
+      window.setTimeout(function() {
+        
+        if( this.properties.id ) {
+          
+          // Queue platform action or fire immediately if this object is resolved
+          this.enqueue(
+            chrome.windows.update,
+            this.properties.id, 
+            updateProperties, 
+            function() {
+              this.dequeue();
+            }.bind(this)
+          );
+          
+        } else {
+          
+          submitWhenReady.call(this);
+          
+        }
+        
+      }.bind(this), 20);
+    }.bind(this))();
+  
+  }
 
 }
 
@@ -176,8 +226,9 @@ BrowserWindow.prototype.close = function() {
   
   if( this.properties.closed == true) {
     /*throw new OError(
-      "Invalid state",
-      "The current BrowserWindow object is already closed. Cannot call close on this object."
+      "InvalidStateError",
+      "The current BrowserWindow object is already closed. Cannot call close on this object.",
+      DOMException.INVALID_STATE_ERR
     );*/
     return;
   }

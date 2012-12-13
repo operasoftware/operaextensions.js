@@ -294,15 +294,27 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
   }
 
   if(isEmpty_TabsToInject && isEmpty_BrowserWindowProperties) {
-    throw new OError("NotSupportedError", "Cannot create a new window without providing at least one method parameter.", 9);
+    throw new OError(
+      "NotSupportedError", 
+      "Cannot create a new window without providing at least one method parameter.", 
+      DOMException.NOT_SUPPORTED_ERR
+    );
   }
   
   if(!isEmpty_TabsToInject && isEmpty_BrowserWindowProperties) {
-    throw new OError("NotSupportedError", "Cannot create a new window without providing at least one window property parameter.", 9);
+    throw new OError(
+      "NotSupportedError", 
+      "Cannot create a new window without providing at least one window property parameter.", 
+      DOMException.NOT_SUPPORTED_ERR
+    );
   }
   
   if(isEmpty_TabsToInject && !isEmpty_BrowserWindowProperties) {
-    throw new OError("NotSupportedError", "Cannot create a new window without providing at least one object (or 'null')", 9);
+    throw new OError(
+      "NotSupportedError", 
+      "Cannot create a new window without providing at least one object (or 'null')", 
+      DOMException.NOT_SUPPORTED_ERR
+    );
   }*/
 
   // Create new BrowserWindow object (+ sanitize browserWindowProperties values)
