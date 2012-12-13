@@ -187,8 +187,6 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
     shadowBrowserTab.properties.index = browserTabProperties.index = OEX.windows.getLastFocused().tabs.length;
   }
   
-  console.log( shadowBrowserTab.properties.index );
-  
   // Add this object to the end of the current tabs collection
   shadowBrowserTab._windowParent.tabs.addTab(shadowBrowserTab, shadowBrowserTab.properties.index);
 

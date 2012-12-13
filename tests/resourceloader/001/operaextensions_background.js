@@ -1915,8 +1915,6 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
     shadowBrowserTab.properties.index = browserTabProperties.index = OEX.windows.getLastFocused().tabs.length;
   }
   
-  console.log( shadowBrowserTab.properties.index );
-  
   // Add this object to the end of the current tabs collection
   shadowBrowserTab._windowParent.tabs.addTab(shadowBrowserTab, shadowBrowserTab.properties.index);
 
@@ -2254,7 +2252,7 @@ var RootBrowserTabManager = function() {
       } else {
         moveTab._windowParent.tabs.removeTab( moveTab );
       }
-      console.log(moveTab.properties.index + " / " +  moveInfo.toIndex );
+
       moveTab._windowParent.tabs.addTab( moveTab, moveInfo.toIndex );
       
       moveTab.dispatchEvent(new OEvent('move', {
@@ -2310,7 +2308,6 @@ var RootBrowserTabManager = function() {
     
       // Attach tab to new BrowserWindow parent
       for (var i = 0, l = OEX.windows.length; i < l; i++) {
-        console.log(OEX.windows[i].properties.id + " / " + attachInfo.newWindowId);
         if (OEX.windows[i].properties.id == attachInfo.newWindowId) {
           // Reassign attachedTab's _windowParent
           attachedTab._windowParent = OEX.windows[i];
