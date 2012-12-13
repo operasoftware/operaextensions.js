@@ -39,7 +39,6 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
     }
     
     // TODO handle private tab insertion differently in Chromium
-    if()
     //browserTabProperties.incognito = browserTabProperties.private || false;
     
     // Properties disallowed when creating a new object or updating an existing object
