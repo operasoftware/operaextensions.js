@@ -22,30 +22,30 @@ opera.isReady(function() {
         type : "close"
     } ]; // List of expected events
 
-    tests["create"] = async_test("Tab Group create event");
-    tests["move"] = async_test("Tab Group move event");
-    tests["close"] = async_test("Tab Group close event");
+    tests["create"] = async_test("Tab create event");
+    tests["move"] = async_test("Tab move event");
+    tests["close"] = async_test("Tab close event");
     tests["order"] = async_test("Order of events");
 
     function getHandler(type) {
         return function(evt) {
             tests[type].step(function() {
                 assert_equals(evt.type, type, "Event type should be '" + type + "'");
-                assert_exists(evt, "tab", "The event object should have a tabGroup property");
-                assert_equals(evt.tab.id, tab.id, "The event should refer to the created tab group");
+                assert_exists(evt, "tab", "The event object should have a tab property");
+                assert_equals(evt.tab.id, tab.id, "The event should refer to the created tab");
             });
             tests[type].done();
         }
     }
 
     function eventOrder(evt) {
-        var evtTarget = evt.browserWindow ? "browserWindow" : evt.tabGroup ? "tabGroup" : evt.tab ? "tab" : "unknown"
+        var evtTarget = evt.browserWindow ? "browserWindow" : evt.tab ? "tab" : "unknown"
 
         eventsReceived.push({
             target : evtTarget,
             type : evt.type
         });
-
+        console.log(eventsReceived[eventsReceived.length-1]);
         if (eventsReceived.length === eventsExpected.length) {
             setTimeout(function() {
                 tests["order"].step(function() {
@@ -67,12 +67,8 @@ opera.isReady(function() {
     tabs.addEventListener("create", getHandler("create"), false);
     tabs.addEventListener("move", getHandler("move"), false);
     tabs.addEventListener("close", getHandler("close"), false);
-
     windows.addEventListener("create", eventOrder, false);
     windows.addEventListener("close", eventOrder, false);
-    groups.addEventListener("create", eventOrder, false);
-    groups.addEventListener("move", eventOrder, false);
-    groups.addEventListener("close", eventOrder, false);
     tabs.addEventListener("create", eventOrder, false);
     tabs.addEventListener("move", eventOrder, false);
     tabs.addEventListener("close", eventOrder, false);
@@ -82,6 +78,7 @@ opera.isReady(function() {
         win = createWindow(null, {
             focused : true
         }); // Create a window
+
     } catch (e) {
         for ( var n in tests)
             tests[n].step(function() {
@@ -90,10 +87,10 @@ opera.isReady(function() {
     }
 
     setTimeout(function() {
-        win.insert(tab) // Fire a move event
+	win.insert(tab); // Fire a move event
         setTimeout(function() {
             tab.close(); // Close event
             win.close(); // Window close event
-        }, 100);
+        }, 1000);
     }, 100);
 });
