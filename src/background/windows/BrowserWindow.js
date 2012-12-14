@@ -242,7 +242,7 @@ BrowserWindow.prototype.close = function() {
       this.properties.id,
       function() {
         this.dequeue();
-        OEX.windows.dequeue();
+        //OEX.windows.dequeue();
       }.bind(this)
     );
   }.bind(this));

@@ -151,13 +151,13 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
   browserTabProperties = browserTabProperties || {};
   
   // Remove parameters not allowed from create properties
-  if(browserTabProperties.closed !== undefined) {
+  /*if(browserTabProperties.closed !== undefined) {
     delete browserTabProperties.closed;
   }
   
   if(browserTabProperties.private !== undefined) {
     delete browserTabProperties.private;
-  }
+  }*/
   
   var shadowBrowserTab = new BrowserTab( browserTabProperties, this._parent || OEX.windows.getLastFocused() );
   

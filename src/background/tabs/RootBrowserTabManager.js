@@ -8,120 +8,189 @@ var RootBrowserTabManager = function() {
   
   // global permanaent tabs collection manager
   this._allTabs = [];
-
+  
   // Event Listener implementations
   chrome.tabs.onCreated.addListener(function(_tab) {
+    
+    var tabFoundIndex = -1;
 
-    // Delay so chrome.tabs.create callback gets to run first, if any
-    global.setTimeout(function() {
-      
-      if( this._blackList[ _tab.id ] ) {
+    for (var i = 0, l = this._allTabs.length; i < l; i++) {
+
+      // opera.extension.windows.create rewrite hack
+      if (this._allTabs[i].rewriteUrl && this._allTabs[i].properties.url == _tab.url) {
+
+        if(this._allTabs[i]._windowParent) {
+          
+          // If the window ids don't match then silently move the tab to the correct parent
+          // e.g. this happens if we create a new tab from the background page's console.
+          if(this._allTabs[i]._windowParent.properties.id !== _tab.windowId) {
+            for(var j = 0, k = OEX.windows.length; j < k; j++) {
+              if(OEX.windows[j].properties.id == _tab.windowId) {
+                this._allTabs[i]._windowParent.tabs.removeTab(this._allTabs[i]);
+                this._allTabs[i]._windowParent = OEX.windows[j];
+                //this._allTabs[i].properties.index = this._allTabs[i]._windowParent.tabs.length;
+                this._allTabs[i].properties.windowId = _tab.windowId;
+
+                // Force change tab's index position in platform
+                this._allTabs[i].enqueue(function() {
+                  chrome.tabs.move(
+                    this.properties.id,
+                    { index: this._windowParent.tabs.length },
+                    function(_tab) {
+                      this.dequeue();
+                    }.bind(this)
+                  );
+                }.bind(this._allTabs[i]));
+              
+                OEX.windows[j].tabs.addTab( this._allTabs[i], this._allTabs[i].properties.index);
+              }
+            }
+          }
+          
+          // Resolve the parent window object, if it's not already resolved
+          this._allTabs[i]._windowParent.properties.id = _tab.windowId;
+          this._allTabs[i]._windowParent.resolve(true);
+          // Also resolve window object's root tab manager
+          this._allTabs[i]._windowParent.tabs.resolve(true);
+        
+        } else {
+          
+          throw new OError('NoParent', 'BrowserTab object must have a parent window.');
+          
+        }
+        
+        // Rewrite tab properties (importantly, the id gets added here)
+        for(var j in _tab) {
+          if(j == 'url') continue;
+          this._allTabs[i].properties[j] = _tab[j];
+        }
+        
+        // now rewrite tab to the correct url 
+        // (which will be automatically trigger navigation to the rewrite url)
+        this._allTabs[i].url = this._allTabs[i].rewriteUrl;
+        
+        delete this._allTabs[i].rewriteUrl;
+        
+        // Resolve the tab object
+        this._allTabs[i].resolve(true);
+        
+        // remove windowparent rewrite url
+        if(this._allTabs[i]._windowParent.rewriteUrl !== undefined) {
+          delete this._allTabs[i]._windowParent.rewriteUrl;
+        }
+
         return;
       }
       
-      // If this tab is already registered in the root tab collection then ignore
-      var tabFoundIndex = -1;
-      for (var i = 0, l = this._allTabs.length; i < l; i++) {
+      // Standard tab search
+      if (this._allTabs[i].properties.id == _tab.id) {
+        tabFoundIndex = i;
+        break;
+      }
+    }
+    
+    var newTab;
+    
+    if (tabFoundIndex < 0) {
+      
+      var parentWindow;
 
-        // opera.extension.windows.create rewrite hack
-        if (this._allTabs[i].rewriteUrl && this._allTabs[i].properties.url == _tab.url) {
-
-          if(this._allTabs[i]._windowParent) {
-
-            // If the window ids don't match then silently move the tab to the correct parent
-            // e.g. this happens if we create a new tab from the background page's console.
-            if(this._allTabs[i]._windowParent.properties.id !== _tab.windowId) {
-              for(var j = 0, k = OEX.windows.length; j < k; j++) {
-                if(OEX.windows[j].properties.id == _tab.windowId) {
-                  this._allTabs[i]._windowParent.tabs.removeTab(this._allTabs[i]);
-                  this._allTabs[i].properties.index = this._allTabs[i]._windowParent.tabs.length;
-                  this._allTabs[i]._windowParent = OEX.windows[j];
-                  this._allTabs[i].properties.windowId = _tab.windowId;
-                
-                  OEX.windows[j].tabs.addTab( this._allTabs[i], this._allTabs[i].properties.index);
-                }
-              }
-            }
-          
-          }
-          
-          for(var j in _tab) {
-            if(j == 'url' || j == 'windowId') continue;
-            this._allTabs[i].properties[j] = _tab[j];
-          }
-          // now rewrite to the correct url 
-          // (which will be navigated to automatically when tab is resolved)
-          this._allTabs[i].url = this._allTabs[i].rewriteUrl;
-          delete this._allTabs[i].rewriteUrl;
-          
-          return;
+      // find tab's parent window object via the window.rewriteURL property
+      var _windows = OEX.windows;
+      for (var i = 0, l = _windows.length; i < l; i++) {
+        
+        // Bind the window object with its window id and resolve
+        if( _windows[i].rewriteUrl && _windows[i].rewriteUrl == _tab.url ) {
+          _windows[i].properties.id = _tab.windowId;
+          _windows[i].resolve(true);
+          // Also resolve window object's root tab manager
+          _windows[i].tabs.resolve(true);
         }
         
-        // Standard tab search
-        if (this._allTabs[i].properties.id == _tab.id) {
-          tabFoundIndex = i;
+        if (_windows[i].properties.id !== undefined && _windows[i].properties.id == _tab.windowId) {
+          parentWindow = _windows[i];
           break;
         }
       }
-        
-      var newTab;
-      
-      if (tabFoundIndex < 0) {
-        
-        var parentWindow;
 
-        // find tab's parent window object
-        var _windows = opera.extension.windows;
-        for (var i = 0, l = _windows.length; i < l; i++) {
-          if (_windows[i].properties.id == _tab.windowId) {
-            parentWindow = _windows[i];
-            break;
-          }
-        }
-
-        if (!parentWindow) {
-          parentWindow = OEX.windows.getLastFocused();
-        }
+      if (!parentWindow) {
         
-        // Create and register a new BrowserTab object
-        newTab = new BrowserTab(_tab, parentWindow);
-
-        newTab._windowParent.tabs.addTab( newTab, newTab.properties.index );
+        // Create new BrowserWindow object
+        parentWindow = new BrowserWindow();
         
-        // Add object to root store
-        this.addTab( newTab );
-        
-        // Resolve new tab, if it hasn't been resolved already
-        newTab.resolve(true);
-
-      } else {
-        
-        // Update tab properties
-        for(var i in _tab) {
-          this[tabFoundIndex].properties[i] = _tab[i];
-        }
-        
-        newTab = this[tabFoundIndex];
+        // Attach to windows collection
+        OEX.windows.addWindow(_tab.windowId, parentWindow);
         
       }
       
-      newTab._windowParent.tabs.dispatchEvent(new OEvent('create', {
-        "tab": newTab,
-        "prevWindow": newTab._windowParent,
-        "prevTabGroup": null,
-        "prevPosition": NaN
-      }));
+      // Replace first tab object with newTab
+      if(parentWindow.rewriteUrl && parentWindow.tabs.length > 0) {
+        
+        newTab = parentWindow.tabs[0];
+        
+        // rewrite the first tabs properties
+        for(var j in _tab) {
+          if(j == 'id' || j == 'url' || j == 'windowId') continue;
+          newTab.properties[j] = _tab[j];
+        }
 
-      // Fire a create event at RootTabsManager
-      this.dispatchEvent(new OEvent('create', {
-        "tab": newTab,
-        "prevWindow": newTab._windowParent,
-        "prevTabGroup": null,
-        "prevPosition": NaN
-      }));
+        // Assign tab id to BrowserTab object
+        newTab.properties.id = _tab.id;
+        
+      } else {
+        
+        // Create the new BrowserTab object using the provided properties
+        newTab = new BrowserTab(_tab, parentWindow);
+        
+        // Register the new BrowserTab object with a BrowserWindow's tabs collection
+        newTab._windowParent.tabs.addTab( newTab, newTab.properties.index );
+
+        // Add object to root store
+        this.addTab( newTab );
+        
+      }
+
+    } else {
       
-    }.bind(this), 200);
+      newTab = this[tabFoundIndex];
+      
+      // Update existing tab properties
+      for(var i in _tab) {
+        newTab.properties[i] = _tab[i];
+      }
+      
+    }
+    
+    // remove window rewriteUrl since the bootstrap has now been used
+    if(newTab._windowParent.rewriteUrl !== undefined) {
+      delete newTab._windowParent.rewriteUrl;
+    }
+    
+    // now rewrite to the correct url 
+    // (which will be automatically trigger navigation to the rewrite url)
+    if(newTab.rewriteUrl !== undefined) {
+      newTab.url = newTab.rewriteUrl;
+      delete newTab.rewriteUrl;
+    }
+    
+    newTab._windowParent.tabs.dispatchEvent(new OEvent('create', {
+      "tab": newTab,
+      "prevWindow": newTab._windowParent,
+      "prevTabGroup": null,
+      "prevPosition": NaN
+    }));
 
+    // Fire a create event at RootTabsManager
+    this.dispatchEvent(new OEvent('create', {
+      "tab": newTab,
+      "prevWindow": newTab._windowParent,
+      "prevTabGroup": null,
+      "prevPosition": NaN
+    }));
+    
+    // Resolve new tab, if it hasn't been resolved already
+    newTab.resolve(true);
+    
   }.bind(this));
 
   chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
@@ -142,7 +211,7 @@ var RootBrowserTabManager = function() {
     if (deleteIndex < 0) {
       return;
     }
-
+    
     var oldTab = this._allTabs[deleteIndex];
     
     var oldTabWindowParent = oldTab._oldWindowParent;
@@ -407,9 +476,9 @@ var RootBrowserTabManager = function() {
           }
 
           // unset active state of all other tabs in this collection
-          for(var i = 0, l = this._allTabs[i]._windowParent.tabs.length; i < l; i++) {
-            if(this._allTabs[i]._windowParent.tabs[i] !== this._allTabs[i]) {
-              this._allTabs[i]._windowParent.tabs[i].properties.active = false;
+          for(var j = 0, k = this._allTabs[i]._windowParent.tabs.length; j < k; j++) {
+            if(this._allTabs[i]._windowParent.tabs[j] !== this._allTabs[i]) {
+              this._allTabs[i]._windowParent.tabs[j].properties.active = false;
             }
           }
         }

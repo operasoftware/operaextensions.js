@@ -371,7 +371,7 @@ BrowserTab.prototype.close = function() {
   
   // Detach from parent window
   this._oldWindowParent = this._windowParent;
-  this._windowParent = null;
+  //this._windowParent = null;
   
   // Remove index
   this._oldIndex = this.properties.index;
