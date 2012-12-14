@@ -15,22 +15,22 @@ opera.isReady(function() {
         type : "close"
     } ];
 
-    tests["close"] = async_test("Tab Group close event");
+    tests["close"] = async_test("Tab Window close event");
     tests["order"] = async_test("Order of events");
 
     function getHandler(type) {
         return function(evt) {
             tests[type].step(function() {
                 assert_equals(evt.type, type, "Event type should be '" + type + "'");
-                assert_exists(evt, "tab", "The event object should have a tabGroup property");
-                assert_equals(evt.tab.id, tab.id, "The event should refer to the created tab group");
+                assert_exists(evt, "tab", "The event object should have a tab property");
+                assert_equals(evt.tab.id, tab.id, "The event should refer to the created tab");
             });
             tests[type].done();
         }
     }
 
     function eventOrder(evt) {
-        var evtTarget = evt.browserWindow ? "browserWindow" : evt.tabGroup ? "tabGroup" : evt.tab ? "tab" : "unknown"
+        var evtTarget = evt.browserWindow ? "browserWindow" : evt.tab ? "tab" : "unknown";
 
         eventsReceived.push({
             target : evtTarget,
@@ -56,6 +56,7 @@ opera.isReady(function() {
     }
 
     // Setup
+
     try {
         win = createWindow({}, {
             focused : true
@@ -68,22 +69,24 @@ opera.isReady(function() {
     }
     tab = win.tabs.getAll()[0];
 
-    tabs.addEventListener("close", getHandler("close"), false);
-
-    windows.addEventListener("create", eventOrder, false);
-    windows.addEventListener("close", eventOrder, false);
-    groups.addEventListener("create", eventOrder, false);
-    groups.addEventListener("move", eventOrder, false);
-    groups.addEventListener("close", eventOrder, false);
-    tabs.addEventListener("create", eventOrder, false);
-    tabs.addEventListener("move", eventOrder, false);
-    tabs.addEventListener("close", eventOrder, false);
-
+    //window create-event may be delayed
     setTimeout(function() {
-        // Step 1
-        tab.close(); // Close the tab and its tabs, fire close events
+	tabs.addEventListener("close", getHandler("close"), false);
+	windows.addEventListener("create", eventOrder, false);
+	windows.addEventListener("close", eventOrder, false);
+	    //groups.addEventListener("create", eventOrder, false);
+	    //groups.addEventListener("move", eventOrder, false);
+	    //groups.addEventListener("close", eventOrder, false);
+	tabs.addEventListener("create", eventOrder, false);
+	tabs.addEventListener("move", eventOrder, false);
+	tabs.addEventListener("close", eventOrder, false);
 
-        // Step 2
-        win.close(); // Close the window, if it didn't close automatically
+	setTimeout(function() {
+            // Step 1
+            tab.close(); // Close the tab and its tabs, fire close events
+
+            // Step 2
+            win.close(); // Close the window, if it didn't close automatically
+        }, 100);
     }, 100);
 });
