@@ -130,7 +130,7 @@ var RootBrowserTabManager = function() {
         
         // rewrite the first tabs properties
         for(var j in _tab) {
-          if(j == 'id' || j == 'url' || j == 'windowId') continue;
+          if(j == 'url') continue;
           newTab.properties[j] = _tab[j];
         }
 
@@ -291,9 +291,9 @@ var RootBrowserTabManager = function() {
     
     // Update tab properties in current collection
     for (var prop in tab) {
-      if(prop == "id" || prop == "windowId") { // ignore these
+      /*if(prop == "id" || prop == "windowId") { // ignore these
         continue;
-      }
+      }*/
       // if rewriteUrl hasn't been handled yet, don't set readyState to completed
       if(updateTab.rewriteUrl && prop == "status" && tab[prop] == "complete") {
         continue;
