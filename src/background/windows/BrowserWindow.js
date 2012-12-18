@@ -137,7 +137,7 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
   }
 
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(
+  browserTab.enqueue(
     chrome.tabs.move,
     browserTab.properties.id, 
     moveProperties, 
@@ -154,16 +154,15 @@ BrowserWindow.prototype.focus = function() {
   this.properties.focused = true;
 
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(
-    chrome.windows.update,
-    this.properties.id, 
-    {
-      focused: true
-    }, 
-    function() {
-      this.dequeue();
-    }.bind(this)
-  );
+  this.enqueue(function() {
+    chrome.windows.update(
+      this.properties.id, 
+      { focused: true }, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
+  }.bind(this));
 
 };
 
@@ -193,30 +192,16 @@ BrowserWindow.prototype.update = function(browserWindowProperties) {
 
   if( !isObjectEmpty(updateProperties) ) {
 
-    // TODO replicate this structure elsewhere in the code
-    (function submitWhenReady() {
-      window.setTimeout(function() {
-        
-        if( this.properties.id ) {
-          
-          // Queue platform action or fire immediately if this object is resolved
-          this.enqueue(
-            chrome.windows.update,
-            this.properties.id, 
-            updateProperties, 
-            function() {
-              this.dequeue();
-            }.bind(this)
-          );
-          
-        } else {
-          
-          submitWhenReady.call(this);
-          
-        }
-        
-      }.bind(this), 20);
-    }.bind(this))();
+    // Queue platform action or fire immediately if this object is resolved
+    this.enqueue(function() {
+      chrome.windows.update(
+        this.properties.id, 
+        updateProperties, 
+        function() {
+          this.dequeue();
+        }.bind(this)
+      );
+    }.bind(this));
   
   }
 
