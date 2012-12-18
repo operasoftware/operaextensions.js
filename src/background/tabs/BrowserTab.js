@@ -19,7 +19,7 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
       // Explicitly set active to false by default in Opera implementation
       props.active = false;
     }
-
+    
     if(props.locked !== undefined) {
       props.pinned = !!props.locked;
       delete props.locked;
@@ -145,6 +145,10 @@ BrowserTab.prototype.__defineSetter__("url", function(val) {
   this.properties.url = val + "";
   
   this.enqueue(function() {
+    if(this.properties.closed == true) {
+      return;
+    }
+    
     chrome.tabs.update(
       this.properties.id, 
       { url: this.properties.url }, 
@@ -176,7 +180,7 @@ BrowserTab.prototype.__defineGetter__("position", function() {
 
 BrowserTab.prototype.focus = function() {
   
-  if(this.properties.active == true) {
+  if(this.properties.active == true || this.properties.closed == true) {
     return; // already focused
   }
   
@@ -201,6 +205,10 @@ BrowserTab.prototype.focus = function() {
 
   // Queue platform action or fire immediately if this object is resolved
   this.enqueue(function() {
+    if(this.properties.closed == true) {
+      return;
+    }
+    
     chrome.tabs.update(
       this.properties.id, 
       { active: true }, 
@@ -253,6 +261,10 @@ BrowserTab.prototype.update = function(browserTabProperties) {
   
     // Queue platform action or fire immediately if this object is resolved
     this.enqueue(function() {
+      if(this.properties.closed == true) {
+        return;
+      }
+      
       chrome.tabs.update(
         this.properties.id, 
         updateProperties, 
@@ -273,10 +285,20 @@ BrowserTab.prototype.refresh = function() {
     return;
   }
   
+  // reload by resetting the URL
+
+  //this.properties.status = "loading";
+  //this.properties.title = undefined;
+
+  
   this.enqueue(function() {
+    // reset the readyState + title
+    this.properties.status = "loading";
+    this.properties.title = undefined;
+    
     chrome.tabs.reload( 
       this.properties.id, 
-      { "bypassCache": true }, 
+      { bypassCache: true }, 
       function() {
         this.dequeue();
       }.bind(this)

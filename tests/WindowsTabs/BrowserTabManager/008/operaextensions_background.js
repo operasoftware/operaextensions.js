@@ -1954,27 +1954,20 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
     );
   }
   
-  browserTabProperties = browserTabProperties || {};
-  
-  // Remove parameters not allowed from create properties
-  /*if(browserTabProperties.closed !== undefined) {
-    delete browserTabProperties.closed;
-  }
-  
-  if(browserTabProperties.private !== undefined) {
-    delete browserTabProperties.private;
-  }*/
-  
   var shadowBrowserTab = new BrowserTab( browserTabProperties, this._parent || OEX.windows.getLastFocused() );
   
   // Sanitized tab properties
-  browserTabProperties = shadowBrowserTab.properties;
+  var createTabProperties = {
+    url: shadowBrowserTab.properties.url,
+    active: shadowBrowserTab.properties.active,
+    pinned: shadowBrowserTab.properties.pinned
+  };
   
   // By default, tab will be created at end of current collection
-  shadowBrowserTab.properties.index = browserTabProperties.index = shadowBrowserTab._windowParent.tabs.length;
+  shadowBrowserTab.properties.index = createTabProperties.index = shadowBrowserTab._windowParent.tabs.length;
   
   // no windowId will default to adding the tab to the current window
-  browserTabProperties.windowId = this._parent ? this._parent.properties.id : OEX.windows.getLastFocused().properties.id;
+  createTabProperties.windowId = this._parent ? this._parent.properties.id : OEX.windows.getLastFocused().properties.id;
 
   // Set insert position for the new tab from 'before' attribute, if any
   if( before && (before instanceof BrowserTab) ) {
@@ -1994,15 +1987,15 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
         DOMException.INVALID_STATE_ERR
       );
     }
-    browserTabProperties.windowId = before._windowParent ?
-                                      before._windowParent.properties.id : browserTabProperties.windowId;
-    browserTabProperties.index = before.position;
+    createTabProperties.windowId = before._windowParent ?
+                                      before._windowParent.properties.id : createTabProperties.windowId;
+    createTabProperties.index = before.position;
 
   }
   
   // Set up tab index on start
   if(this === OEX.tabs) {
-    shadowBrowserTab.properties.index = browserTabProperties.index = OEX.windows.getLastFocused().tabs.length;
+    shadowBrowserTab.properties.index = createTabProperties.index = OEX.windows.getLastFocused().tabs.length;
   }
   
   // Add this object to the end of the current tabs collection
@@ -2010,9 +2003,18 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
 
   // Add this object to the root tab manager
   OEX.tabs.addTab( shadowBrowserTab );
+  
+  if(shadowBrowserTab.properties.active == true) {
+    // Set tab focused
+    shadowBrowserTab._windowParent.tabs._lastFocusedTab = shadowBrowserTab;
+    // Set global tab focus if window is also currently focused
+    if(OEX.windows._lastFocusedWindow === shadowBrowserTab._windowParent) {
+      OEX.tabs._lastFocusedTab = shadowBrowserTab;
+    }
+  }
 
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue( chrome.tabs.create, browserTabProperties, function( _tab ) {
+  this.enqueue( chrome.tabs.create, createTabProperties, function( _tab ) {
     
       // Update BrowserTab properties
       for(var i in _tab) {
@@ -2212,7 +2214,7 @@ var RootBrowserTabManager = function() {
         
         // rewrite the first tabs properties
         for(var j in _tab) {
-          if(j == 'id' || j == 'url' || j == 'windowId') continue;
+          if(j == 'url') continue;
           newTab.properties[j] = _tab[j];
         }
 
@@ -2373,9 +2375,9 @@ var RootBrowserTabManager = function() {
     
     // Update tab properties in current collection
     for (var prop in tab) {
-      if(prop == "id" || prop == "windowId") { // ignore these
+      /*if(prop == "id" || prop == "windowId") { // ignore these
         continue;
-      }
+      }*/
       // if rewriteUrl hasn't been handled yet, don't set readyState to completed
       if(updateTab.rewriteUrl && prop == "status" && tab[prop] == "complete") {
         continue;
@@ -2654,7 +2656,7 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
       // Explicitly set active to false by default in Opera implementation
       props.active = false;
     }
-
+    
     if(props.locked !== undefined) {
       props.pinned = !!props.locked;
       delete props.locked;
@@ -2780,6 +2782,10 @@ BrowserTab.prototype.__defineSetter__("url", function(val) {
   this.properties.url = val + "";
   
   this.enqueue(function() {
+    if(this.properties.closed == true) {
+      return;
+    }
+    
     chrome.tabs.update(
       this.properties.id, 
       { url: this.properties.url }, 
@@ -2811,7 +2817,7 @@ BrowserTab.prototype.__defineGetter__("position", function() {
 
 BrowserTab.prototype.focus = function() {
   
-  if(this.properties.active == true) {
+  if(this.properties.active == true || this.properties.closed == true) {
     return; // already focused
   }
   
@@ -2836,6 +2842,10 @@ BrowserTab.prototype.focus = function() {
 
   // Queue platform action or fire immediately if this object is resolved
   this.enqueue(function() {
+    if(this.properties.closed == true) {
+      return;
+    }
+    
     chrome.tabs.update(
       this.properties.id, 
       { active: true }, 
@@ -2888,6 +2898,10 @@ BrowserTab.prototype.update = function(browserTabProperties) {
   
     // Queue platform action or fire immediately if this object is resolved
     this.enqueue(function() {
+      if(this.properties.closed == true) {
+        return;
+      }
+      
       chrome.tabs.update(
         this.properties.id, 
         updateProperties, 
@@ -2908,10 +2922,20 @@ BrowserTab.prototype.refresh = function() {
     return;
   }
   
+  // reload by resetting the URL
+
+  //this.properties.status = "loading";
+  //this.properties.title = undefined;
+
+  
   this.enqueue(function() {
+    // reset the readyState + title
+    this.properties.status = "loading";
+    this.properties.title = undefined;
+    
     chrome.tabs.reload( 
       this.properties.id, 
-      { "bypassCache": true }, 
+      { bypassCache: true }, 
       function() {
         this.dequeue();
       }.bind(this)
