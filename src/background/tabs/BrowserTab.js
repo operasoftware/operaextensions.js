@@ -144,8 +144,14 @@ BrowserTab.prototype.__defineGetter__("url", function() {
 BrowserTab.prototype.__defineSetter__("url", function(val) {
   this.properties.url = val + "";
   
-  this.enqueue(chrome.tabs.update, this.properties.id, { url: this.properties.url }, function() {
-    this.dequeue();
+  this.enqueue(function() {
+    chrome.tabs.update(
+      this.properties.id, 
+      { url: this.properties.url }, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
   }.bind(this));
 });
 
@@ -194,8 +200,14 @@ BrowserTab.prototype.focus = function() {
   }
 
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(chrome.tabs.update, this.properties.id, { active: true }, function() {
-    this.dequeue();
+  this.enqueue(function() {
+    chrome.tabs.update(
+      this.properties.id, 
+      { active: true }, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
   }.bind(this));
 
 };
@@ -240,8 +252,14 @@ BrowserTab.prototype.update = function(browserTabProperties) {
   if( !isObjectEmpty(updateProperties) ) {
   
     // Queue platform action or fire immediately if this object is resolved
-    this.enqueue(chrome.tabs.update, this.properties.id, updateProperties, function() {
-      this.dequeue();
+    this.enqueue(function() {
+      chrome.tabs.update(
+        this.properties.id, 
+        updateProperties, 
+        function() {
+          this.dequeue();
+        }.bind(this)
+      );
     }.bind(this));
   
   }
@@ -255,14 +273,15 @@ BrowserTab.prototype.refresh = function() {
     return;
   }
   
-  this.enqueue(
-    chrome.tabs.reload, 
-    this.properties.id, 
-    { "bypassCache": true }, 
-    function() {
-      this.dequeue();
-    }.bind(this)
-  );
+  this.enqueue(function() {
+    chrome.tabs.reload( 
+      this.properties.id, 
+      { "bypassCache": true }, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
+  }.bind(this));
   
 };
 
@@ -279,8 +298,14 @@ BrowserTab.prototype.postMessage = function( postData ) {
   }
   
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(chrome.tabs.sendMessage, this.properties.id, postData, function() {
-    this.dequeue();
+  this.enqueue(function() {
+    chrome.tabs.sendMessage(
+      this.properties.id, 
+      postData, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
   }.bind(this));
   
 };
@@ -305,44 +330,45 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
   try {
   
     // Queue platform action or fire immediately if this object is resolved
-    this.enqueue(
-      chrome.tabs.captureVisibleTab,
-      this._windowParent.properties.id, 
-      {}, 
-      function( nativeCallback ) {
+    this.enqueue(function() {
+      chrome.tabs.captureVisibleTab(
+        this._windowParent.properties.id, 
+        {}, 
+        function( nativeCallback ) {
       
-        if( nativeCallback ) {
+          if( nativeCallback ) {
       
-          // Convert the returned dataURL in to an ImageData object and
-          // return via the main callback function argument
-          var canvas = document.createElement('canvas');
-          var ctx = canvas.getContext('2d');
-          var img = new Image();
-          img.onload = function(){
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img,0,0);
+            // Convert the returned dataURL in to an ImageData object and
+            // return via the main callback function argument
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            img.onload = function(){
+              canvas.width = img.width;
+              canvas.height = img.height;
+              ctx.drawImage(img,0,0);
 
-            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-            // Return the ImageData object to the callee
-            callback.call( this, imageData );
+              // Return the ImageData object to the callee
+              callback.call( this, imageData );
         
-            this.dequeue();
+              this.dequeue();
             
-          }.bind(this);
-          img.src = nativeCallback;
+            }.bind(this);
+            img.src = nativeCallback;
       
-        } else {
+          } else {
         
-          callback.call( this, undefined );
+            callback.call( this, undefined );
         
-        }
+          }
         
-        this.dequeue();
+          this.dequeue();
     
-      }.bind(this)
-    );
+        }.bind(this)
+      );
+    }.bind(this));
   
   } catch(e) {} 
   
@@ -385,12 +411,13 @@ BrowserTab.prototype.close = function() {
   // Don't remove from root tab manager because we need this in the chrome.tabs.onRemoved listener!
   
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(
-    chrome.tabs.remove, 
-    this.properties.id, 
-    function() {
-      this.dequeue();
-    }.bind(this)
-  );
+  this.enqueue(function() {
+    chrome.tabs.remove( 
+      this.properties.id, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
+  }.bind(this));
 
 };

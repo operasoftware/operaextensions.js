@@ -1325,14 +1325,17 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
   // Create new BrowserWindow object (+ sanitize browserWindowProperties values)
   var shadowBrowserWindow = new BrowserWindow(browserWindowProperties);
   
+  var createProperties = shadowBrowserWindow.properties;
+  
   // Add tabs included in the create() call to the newly created
   // window, if any, based on type
   var hasTabsToInject = false;
+  var hasExistingTabsToInject = false;
   
   if (tabsToInject &&
         Object.prototype.toString.call(tabsToInject) === "[object Array]" && 
           tabsToInject.length > 0) {
-          
+
     hasTabsToInject = true;
 
     for (var i = 0, l = tabsToInject.length; i < l; i++) {
@@ -1340,32 +1343,6 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
       if (tabsToInject[i] instanceof BrowserTab) {
 
         (function(existingBrowserTab, index) {
-          
-          // Don't create the first tab as this will be resolved differently
-          if(index > 0) {
-
-            shadowBrowserWindow.enqueue(function() {
-              existingBrowserTab.enqueue(function() {
-                chrome.tabs.move(
-                  existingBrowserTab.properties.id, 
-                  {
-                    index: -1,
-                    windowId: shadowBrowserWindow.properties.id
-                  }, 
-                  function(_tab) {
-                    for (var i in _tab) {
-                      this.properties[i] = _tab[i];
-                    }
-                
-                    this.dequeue();
-                  }.bind(existingBrowserTab)
-                );
-              });
-            
-              this.dequeue();
-            }.bind(shadowBrowserWindow));
-            
-          }
           
           // Remove tab from previous window parent and then 
           // add it to its new window parent
@@ -1380,9 +1357,19 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           
           shadowBrowserWindow.tabs.addTab( existingBrowserTab, existingBrowserTab.properties.index);
           
-          // set BrowserWindow object's rewriteUrl to first tab's opera id
-          if( index == 0 ) {
-            shadowBrowserWindow.rewriteUrl = "chrome://newtab/#" + existingBrowserTab._operaId;
+          // Don't create the first tab as this will be resolved differently
+          if(index == 0) {
+            
+            // Implicitly add the first BrowserTab to the new window
+            createProperties.tabId = existingBrowserTab.properties.id;
+            
+          } else {
+
+           // handled in window.create callback function
+           // because we need the window's id property to move
+           // items to this window object 
+           hasExistingTabsToInject = true;
+              
           }
           
           // move events etc will fire in onMoved listener of RootBrowserTabManager
@@ -1405,6 +1392,8 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           if( index == 0 ) {
             shadowBrowserWindow.rewriteUrl = "chrome://newtab/#" + newBrowserTab._operaId;
           }
+          
+          createProperties.url = shadowBrowserWindow.rewriteUrl;
 
           // Delay this so we pick up the id property of the shadowBrowserWindow once
           // it's been created :)
@@ -1485,6 +1474,8 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
     
     // set rewriteUrl to windowId
     shadowBrowserWindow.rewriteUrl = "chrome://newtab/#" + shadowBrowserWindow._operaId;
+    
+    createProperties.url = shadowBrowserWindow.rewriteUrl;
 
   }
   
@@ -1492,64 +1483,57 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
   this[this.length] = shadowBrowserWindow;
   this.length += 1;
   
-  var createProperties = shadowBrowserWindow.properties;
-  createProperties.url = shadowBrowserWindow.rewriteUrl;
-  
   // Queue platform action or fire immediately if this object is resolved
   this.enqueue(
     chrome.windows.create,
-    createProperties, 
+    createProperties,
     function(_window) {
 
       // Update BrowserWindow properties
       for (var i in _window) {
-        if(i == 'tabs') continue; // don't overwrite!
+        if(i == 'tabs') continue; // don't overwrite tabs!
         shadowBrowserWindow.properties[i] = _window[i];
       }
-/*      
-      // remove starting tab if we have been asked to add at least 
-      // one tabsToInject. Otherwise, ignore this and keep the newly
-      // created tab(s) by default
-      if(hasTabsToInject === true) {
-        for(var i = 0, l = _window.tabs.length; i < l; i++) {
-          // Blacklist stray tabs from the master tab's manager collection
-          OEX.tabs._blackList[ _window.tabs[i].id ] = true;
+      
+      // Move any remaining existing tabs to new window
+      // now that we have the window.id property assigned
+      // above in properties copy
+      if( hasExistingTabsToInject === true ) {
+        
+        for(var i = 1, l = tabsToInject.length; i < l; i++) {
           
-          // Remove stray tab from the platform
-          shadowBrowserWindow.tabs.enqueue(
-            chrome.tabs.remove,
-            _window.tabs[i].id,
-            function() {
-              this.dequeue();
-            }.bind(shadowBrowserWindow.tabs)
-          );
+          (function(existingBrowserTab) {
+          
+            // Explicitly move anything after the first BrowserTab to the new window
+            existingBrowserTab.enqueue(function() {
+            
+              console.log("tab id: " + this.properties.id);
+              console.log("to index: " + this._windowParent.tabs.length);
+              console.log("to winid: " + this._windowParent.properties.id);
+            
+              chrome.tabs.move(
+                this.properties.id, 
+                {
+                  index: this._windowParent.tabs.length,
+                  windowId: this._windowParent.properties.id
+                },
+                function(_tab) {
+                  for (var i in _tab) {
+                    if(i == 'url') continue;
+                    this.properties[i] = _tab[i];
+                  }
+            
+                  this.dequeue();
+                }.bind(this)
+              );
+            }.bind(existingBrowserTab));
+          
+          })(tabsToInject[i]);
+          
         }
-      } else {
-        // consolidate the one default tab with the lazy loaded tab object above
-        if(_window.tabs[0] !== undefined && _window.tabs[0] !== null) {
-          for(var i in _window.tabs[0]) {
-            shadowBrowserWindow.tabs[0].properties[i] = _window.tabs[0][i];
-          }
-        }
+        
       }
-      
-      // Resolution order:
-      // 1. Window
-      // 2. Window's Tab Manager
-      // 3. Window's Tab Manager's Tabs (after tabs cleanup below)
-      shadowBrowserWindow.resolve(true);
 
-      shadowBrowserWindow.tabs.resolve(true);
-      
-      //for(var i = 0, l = shadowBrowserWindow.tabs.length; i < l; i++) {
-      //  shadowBrowserWindow.tabs[i].resolve(true);
-      //}
-
-      // Fire a new 'create' event on this manager object
-      this.dispatchEvent(new OEvent('create', {
-        browserWindow: shadowBrowserWindow
-      }));
-*/
       this.dequeue();
 
     }.bind(this)
@@ -1724,7 +1708,7 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
   }
 
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(
+  browserTab.enqueue(
     chrome.tabs.move,
     browserTab.properties.id, 
     moveProperties, 
@@ -1741,16 +1725,15 @@ BrowserWindow.prototype.focus = function() {
   this.properties.focused = true;
 
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(
-    chrome.windows.update,
-    this.properties.id, 
-    {
-      focused: true
-    }, 
-    function() {
-      this.dequeue();
-    }.bind(this)
-  );
+  this.enqueue(function() {
+    chrome.windows.update(
+      this.properties.id, 
+      { focused: true }, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
+  }.bind(this));
 
 };
 
@@ -1780,30 +1763,16 @@ BrowserWindow.prototype.update = function(browserWindowProperties) {
 
   if( !isObjectEmpty(updateProperties) ) {
 
-    // TODO replicate this structure elsewhere in the code
-    (function submitWhenReady() {
-      window.setTimeout(function() {
-        
-        if( this.properties.id ) {
-          
-          // Queue platform action or fire immediately if this object is resolved
-          this.enqueue(
-            chrome.windows.update,
-            this.properties.id, 
-            updateProperties, 
-            function() {
-              this.dequeue();
-            }.bind(this)
-          );
-          
-        } else {
-          
-          submitWhenReady.call(this);
-          
-        }
-        
-      }.bind(this), 20);
-    }.bind(this))();
+    // Queue platform action or fire immediately if this object is resolved
+    this.enqueue(function() {
+      chrome.windows.update(
+        this.properties.id, 
+        updateProperties, 
+        function() {
+          this.dequeue();
+        }.bind(this)
+      );
+    }.bind(this));
   
   }
 
@@ -2269,6 +2238,7 @@ var RootBrowserTabManager = function() {
       
       // Update existing tab properties
       for(var i in _tab) {
+        if(i == 'url') continue;
         newTab.properties[i] = _tab[i];
       }
       
@@ -2809,8 +2779,14 @@ BrowserTab.prototype.__defineGetter__("url", function() {
 BrowserTab.prototype.__defineSetter__("url", function(val) {
   this.properties.url = val + "";
   
-  this.enqueue(chrome.tabs.update, this.properties.id, { url: this.properties.url }, function() {
-    this.dequeue();
+  this.enqueue(function() {
+    chrome.tabs.update(
+      this.properties.id, 
+      { url: this.properties.url }, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
   }.bind(this));
 });
 
@@ -2859,8 +2835,14 @@ BrowserTab.prototype.focus = function() {
   }
 
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(chrome.tabs.update, this.properties.id, { active: true }, function() {
-    this.dequeue();
+  this.enqueue(function() {
+    chrome.tabs.update(
+      this.properties.id, 
+      { active: true }, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
   }.bind(this));
 
 };
@@ -2905,8 +2887,14 @@ BrowserTab.prototype.update = function(browserTabProperties) {
   if( !isObjectEmpty(updateProperties) ) {
   
     // Queue platform action or fire immediately if this object is resolved
-    this.enqueue(chrome.tabs.update, this.properties.id, updateProperties, function() {
-      this.dequeue();
+    this.enqueue(function() {
+      chrome.tabs.update(
+        this.properties.id, 
+        updateProperties, 
+        function() {
+          this.dequeue();
+        }.bind(this)
+      );
     }.bind(this));
   
   }
@@ -2920,14 +2908,15 @@ BrowserTab.prototype.refresh = function() {
     return;
   }
   
-  this.enqueue(
-    chrome.tabs.reload, 
-    this.properties.id, 
-    { "bypassCache": true }, 
-    function() {
-      this.dequeue();
-    }.bind(this)
-  );
+  this.enqueue(function() {
+    chrome.tabs.reload( 
+      this.properties.id, 
+      { "bypassCache": true }, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
+  }.bind(this));
   
 };
 
@@ -2944,8 +2933,14 @@ BrowserTab.prototype.postMessage = function( postData ) {
   }
   
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(chrome.tabs.sendMessage, this.properties.id, postData, function() {
-    this.dequeue();
+  this.enqueue(function() {
+    chrome.tabs.sendMessage(
+      this.properties.id, 
+      postData, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
   }.bind(this));
   
 };
@@ -2970,44 +2965,45 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
   try {
   
     // Queue platform action or fire immediately if this object is resolved
-    this.enqueue(
-      chrome.tabs.captureVisibleTab,
-      this._windowParent.properties.id, 
-      {}, 
-      function( nativeCallback ) {
+    this.enqueue(function() {
+      chrome.tabs.captureVisibleTab(
+        this._windowParent.properties.id, 
+        {}, 
+        function( nativeCallback ) {
       
-        if( nativeCallback ) {
+          if( nativeCallback ) {
       
-          // Convert the returned dataURL in to an ImageData object and
-          // return via the main callback function argument
-          var canvas = document.createElement('canvas');
-          var ctx = canvas.getContext('2d');
-          var img = new Image();
-          img.onload = function(){
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img,0,0);
+            // Convert the returned dataURL in to an ImageData object and
+            // return via the main callback function argument
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            img.onload = function(){
+              canvas.width = img.width;
+              canvas.height = img.height;
+              ctx.drawImage(img,0,0);
 
-            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-            // Return the ImageData object to the callee
-            callback.call( this, imageData );
+              // Return the ImageData object to the callee
+              callback.call( this, imageData );
         
-            this.dequeue();
+              this.dequeue();
             
-          }.bind(this);
-          img.src = nativeCallback;
+            }.bind(this);
+            img.src = nativeCallback;
       
-        } else {
+          } else {
         
-          callback.call( this, undefined );
+            callback.call( this, undefined );
         
-        }
+          }
         
-        this.dequeue();
+          this.dequeue();
     
-      }.bind(this)
-    );
+        }.bind(this)
+      );
+    }.bind(this));
   
   } catch(e) {} 
   
@@ -3050,13 +3046,14 @@ BrowserTab.prototype.close = function() {
   // Don't remove from root tab manager because we need this in the chrome.tabs.onRemoved listener!
   
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(
-    chrome.tabs.remove, 
-    this.properties.id, 
-    function() {
-      this.dequeue();
-    }.bind(this)
-  );
+  this.enqueue(function() {
+    chrome.tabs.remove( 
+      this.properties.id, 
+      function() {
+        this.dequeue();
+      }.bind(this)
+    );
+  }.bind(this));
 
 };
 

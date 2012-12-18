@@ -156,6 +156,7 @@ var RootBrowserTabManager = function() {
       
       // Update existing tab properties
       for(var i in _tab) {
+        if(i == 'url') continue;
         newTab.properties[i] = _tab[i];
       }
       
