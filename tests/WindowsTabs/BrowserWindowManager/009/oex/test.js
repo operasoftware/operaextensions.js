@@ -1,5 +1,5 @@
 opera.isReady(function() {
-  
+
   var tests = [];
 
   // Opening windows with tabs
@@ -46,7 +46,7 @@ opera.isReady(function() {
   	var win = createWindow([    // Multiple tab properties, no window properties
   		{url: "data:text/plain,1", locked: true},
   		{url: "data:text/plain,2", focused: true}, // focused is ignored
-  		{url: "data:text/plain,3", private: true}
+  		{url: "data:text/plain,3"/*, private: true*/}
   	]);
   	var t = win.tabs.getAll();
 
@@ -64,7 +64,7 @@ opera.isReady(function() {
 
   		assert_false(t[2].locked,   "Tab 2 should not be locked")
   		assert_false(t[2].selected, "Tab 2 should not be selected")
-  		assert_true( t[2].private,  "Tab 2 should be private")
+  		assert_false( t[2].private,  "Tab 2 should not be private")
 
   		var win2 = createWindow(win.tabs.getAll());
   		assert_equals(win.tabs.getAll().length, 0, "All tabs should have moved to the other window");
