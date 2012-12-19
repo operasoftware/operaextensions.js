@@ -75,4 +75,6 @@ opera.isReady(function(){
 
 
     tab2 = createTab({focused: true}); // Create and focus event
+    
+    console.log(eventsReceived);
 });
