@@ -461,12 +461,17 @@ var RootBrowserTabManager = function() {
     
     if(!activeInfo.tabId) return;
     
+    var blurTarget, focusTarget;
+    
     for(var i = 0, l = this._allTabs.length; i < l; i++) {
       
       if(this._allTabs[i].properties.id == activeInfo.tabId) {
         
         // Set BrowserTab object to active state
         this._allTabs[i].properties.active = true;
+        
+        // Fire focus event on tab's manager
+        focusTarget = this._allTabs[i];
 
         if(this._allTabs[i]._windowParent) {
           // Set tab focused
@@ -479,6 +484,9 @@ var RootBrowserTabManager = function() {
           // unset active state of all other tabs in this collection
           for(var j = 0, k = this._allTabs[i]._windowParent.tabs.length; j < k; j++) {
             if(this._allTabs[i]._windowParent.tabs[j] !== this._allTabs[i]) {
+              if(this._allTabs[i]._windowParent.tabs[j].properties.active == true) {
+                blurTarget = this._allTabs[i]._windowParent.tabs[j];
+              }
               this._allTabs[i]._windowParent.tabs[j].properties.active = false;
             }
           }
@@ -486,6 +494,26 @@ var RootBrowserTabManager = function() {
         
       }
       
+    }
+    
+    // Fire focus event
+    if(focusTarget) {
+      OEX.tabs.dispatchEvent( new OEvent('blur', {
+        "tab": focusTarget,
+        "prevWindow": focusTarget._windowParent, // same as current window
+        "prevTabGroup": null,
+        "prevPosition": focusTarget.properties.index
+      }) );
+    }
+    
+    // Fire blur event
+    if(blurTarget) {
+      OEX.tabs.dispatchEvent( new OEvent('focus', {
+        "tab": blurTarget,
+        "prevWindow": blurTarget._windowParent, // same as current window
+        "prevTabGroup": null,
+        "prevPosition": blurTarget.properties.index
+      }) );
     }
 
   }.bind(this));

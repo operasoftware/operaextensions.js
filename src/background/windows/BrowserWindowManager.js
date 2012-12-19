@@ -146,14 +146,14 @@ var BrowserWindowManager = function() {
           this[i].dispatchEvent(new OEvent('blur', {
             // browserWindow should refer to the new foreground window
             // see: /tests/BrowserWindowManager/004/
-            browserWindow: this._lastFocusedWindow
+            browserWindow: _prevFocusedWindow
           }));
           
           // Fire a new 'blur' event on this manager object
           this.dispatchEvent(new OEvent('blur', {
             // browserWindow should refer to the new foreground window
             // see: /tests/BrowserWindowManager/004/
-            browserWindow: this._lastFocusedWindow
+            browserWindow: _prevFocusedWindow
           }));
           
           // If something is blurring then we should also fire the
@@ -163,14 +163,14 @@ var BrowserWindowManager = function() {
           this._lastFocusedWindow.dispatchEvent(new OEvent('focus', {
             // browserWindow should refer to the old background window
             // see: /tests/BrowserWindowManager/004/
-            browserWindow: _prevFocusedWindow
+            browserWindow: this._lastFocusedWindow
           }));
           
           // Fire a new 'focus' event on this manager object
           this.dispatchEvent(new OEvent('focus', {
             // browserWindow should refer to the old background window
             // see: /tests/BrowserWindowManager/004/
-            browserWindow: _prevFocusedWindow
+            browserWindow: this._lastFocusedWindow
           }));
         
           break;
@@ -281,7 +281,9 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
   // Add tabs included in the create() call to the newly created
   // window, if any, based on type
   var hasTabsToInject = false;
-  var hasExistingTabsToInject = false;
+  
+  var tabsToMove = [];
+  var tabsToCreate = [];
   
   if (tabsToInject &&
         Object.prototype.toString.call(tabsToInject) === "[object Array]" && 
@@ -319,7 +321,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
            // handled in window.create callback function
            // because we need the window's id property to move
            // items to this window object 
-           hasExistingTabsToInject = true;
+           tabsToMove.push(existingBrowserTab);
               
           }
           
@@ -342,62 +344,13 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           // set BrowserWindow object's rewriteUrl to first tab's opera id
           if( index == 0 ) {
             shadowBrowserWindow.rewriteUrl = "chrome://newtab/#" + newBrowserTab._operaId;
+            
+            createProperties.url = shadowBrowserWindow.rewriteUrl;
+          } else {
+            
+            tabsToCreate.push(newBrowserTab);
+            
           }
-          
-          createProperties.url = shadowBrowserWindow.rewriteUrl;
-
-          // Delay this so we pick up the id property of the shadowBrowserWindow once
-          // it's been created :)
-          shadowBrowserWindow.tabs.enqueue(function() {
-            newBrowserTab.properties.windowId = shadowBrowserWindow.properties.id;
-            
-            var tabProps = {};
-            tabProps.url = newBrowserTab.properties.url || "chrome://newtab/";
-            
-            // remove invalid parameters if they exist
-            if(tabProps.closed !== undefined) {
-              delete tabProps.closed;
-            }
-            
-            if(tabProps.incognito !== undefined) {
-              delete tabProps.incognito;
-            }
-            
-            if(tabProps.highlighted !== undefined) {
-              delete tabProps.highlighted;
-            }
-            
-            // Don't create the first tab as this will be resolved differently
-            if(index > 0) {
-              chrome.tabs.create(
-                tabProps, 
-                function(_tab) {
-                  for (var i in _tab) {
-                    newBrowserTab.properties[i] = _tab[i];
-                  }
-                
-                  this.dispatchEvent(new OEvent('create', {
-                    "tab": newBrowserTab,
-                    "prevWindow": newBrowserTab._windowParent,
-                    "prevTabGroup": null,
-                    "prevPosition": NaN
-                  }));
-
-                  // Fire a create event at RootTabsManager
-                  OEX.tabs.dispatchEvent(new OEvent('create', {
-                    "tab": newBrowserTab,
-                    "prevWindow": newBrowserTab._windowParent,
-                    "prevTabGroup": null,
-                    "prevPosition": NaN
-                  }));
-                
-                  newBrowserTab.resolve(true);
-                
-                  this.dequeue();
-                }.bind(shadowBrowserWindow.tabs)
-              );
-            } 
-          });
 
         })(tabsToInject[i], i);
 
@@ -449,9 +402,9 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
       // Move any remaining existing tabs to new window
       // now that we have the window.id property assigned
       // above in properties copy
-      if( hasExistingTabsToInject === true ) {
+      if( tabsToMove.length > 0 ) {
         
-        for(var i = 1, l = tabsToInject.length; i < l; i++) {
+        for(var i = 0, l = tabsToMove.length; i < l; i++) {
           
           (function(existingBrowserTab) {
           
@@ -479,11 +432,77 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
               );
             }.bind(existingBrowserTab));
           
-          })(tabsToInject[i]);
+          })(tabsToMove[i]);
           
         }
         
       }
+      
+      if( tabsToCreate.length > 0 ) {
+        
+        for(var i = 0, l = tabsToCreate.length; i < l; i++) {
+          
+          (function(newBrowserTab) {
+
+            var tabProps = {};
+            tabProps.windowId = shadowBrowserWindow.properties.id;
+            tabProps.url = newBrowserTab.properties.url || "chrome://newtab/";
+            
+            tabProps.active = newBrowserTab.properties.active;
+
+            // remove invalid parameters if they exist
+            /*if(tabProps.closed !== undefined) {
+              delete tabProps.closed;
+            }
+
+            if(tabProps.incognito !== undefined) {
+              delete tabProps.incognito;
+            }
+
+            if(tabProps.highlighted !== undefined) {
+              delete tabProps.highlighted;
+            }*/
+
+            chrome.tabs.create(
+              tabProps, 
+              function(_tab) {
+                for (var i in _tab) {
+                  newBrowserTab.properties[i] = _tab[i];
+                }
+
+                newBrowserTab._windowParent.tabs.dispatchEvent(new OEvent('create', {
+                  "tab": newBrowserTab,
+                  "prevWindow": newBrowserTab._windowParent,
+                  "prevTabGroup": null,
+                  "prevPosition": NaN
+                }));
+
+                // Fire a create event at RootTabsManager
+                OEX.tabs.dispatchEvent(new OEvent('create', {
+                  "tab": newBrowserTab,
+                  "prevWindow": newBrowserTab._windowParent,
+                  "prevTabGroup": null,
+                  "prevPosition": NaN
+                }));
+
+                newBrowserTab.resolve(true);
+
+                newBrowserTab.dequeue();
+                this.dequeue();
+                
+              }.bind(shadowBrowserWindow.tabs)
+            );
+            
+          })(tabsToCreate[i]);
+          
+        }
+        
+      }
+      
+      // Fire a new 'create' event on this manager object
+      this.dispatchEvent(new OEvent('create', {
+        browserWindow: shadowBrowserWindow
+      }));
 
       this.dequeue();
 
