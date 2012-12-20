@@ -9,7 +9,7 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
   
   this._windowParent = windowParent;
 
-  this.sanitizeProperties = function( props ) {
+  /*this.sanitizeProperties = function( props ) {
 
     if(props.focused !== undefined) {
       props.active = !!props.focused;
@@ -49,7 +49,30 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
     return props;
   };
   
-  this.properties = this.sanitizeProperties(browserTabProperties || {});
+  this.properties = this.sanitizeProperties(browserTabProperties || {});*/
+  
+  browserTabProperties = browserTabProperties || {};
+  
+  this.properties = {
+    'id': undefined, // not settable on create
+    'closed': false, // not settable on create
+    // locked: 
+    'pinned': browserTabProperties.locked ? !!browserTabProperties.locked : false,
+    // private:
+    'incognito': false, // TODO handle private tab creation in Chromium model
+    // selected: 
+    'active': browserTabProperties.focused ? !!browserTabProperties.focused : false,
+    // readyState:
+    'status': 'loading', // not settable on create
+    // faviconUrl:
+    'favIconUrl': '', // not settable on create
+    'title': '', // not settable on create
+    'url': browserTabProperties.url ? (browserTabProperties.url + "") : 'chrome://newtab',
+    // position:
+    'index': browserTabProperties.position ? parseInt(browserTabProperties.position, 10) : 0
+    // 'browserWindow' not part of settable properties
+    // 'tabGroup' not part of settable properties
+  }
 
   // Create a unique browserTab id
   this._operaId = Math.floor(Math.random() * 1e16);
@@ -67,7 +90,6 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
   
   // Add this object to the permanent management collection
   OEX.tabs._allTabs.push( this );
-  
 
 };
 
@@ -151,11 +173,12 @@ BrowserTab.prototype.__defineSetter__("url", function(val) {
     
     chrome.tabs.update(
       this.properties.id, 
-      { url: this.properties.url }, 
+      { 'url': val + "" }, 
       function() {
         this.dequeue();
       }.bind(this)
     );
+
   }.bind(this));
 });
 
@@ -181,20 +204,13 @@ BrowserTab.prototype.__defineGetter__("position", function() {
 BrowserTab.prototype.focus = function() {
   
   if(this.properties.active == true || this.properties.closed == true) {
-    return; // already focused
+    return; // already focused or invalid because tab is closed
   }
   
   // Set BrowserTab object to active state
   this.properties.active = true;
   
   if(this._windowParent) {
-    // Set tab focused
-    this._windowParent.tabs._lastFocusedTab = this;
-    // Set global tab focus if window is also currently focused
-    if(OEX.windows._lastFocusedWindow === this._windowParent) {
-      OEX.tabs._lastFocusedTab = this;
-    }
-    
     // unset active state of all other tabs in this collection
     for(var i = 0, l = this._windowParent.tabs.length; i < l; i++) {
       if(this._windowParent.tabs[i] !== this) {
@@ -243,6 +259,15 @@ BrowserTab.prototype.update = function(browserTabProperties) {
   // Cannot set focused = false in update
   if(browserTabProperties.focused !== undefined && browserTabProperties.focused == true) {
     this.properties.active = updateProperties.active = !!browserTabProperties.focused;
+    
+    // unset active parameter of all other objects
+    if(this._windowParent) {
+      for(var i = 0, l = this._windowParent.tabs.length; i < l; i++) {
+        if(this._windowParent.tabs[i] != this) {
+          this._windowParent.tabs[i].properties.active = false;
+        }
+      }
+    }
   }
   
   if(browserTabProperties.locked !== undefined && browserTabProperties.locked !== null) {
@@ -430,7 +455,8 @@ BrowserTab.prototype.close = function() {
     this._oldWindowParent.tabs.removeTab( this );
   } 
   
-  // Don't remove from root tab manager because we need this in the chrome.tabs.onRemoved listener!
+  // Remove tab from global collection
+  OEX.tabs.removeTab( this );
   
   // Queue platform action or fire immediately if this object is resolved
   this.enqueue(function() {

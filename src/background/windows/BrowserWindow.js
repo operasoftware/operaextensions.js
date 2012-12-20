@@ -3,7 +3,22 @@ var BrowserWindow = function(browserWindowProperties) {
 
   OPromise.call(this);
 
-  this.properties = browserWindowProperties || {};
+  browserWindowProperties = browserWindowProperties || {};
+  
+  this.properties = {
+    'id': undefined, // not settable on create
+    'closed': false, // not settable on create
+    'focused': browserWindowProperties.focused ? !!browserWindowProperties.focused : undefined,
+    // private:
+    'incognito': browserWindowProperties.private ? !!browserWindowProperties.private : undefined,
+    'parent': null,
+    'width': browserWindowProperties.width ? parseInt(browserWindowProperties.width, 10) : undefined,
+    'height': browserWindowProperties.height ? parseInt(browserWindowProperties.height, 10) : undefined,
+    'top': browserWindowProperties.top ? parseInt(browserWindowProperties.top, 10) : undefined,
+    'left': browserWindowProperties.left ? parseInt(browserWindowProperties.left, 10) : undefined
+    // 'tabGroups' not part of settable properties
+    // 'tabs' not part of settable properties
+  };
 
   this._parent = null;
 
@@ -13,11 +28,6 @@ var BrowserWindow = function(browserWindowProperties) {
   this.tabs = new BrowserTabManager(this);
 
   this.tabGroups = new BrowserTabGroupManager(this);
-  
-  // Set global focused window is focused property is true
-  if(this.properties.focused == true) {
-    OEX.windows._lastFocusedWindow = this;
-  }
   
   if(this.properties.private !== undefined) {
     this.properties.incognito = !!this.properties.private;
@@ -85,7 +95,7 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
 
   var moveProperties = {
     windowId: this.properties.id,
-    index: this.length // by default, add to the end of the current window
+    index: OEX.windows.length // by default, add to the end of the current window
   };
 
   // Set insert position for the new tab from 'before' attribute, if any
@@ -137,21 +147,36 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
   }
 
   // Queue platform action or fire immediately if this object is resolved
-  browserTab.enqueue(
-    chrome.tabs.move,
-    browserTab.properties.id, 
-    moveProperties, 
-    function(_tab) {
-      this.dequeue();
-    }.bind(this)
-  );
+  browserTab.enqueue(function() {
+    chrome.tabs.move(
+      browserTab.properties.id, 
+      {
+        windowId: moveProperties.windowId || this.properties.id,
+        index: moveProperties.index
+      }, 
+      function(_tab) {
+        this.dequeue();
+      }.bind(this)
+    );
+  }.bind(this));
 
 };
 
 BrowserWindow.prototype.focus = function() {
+  
+  if(this.properties.focused == true || this.properties.closed == true) {
+    return; // already focused or invalid because window is closed
+  }
 
   // Set BrowserWindow object to focused state
   this.properties.focused = true;
+  
+  // unset all other window object's focused state
+  for(var i = 0, l = OEX.windows.length; i < l; i++) {
+    if(OEX.windows[i] !== this) {
+      OEX.windows[i].properties.focused = false;
+    }
+  }
 
   // Queue platform action or fire immediately if this object is resolved
   this.enqueue(function() {
