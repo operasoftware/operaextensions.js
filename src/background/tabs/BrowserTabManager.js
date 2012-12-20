@@ -6,17 +6,6 @@ var BrowserTabManager = function( parentObj ) {
   // Set up 0 mock BrowserTab objects at startup
   this.length = 0;
 
-  this._focusedTab = null;
-  this.__defineGetter__('_lastFocusedTab', function() {
-    return this._focusedTab;
-  });
-  this.__defineSetter__('_lastFocusedTab', function(val) {
-    /*if(this == OEX.tabs) {
-      console.log( "Focused tab: " + val.url );
-    }*/
-    this._focusedTab = val;
-  });
-
   this._parent = parentObj;
 
   // Remove all collection items and replace with browserTabs
@@ -152,16 +141,16 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
   
   // Sanitized tab properties
   var createTabProperties = {
-    url: shadowBrowserTab.properties.url,
-    active: shadowBrowserTab.properties.active,
-    pinned: shadowBrowserTab.properties.pinned
+    'url': shadowBrowserTab.properties.url,
+    'active': shadowBrowserTab.properties.active,
+    'pinned': shadowBrowserTab.properties.pinned
   };
   
   // By default, tab will be created at end of current collection
   shadowBrowserTab.properties.index = createTabProperties.index = shadowBrowserTab._windowParent.tabs.length;
   
   // no windowId will default to adding the tab to the current window
-  createTabProperties.windowId = this._parent ? this._parent.properties.id : OEX.windows.getLastFocused().properties.id;
+  createTabProperties.windowId = this._parent ? this._parent.properties.id : OEX.windows.getLastFocused() ? OEX.windows.getLastFocused().properties.id : undefined;
 
   // Set insert position for the new tab from 'before' attribute, if any
   if( before && (before instanceof BrowserTab) ) {
@@ -189,55 +178,75 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
   
   // Set up tab index on start
   if(this === OEX.tabs) {
-    shadowBrowserTab.properties.index = createTabProperties.index = OEX.windows.getLastFocused().tabs.length;
+    shadowBrowserTab._windowParent = OEX.windows.getLastFocused();
+    shadowBrowserTab.properties.index = createTabProperties.index = shadowBrowserTab._windowParent.tabs.length;
   }
   
   // Add this object to the end of the current tabs collection
   shadowBrowserTab._windowParent.tabs.addTab(shadowBrowserTab, shadowBrowserTab.properties.index);
-
-  // Add this object to the root tab manager
-  OEX.tabs.addTab( shadowBrowserTab );
   
-  if(shadowBrowserTab.properties.active == true) {
-    // Set tab focused
-    shadowBrowserTab._windowParent.tabs._lastFocusedTab = shadowBrowserTab;
-    // Set global tab focus if window is also currently focused
-    if(OEX.windows._lastFocusedWindow === shadowBrowserTab._windowParent) {
-      OEX.tabs._lastFocusedTab = shadowBrowserTab;
+  // unfocus all other tabs in tab's window parent collection if this tab is set to focused
+  if(shadowBrowserTab.properties.active == true ) {
+    for(var i = 0, l = shadowBrowserTab._windowParent.tabs.length; i < l; i++) {
+      if(shadowBrowserTab._windowParent.tabs[i] !== shadowBrowserTab) {
+        shadowBrowserTab._windowParent.tabs[i].properties.active = false;
+      }
     }
   }
 
+  // Add this object to the root tab manager
+  OEX.tabs.addTab( shadowBrowserTab );
+
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue( chrome.tabs.create, createTabProperties, function( _tab ) {
+  this.enqueue(function() {
     
-      // Update BrowserTab properties
-      for(var i in _tab) {
-        if(i == 'url') continue;
-        shadowBrowserTab.properties[i] = _tab[i];
-      }
+    chrome.tabs.create(
+      createTabProperties, 
+      function( _tab ) {
     
-      // Move this object to the correct position within the current tabs collection
-      // (but don't worry about doing this for the global tabs manager)
-      // TODO check if this is the correct behavior here
-      if(this !== OEX.tabs) {
-        this.removeTab( shadowBrowserTab );
-        this.addTab( shadowBrowserTab, shadowBrowserTab.properties.index);
-      }
+        // Update BrowserTab properties
+        for(var i in _tab) {
+          if(i == 'url') continue;
+          shadowBrowserTab.properties[i] = _tab[i];
+        }
+    
+        // Move this object to the correct position within the current tabs collection
+        // (but don't worry about doing this for the global tabs manager)
+        // TODO check if this is the correct behavior here
+        if(this !== OEX.tabs) {
+          this.removeTab( shadowBrowserTab );
+          this.addTab( shadowBrowserTab, shadowBrowserTab.properties.index);
+        }
 
-      // Resolve new tab, if it hasn't been resolved already
-      shadowBrowserTab.resolve(true);
+        // Resolve new tab, if it hasn't been resolved already
+        shadowBrowserTab.resolve(true);
 
-      // Dispatch oncreate event to all attached event listeners
-      this.dispatchEvent( new OEvent('create', {
-          "tab": shadowBrowserTab,
-          "prevWindow": shadowBrowserTab._windowParent, // same as current window
-          "prevTabGroup": null,
-          "prevPosition": NaN
-      }) );
+        this.dequeue();
 
-      this.dequeue();
-
+      }.bind(this)
+    );
+  
   }.bind(this));
+  
+  // return shadowBrowserTab from this function before firing these events!
+  global.setTimeout(function() {
+    
+    shadowBrowserTab._windowParent.tabs.dispatchEvent(new OEvent('create', {
+      "tab": shadowBrowserTab,
+      "prevWindow": null,
+      "prevTabGroup": null,
+      "prevPosition": 0
+    }));
+
+    // Fire a create event at RootTabsManager
+    OEX.tabs.dispatchEvent(new OEvent('create', {
+      "tab": shadowBrowserTab,
+      "prevWindow": null,
+      "prevTabGroup": null,
+      "prevPosition": 0
+    }));
+    
+  }, 50);
 
   return shadowBrowserTab;
 
@@ -257,7 +266,18 @@ BrowserTabManager.prototype.getAll = function() {
 
 BrowserTabManager.prototype.getSelected = function() {
 
-  return this._lastFocusedTab || this[ 0 ];
+  for(var i = 0, l = this.length; i < l; i++) {
+    if(this[i].focused == true) {
+      return this[i];
+    }
+  }
+  
+  // default
+  if(this[0]) {
+    this[0].properties.active = true;
+  }
+  
+  return this[0] || undefined;
 
 };
 // Alias of .getSelected()
