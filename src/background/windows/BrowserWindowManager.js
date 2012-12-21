@@ -155,6 +155,8 @@ var BrowserWindowManager = function() {
         }
 
       }
+      
+      Queue.dequeue();
 
   }.bind(this));
 
@@ -197,6 +199,8 @@ var BrowserWindowManager = function() {
       }));
 
     }
+    
+    Queue.dequeue();
 
   }.bind(this));
 
@@ -379,8 +383,9 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
   }
   
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(
-    chrome.windows.create,
+  Queue.enqueue(this, function(done) {
+
+  chrome.windows.create(
     createProperties,
     function(_window) {
 
@@ -389,19 +394,19 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
         if(i == 'tabs') continue; // don't overwrite tabs!
         shadowBrowserWindow.properties[i] = _window[i];
       }
-      
+    
       // Move any remaining existing tabs to new window
       // now that we have the window.id property assigned
       // above in properties copy
       if( tabsToMove.length > 0 ) {
-        
+      
         for(var i = 0, l = tabsToMove.length; i < l; i++) {
-          
+        
           (function(existingBrowserTab) {
-          
+        
             // Explicitly move anything after the first BrowserTab to the new window
-            existingBrowserTab.enqueue(function() {
-            
+            Queue.enqueue(existingBrowserTab, function(done) {
+          
               chrome.tabs.move(
                 this.properties.id, 
                 {
@@ -413,22 +418,22 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
                     if(i == 'url') continue;
                     this.properties[i] = _tab[i];
                   }
-            
-                  this.dequeue();
+          
+                  done();
                 }.bind(this)
               );
             }.bind(existingBrowserTab));
-          
+        
           })(tabsToMove[i]);
-          
+        
         }
-        
-      }
       
+      }
+    
       if( tabsToCreate.length > 0 ) {
-        
+      
         for(var i = 0, l = tabsToCreate.length; i < l; i++) {
-          
+        
           (function(newBrowserTab) {
 
             var tabCreateProps = {
@@ -438,7 +443,8 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
               'pinned': newBrowserTab.properties.pinned,
               'index': newBrowserTab.properties.index
             };
-            
+          
+            Queue.enqueue(this, function(done) {
             chrome.tabs.create(
               tabCreateProps, 
               function(_tab) {
@@ -448,12 +454,12 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
 
                 newBrowserTab.resolve(true);
 
-                newBrowserTab.dequeue();
-                this.dequeue();
-                
+                done();
+              
               }.bind(shadowBrowserWindow.tabs)
             );
-            
+            }.bind(this), true);
+          
             newBrowserTab._windowParent.tabs.dispatchEvent(new OEvent('create', {
               "tab": newBrowserTab,
               "prevWindow": newBrowserTab._windowParent,
@@ -468,17 +474,19 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
               "prevTabGroup": null,
               "prevPosition": NaN
             }));
-            
-          })(tabsToCreate[i]);
           
-        }
+          })(tabsToCreate[i]);
         
+        }
+      
       }
       
-      this.dequeue();
+      done();
 
     }.bind(this)
   );
+  
+  }.bind(this), true);
   
   // return shadowBrowserWindow from this function before firing these events!
   global.setTimeout(function() {
@@ -489,7 +497,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
     }));
     
   }.bind(this), 50);
-
+  
   return shadowBrowserWindow;
 };
 
