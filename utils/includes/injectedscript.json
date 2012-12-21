@@ -3,12 +3,11 @@
   "../src/injectedscript/Require.js",
 
   "../src/common/third_party/rsvp.js",
-  
+
   "../src/common/Error.js",
 
   "../src/common/Event.js",
   "../src/common/EventTarget.js",
-  "../src/common/Promise.js",
 
   "../src/common/MessagePort.js",
   "../src/injectedscript/Root.js",
