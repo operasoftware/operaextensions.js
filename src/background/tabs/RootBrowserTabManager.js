@@ -131,7 +131,7 @@ var RootBrowserTabManager = function() {
           break;
         }
       }
-
+      
       if (!parentWindow) {
         
         // Create new BrowserWindow object
@@ -145,6 +145,8 @@ var RootBrowserTabManager = function() {
         
         parentWindow.resolve(true);
         parentWindow.tabs.resolve(true);
+        
+        console.log('new parent window created...' + parentWindow.id);
         
         // we really need to learn more about the newly create BrowserWindow object
         chrome.windows.get(parentWindow.properties.id, { 'populate': false }, function(_window) {
@@ -370,6 +372,22 @@ var RootBrowserTabManager = function() {
     
     if( this._blackList[ tabId ] ) {
       return;
+    }
+    
+    // find tab's parent window object via the window.rewriteURL property
+    // and rewrite it's id value
+    var _windows = OEX.windows;
+    for (var i = 0, l = _windows.length; i < l; i++) {
+      
+      // Bind the window object with its window id and resolve
+      if( _windows[i].rewriteUrl && _windows[i].rewriteUrl == "chrome://newtab/#" + tabId ) {
+        _windows[i].properties.id = moveInfo.windowId;
+        _windows[i].resolve(true);
+        // Also resolve window object's root tab manager
+        _windows[i].tabs.resolve(true);
+        
+        delete _windows[i].rewriteUrl;
+      }
     }
     
     // Find tab object
