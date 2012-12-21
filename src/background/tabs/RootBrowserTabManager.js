@@ -146,8 +146,6 @@ var RootBrowserTabManager = function() {
         parentWindow.resolve(true);
         parentWindow.tabs.resolve(true);
         
-        console.log('new parent window created...' + parentWindow.id);
-        
         // we really need to learn more about the newly create BrowserWindow object
         chrome.windows.get(parentWindow.properties.id, { 'populate': false }, function(_window) {
           
