@@ -545,7 +545,7 @@ for(var i in OEventTarget.prototype) {
  * functions serially
  */
 var Queue = (function() {
-  var _q = [], _lock = false, _timeout = 5000;
+  var _q = [], _lock = false, _timeout = 1000;
   
   function callNext() {
     _lock = false;
@@ -574,6 +574,8 @@ var Queue = (function() {
         // break deadlocks
         var timer = global.setTimeout(function() {
           console.warn('PromiseQueue deadlock broken with timeout.');
+          console.log(item.obj);
+          console.log(item.obj.isResolved);
           item.obj.trigger('promise:resolved'); // manual trigger / resolve
         }, _timeout);
       
@@ -1350,6 +1352,9 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           
           // Rewrite tab's BrowserWindow parent
           existingBrowserTab._windowParent = shadowBrowserWindow;
+          
+          console.log('parent window changed...' + shadowBrowserWindow.id);
+          
           // Rewrite tab's index position in collection
           existingBrowserTab.properties.index = shadowBrowserWindow.tabs.length;
           
@@ -1361,6 +1366,10 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
             // Implicitly add the first BrowserTab to the new window
             createProperties.tabId = existingBrowserTab.properties.id;
             
+            console.log("id set: " + createProperties.tabId);
+            
+            shadowBrowserWindow.rewriteUrl = "chrome://newtab/#" + existingBrowserTab.properties.id;
+
           } else {
 
            // handled in window.create callback function
@@ -1373,7 +1382,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           // move events etc will fire in onMoved listener of RootBrowserTabManager
           
         })(tabsToInject[i], i);
-
+        
       } else { // Treat as a BrowserTabProperties object by default
 
         (function(browserTabProperties, index) {
@@ -1437,6 +1446,8 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
       }
     }
   }
+  
+  console.log("id check: " + createProperties.tabId);
   
   // Queue platform action or fire immediately if this object is resolved
   Queue.enqueue(this, function(done) {
@@ -2282,7 +2293,7 @@ var RootBrowserTabManager = function() {
           break;
         }
       }
-
+      
       if (!parentWindow) {
         
         // Create new BrowserWindow object
@@ -2296,6 +2307,8 @@ var RootBrowserTabManager = function() {
         
         parentWindow.resolve(true);
         parentWindow.tabs.resolve(true);
+        
+        console.log('new parent window created...' + parentWindow.id);
         
         // we really need to learn more about the newly create BrowserWindow object
         chrome.windows.get(parentWindow.properties.id, { 'populate': false }, function(_window) {
@@ -2521,6 +2534,22 @@ var RootBrowserTabManager = function() {
     
     if( this._blackList[ tabId ] ) {
       return;
+    }
+    
+    // find tab's parent window object via the window.rewriteURL property
+    // and rewrite it's id value
+    var _windows = OEX.windows;
+    for (var i = 0, l = _windows.length; i < l; i++) {
+      
+      // Bind the window object with its window id and resolve
+      if( _windows[i].rewriteUrl && _windows[i].rewriteUrl == "chrome://newtab/#" + tabId ) {
+        _windows[i].properties.id = moveInfo.windowId;
+        _windows[i].resolve(true);
+        // Also resolve window object's root tab manager
+        _windows[i].tabs.resolve(true);
+        
+        delete _windows[i].rewriteUrl;
+      }
     }
     
     // Find tab object

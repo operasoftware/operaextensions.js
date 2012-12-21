@@ -294,6 +294,9 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           
           // Rewrite tab's BrowserWindow parent
           existingBrowserTab._windowParent = shadowBrowserWindow;
+          
+          console.log('parent window changed...' + shadowBrowserWindow.id);
+          
           // Rewrite tab's index position in collection
           existingBrowserTab.properties.index = shadowBrowserWindow.tabs.length;
           
@@ -305,6 +308,10 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
             // Implicitly add the first BrowserTab to the new window
             createProperties.tabId = existingBrowserTab.properties.id;
             
+            console.log("id set: " + createProperties.tabId);
+            
+            shadowBrowserWindow.rewriteUrl = "chrome://newtab/#" + existingBrowserTab.properties.id;
+
           } else {
 
            // handled in window.create callback function
@@ -317,7 +324,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           // move events etc will fire in onMoved listener of RootBrowserTabManager
           
         })(tabsToInject[i], i);
-
+        
       } else { // Treat as a BrowserTabProperties object by default
 
         (function(browserTabProperties, index) {
@@ -381,6 +388,8 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
       }
     }
   }
+  
+  console.log("id check: " + createProperties.tabId);
   
   // Queue platform action or fire immediately if this object is resolved
   Queue.enqueue(this, function(done) {

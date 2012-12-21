@@ -4,7 +4,7 @@
  * functions serially
  */
 var Queue = (function() {
-  var _q = [], _lock = false, _timeout = 5000;
+  var _q = [], _lock = false, _timeout = 1000;
   
   function callNext() {
     _lock = false;
@@ -33,6 +33,8 @@ var Queue = (function() {
         // break deadlocks
         var timer = global.setTimeout(function() {
           console.warn('PromiseQueue deadlock broken with timeout.');
+          console.log(item.obj);
+          console.log(item.obj.isResolved);
           item.obj.trigger('promise:resolved'); // manual trigger / resolve
         }, _timeout);
       
