@@ -10,6 +10,7 @@
   "../src/common/Event.js",
   "../src/common/EventTarget.js",
   "../src/common/Promise.js",
+  "../src/common/Queue.js",
 
   "../src/common/MessagePort.js",
   "../src/background/messaging/BackgroundMessagePort.js",

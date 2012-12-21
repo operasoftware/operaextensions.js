@@ -11,8 +11,6 @@ var ToolbarUIItem = function( properties ) {
   this.properties.popup = new ToolbarPopup( properties.popup || {} );
   this.properties.badge = new ToolbarBadge( properties.badge || {} );
   
-  //this.enqueue('apply');
-  
 };
 
 ToolbarUIItem.prototype = Object.create( OPromise.prototype );
@@ -44,10 +42,22 @@ ToolbarUIItem.prototype.__defineSetter__("disabled", function( val ) {
   if( this.properties.disabled !== val ) {
     if( val === true || val === "true" || val === 1 || val === "1" ) {
       this.properties.disabled = true;
-      this.enqueue(chrome.browserAction.disable);
+      Queue.enqueue(this, function(done) {
+
+        chrome.browserAction.disable();
+
+        done();
+
+      }.bind(this));
     } else {
       this.properties.disabled = false;
-      this.enqueue(chrome.browserAction.enable);
+      Queue.enqueue(this, function(done) {
+
+        chrome.browserAction.enable();
+
+        done();
+
+      }.bind(this));
     }
   }
 });
@@ -59,7 +69,13 @@ ToolbarUIItem.prototype.__defineGetter__("title", function() {
 ToolbarUIItem.prototype.__defineSetter__("title", function( val ) {
   this.properties.title = "" + val;
   
-  this.enqueue(chrome.browserAction.setTitle, { "title": (this.title) });
+  Queue.enqueue(this, function(done) {
+
+    chrome.browserAction.setTitle({ "title": (this.title) });
+
+    done();
+
+  }.bind(this));
 });
 
 ToolbarUIItem.prototype.__defineGetter__("icon", function() {
@@ -69,7 +85,13 @@ ToolbarUIItem.prototype.__defineGetter__("icon", function() {
 ToolbarUIItem.prototype.__defineSetter__("icon", function( val ) {
   this.properties.icon = "" + val;
   
-  this.enqueue(chrome.browserAction.setIcon,{ "path": this.icon });
+  Queue.enqueue(this, function(done) {
+
+    chrome.browserAction.setIcon({ "path": this.icon });
+
+    done();
+
+  }.bind(this));
 });
 
 ToolbarUIItem.prototype.__defineGetter__("popup", function() {

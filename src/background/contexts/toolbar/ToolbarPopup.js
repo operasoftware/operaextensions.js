@@ -10,8 +10,6 @@ var ToolbarPopup = function( properties ) {
   this.properties.width = properties.width;
   this.properties.height = properties.height;
   
-  //this.enqueue('apply');
-
 };
 
 ToolbarPopup.prototype = Object.create( OPromise.prototype );
@@ -30,7 +28,14 @@ ToolbarPopup.prototype.__defineGetter__("href", function() {
 
 ToolbarPopup.prototype.__defineSetter__("href", function( val ) {
   this.properties.href = "" + val;
-  this.enqueue(chrome.browserAction.setPopup, { "popup": ("" + val) });
+  
+  Queue.enqueue(this, function(done) {
+
+    chrome.browserAction.setPopup({ "popup": ("" + val) });
+
+    done();
+
+  }.bind(this));
 });
 
 ToolbarPopup.prototype.__defineGetter__("width", function() {

@@ -149,9 +149,6 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
   // By default, tab will be created at end of current collection
   shadowBrowserTab.properties.index = createTabProperties.index = shadowBrowserTab._windowParent.tabs.length;
   
-  // no windowId will default to adding the tab to the current window
-  createTabProperties.windowId = this._parent ? this._parent.properties.id : OEX.windows.getLastFocused() ? OEX.windows.getLastFocused().properties.id : undefined;
-
   // Set insert position for the new tab from 'before' attribute, if any
   if( before && (before instanceof BrowserTab) ) {
 
@@ -198,18 +195,17 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
   OEX.tabs.addTab( shadowBrowserTab );
 
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(function() {
+  Queue.enqueue(this, function(done) {
     
     chrome.tabs.create(
       createTabProperties, 
       function( _tab ) {
-    
         // Update BrowserTab properties
         for(var i in _tab) {
           if(i == 'url') continue;
           shadowBrowserTab.properties[i] = _tab[i];
         }
-    
+  
         // Move this object to the correct position within the current tabs collection
         // (but don't worry about doing this for the global tabs manager)
         // TODO check if this is the correct behavior here
@@ -220,13 +216,13 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
 
         // Resolve new tab, if it hasn't been resolved already
         shadowBrowserTab.resolve(true);
-
-        this.dequeue();
+        
+        done();
 
       }.bind(this)
     );
   
-  }.bind(this));
+  }.bind(this), true);
   
   // return shadowBrowserTab from this function before firing these events!
   global.setTimeout(function() {
@@ -247,7 +243,7 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
     }));
     
   }, 50);
-
+  
   return shadowBrowserTab;
 
 };

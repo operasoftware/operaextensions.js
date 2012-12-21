@@ -11,8 +11,6 @@ var ToolbarBadge = function( properties ) {
   this.properties.color = complexColorToHex(properties.color);
   this.properties.display = properties.display;
   
-  //this.enqueue('apply');
-  
 };
 
 ToolbarBadge.prototype = Object.create( OPromise.prototype );
@@ -38,7 +36,13 @@ ToolbarBadge.prototype.__defineGetter__("textContent", function() {
 ToolbarBadge.prototype.__defineSetter__("textContent", function( val ) {
   this.properties.textContent = "" + val;
   if( this.properties.display === "block" ) {
-    this.enqueue(chrome.browserAction.setBadgeText, { "text": ("" + val) });
+    Queue.enqueue(this, function(done) {
+      
+      chrome.browserAction.setBadgeText({ "text": ("" + val) });
+      
+      done();
+      
+    }.bind(this));
   }
 });
 
@@ -49,7 +53,13 @@ ToolbarBadge.prototype.__defineGetter__("backgroundColor", function() {
 ToolbarBadge.prototype.__defineSetter__("backgroundColor", function( val ) {
   this.properties.backgroundColor = complexColorToHex("" + val);
 
-  this.enqueue(chrome.browserAction.setBadgeBackgroundColor, { "color": this.properties.backgroundColor });
+  Queue.enqueue(this, function(done) {
+    
+    chrome.browserAction.setBadgeBackgroundColor({ "color": this.properties.backgroundColor });
+    
+    done();
+    
+  }.bind(this));
 });
 
 ToolbarBadge.prototype.__defineGetter__("color", function() {
@@ -68,9 +78,21 @@ ToolbarBadge.prototype.__defineGetter__("display", function() {
 ToolbarBadge.prototype.__defineSetter__("display", function( val ) {
   if(("" + val).toLowerCase() === "block") {
     this.properties.display = "block";
-    this.enqueue(chrome.browserAction.setBadgeText, { "text": this.properties.textContent });
+    Queue.enqueue(this, function(done) {
+
+      chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
+
+      done();
+
+    }.bind(this));
   } else {
     this.properties.display = "none";
-    this.enqueue(chrome.browserAction.setBadgeText, { "text": "" });
+    Queue.enqueue(this, function(done) {
+
+      chrome.browserAction.setBadgeText({ "text": "" });
+
+      done();
+
+    }.bind(this));
   }
 });

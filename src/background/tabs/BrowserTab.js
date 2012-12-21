@@ -9,48 +9,6 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
   
   this._windowParent = windowParent;
 
-  /*this.sanitizeProperties = function( props ) {
-
-    if(props.focused !== undefined) {
-      props.active = !!props.focused;
-      // Not allowed in Chromium API
-      delete props.focused;
-    } else if( props.active !== true ) {
-      // Explicitly set active to false by default in Opera implementation
-      props.active = false;
-    }
-    
-    if(props.locked !== undefined) {
-      props.pinned = !!props.locked;
-      delete props.locked;
-    }
-
-    if(props.url === undefined || props.url === null) {
-      props.url = "chrome://newtab";
-    }
-    
-    if(props.position !== undefined) {
-      props.index = props.position;
-      delete props.position;
-    }
-    
-    if(props.index === undefined || props.index === null) {
-      props.index = this._windowParent.tabs.length;
-    }
-    
-    // TODO handle private tab insertion differently in Chromium
-    //browserTabProperties.incognito = browserTabProperties.private || false;
-    
-    // Properties disallowed when creating a new object or updating an existing object
-    if(props.closed !== undefined) {
-      delete props.closed;
-    }
-    
-    return props;
-  };
-  
-  this.properties = this.sanitizeProperties(browserTabProperties || {});*/
-  
   browserTabProperties = browserTabProperties || {};
   
   this.properties = {
@@ -166,19 +124,14 @@ BrowserTab.prototype.__defineGetter__("url", function() {
 BrowserTab.prototype.__defineSetter__("url", function(val) {
   this.properties.url = val + "";
   
-  this.enqueue(function() {
-    if(this.properties.closed == true) {
-      return;
-    }
-    
+  Queue.enqueue(this, function(done) {
     chrome.tabs.update(
       this.properties.id, 
-      { 'url': val + "" }, 
-      function() {
-        this.dequeue();
+      { 'url': this.properties.url }, 
+      function(_tab) {
+        done();
       }.bind(this)
     );
-
   }.bind(this));
 });
 
@@ -220,16 +173,12 @@ BrowserTab.prototype.focus = function() {
   }
 
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(function() {
-    if(this.properties.closed == true) {
-      return;
-    }
-    
+  Queue.enqueue(this, function(done) {
     chrome.tabs.update(
       this.properties.id, 
       { active: true }, 
       function() {
-        this.dequeue();
+        done();
       }.bind(this)
     );
   }.bind(this));
@@ -283,18 +232,14 @@ BrowserTab.prototype.update = function(browserTabProperties) {
   }
   
   if( !isObjectEmpty(updateProperties) ) {
-  
+    
     // Queue platform action or fire immediately if this object is resolved
-    this.enqueue(function() {
-      if(this.properties.closed == true) {
-        return;
-      }
-      
+    Queue.enqueue(this, function(done) {
       chrome.tabs.update(
         this.properties.id, 
         updateProperties, 
-        function() {
-          this.dequeue();
+        function(_tab) {
+          done();
         }.bind(this)
       );
     }.bind(this));
@@ -314,9 +259,8 @@ BrowserTab.prototype.refresh = function() {
 
   //this.properties.status = "loading";
   //this.properties.title = undefined;
-
   
-  this.enqueue(function() {
+  Queue.enqueue(this, function(done) {
     // reset the readyState + title
     this.properties.status = "loading";
     this.properties.title = undefined;
@@ -325,7 +269,7 @@ BrowserTab.prototype.refresh = function() {
       this.properties.id, 
       { bypassCache: true }, 
       function() {
-        this.dequeue();
+        done();
       }.bind(this)
     );
   }.bind(this));
@@ -345,12 +289,12 @@ BrowserTab.prototype.postMessage = function( postData ) {
   }
   
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(function() {
+  Queue.enqueue(this, function(done) {
     chrome.tabs.sendMessage(
       this.properties.id, 
       postData, 
       function() {
-        this.dequeue();
+        done();
       }.bind(this)
     );
   }.bind(this));
@@ -377,7 +321,7 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
   try {
   
     // Queue platform action or fire immediately if this object is resolved
-    this.enqueue(function() {
+    Queue.enqueue(this, function(done) {
       chrome.tabs.captureVisibleTab(
         this._windowParent.properties.id, 
         {}, 
@@ -399,8 +343,6 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
 
               // Return the ImageData object to the callee
               callback.call( this, imageData );
-        
-              this.dequeue();
             
             }.bind(this);
             img.src = nativeCallback;
@@ -411,7 +353,7 @@ BrowserTab.prototype.getScreenshot = function( callback ) {
         
           }
         
-          this.dequeue();
+          done();
     
         }.bind(this)
       );
@@ -459,11 +401,12 @@ BrowserTab.prototype.close = function() {
   OEX.tabs.removeTab( this );
   
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(function() {
+  Queue.enqueue(this, function(done) {
+    if(!this.properties.id) return;
     chrome.tabs.remove( 
       this.properties.id, 
       function() {
-        this.dequeue();
+        done();
       }.bind(this)
     );
   }.bind(this));

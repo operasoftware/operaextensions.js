@@ -15,13 +15,13 @@ opera.isReady(function() {
 
         // Unlock so we can clean up
         tab.update({
-            locked : false
+            locked : true
         })
     }, "Locked by create properties")
 
     test(function() {
         var tab = createTab({
-            url : "data:text/plain,locked tab",
+            url : "data:text/plain,locked tab2",
             locked : false
         })
         assert_false(tab.locked, "locked property set to false")

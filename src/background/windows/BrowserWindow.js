@@ -147,7 +147,7 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
   }
 
   // Queue platform action or fire immediately if this object is resolved
-  browserTab.enqueue(function() {
+  Queue.enqueue(browserTab, function(done) {
     chrome.tabs.move(
       browserTab.properties.id, 
       {
@@ -155,7 +155,7 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
         index: moveProperties.index
       }, 
       function(_tab) {
-        this.dequeue();
+        done();
       }.bind(this)
     );
   }.bind(this));
@@ -179,12 +179,12 @@ BrowserWindow.prototype.focus = function() {
   }
 
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(function() {
+  Queue.enqueue(this, function(done) {
     chrome.windows.update(
       this.properties.id, 
       { focused: true }, 
       function() {
-        this.dequeue();
+        done();
       }.bind(this)
     );
   }.bind(this));
@@ -218,12 +218,12 @@ BrowserWindow.prototype.update = function(browserWindowProperties) {
   if( !isObjectEmpty(updateProperties) ) {
 
     // Queue platform action or fire immediately if this object is resolved
-    this.enqueue(function() {
+    Queue.enqueue(this, function(done) {
       chrome.windows.update(
         this.properties.id, 
         updateProperties, 
         function() {
-          this.dequeue();
+          done();
         }.bind(this)
       );
     }.bind(this));
@@ -247,12 +247,12 @@ BrowserWindow.prototype.close = function() {
   this.properties.closed = true;
 
   // Queue platform action or fire immediately if this object is resolved
-  this.enqueue(function() {
+  Queue.enqueue(this, function(done) {
+    if(!this.properties.id) return;
     chrome.windows.remove(
       this.properties.id,
       function() {
-        this.dequeue();
-        //OEX.windows.dequeue();
+        done();
       }.bind(this)
     );
   }.bind(this));

@@ -32,12 +32,12 @@ var RootBrowserTabManager = function() {
                 this._allTabs[i].properties.windowId = _tab.windowId;
 
                 // Force change tab's index position in platform
-                this._allTabs[i].enqueue(function() {
+                Queue.enqueue(this._allTabs[i], function(done) {
                   chrome.tabs.move(
                     this.properties.id,
                     { index: this._windowParent.tabs.length },
                     function(_tab) {
-                      this.dequeue();
+                      done();
                     }.bind(this)
                   );
                 }.bind(this._allTabs[i]));
@@ -77,12 +77,21 @@ var RootBrowserTabManager = function() {
         
         // now rewrite tab to the correct url 
         // (which will be automatically trigger navigation to the rewrite url)
-        this._allTabs[i].url = this._allTabs[i].rewriteUrl;
-
-        delete this._allTabs[i].rewriteUrl;
         
         // Resolve the tab object
         this._allTabs[i].resolve(true);
+        
+        this._allTabs[i].properties.url = this._allTabs[i].rewriteUrl;
+      
+        delete this._allTabs[i].rewriteUrl;
+        
+        chrome.tabs.update(
+          this._allTabs[i].properties.id, 
+          { 'url': this._allTabs[i].properties.url }, 
+          function(_tab) {}
+        );
+          
+        //this._allTabs[i].rewriteDone = true;
         
         // remove windowparent rewrite url
         if(this._allTabs[i]._windowParent.rewriteUrl !== undefined) {
@@ -133,6 +142,9 @@ var RootBrowserTabManager = function() {
         
         // Attach to windows collection
         OEX.windows.addWindow(_tab.windowId, parentWindow);
+        
+        parentWindow.resolve(true);
+        parentWindow.tabs.resolve(true);
         
         // we really need to learn more about the newly create BrowserWindow object
         chrome.windows.get(parentWindow.properties.id, { 'populate': false }, function(_window) {
@@ -206,7 +218,7 @@ var RootBrowserTabManager = function() {
     } else {
       
       newTab = this[tabFoundIndex];
-      
+
       // Update existing tab properties
       for(var i in _tab) {
         if(i == 'url') continue;
@@ -231,6 +243,8 @@ var RootBrowserTabManager = function() {
     
     // Resolve new tab, if it hasn't been resolved already
     newTab.resolve(true);
+    
+    Queue.dequeue();
     
   }.bind(this));
 
@@ -310,11 +324,13 @@ var RootBrowserTabManager = function() {
       "prevTabGroup": null,
       "prevPosition": oldTabPosition
     }));
+    
+    Queue.dequeue();
 
   }.bind(this));
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-
+    
     var updateIndex = -1;
     for (var i = 0, l = this._allTabs.length; i < l; i++) {
       if (this._allTabs[i].properties.id == tabId) {
@@ -329,20 +345,6 @@ var RootBrowserTabManager = function() {
     
     var updateTab = this._allTabs[updateIndex];
     
-    // Rewrite url if necessary
-    var urlLoadingRegex = /^chrome:\/\/newtab\/\#[0-9]{16}$/i;
-    if(urlLoadingRegex.test(tab.url)) {
-      var updateUrl = updateTab.rewriteUrl || updateTab.properties.url;
-      // revert url to rewrite value
-      if(!urlLoadingRegex.test(updateUrl)) {
-        updateTab.url = updateUrl;
-        if(updateTab.rewriteUrl) {
-          delete updateTab.rewriteUrl;
-        }
-      }
-      return;
-    }
-
     // Update individual tab properties
     
     updateTab.properties.url = tab.url;
@@ -359,6 +361,8 @@ var RootBrowserTabManager = function() {
     if(tab.active == true && updateTab.properties.active == false) {
       updateTab.focus();
     }
+    
+    Queue.dequeue();
 
   }.bind(this));
   
@@ -420,6 +424,8 @@ var RootBrowserTabManager = function() {
       }
 
     }
+    
+    Queue.dequeue();
 
   }
   
@@ -494,6 +500,8 @@ var RootBrowserTabManager = function() {
       detachedTab._oldIndex = detachedTab.position;
     }
     
+    Queue.dequeue();
+    
   }
   
   // Fired when a tab is moved within a window
@@ -561,6 +569,8 @@ var RootBrowserTabManager = function() {
         "prevPosition": blurTarget.properties.index
       }) );
     }
+    
+    Queue.dequeue();
 
   }.bind(this));
   
