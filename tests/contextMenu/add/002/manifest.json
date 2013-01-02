@@ -1,0 +1,12 @@
+{
+  "name": "tc-context-menu-add-002",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Adding menu items in positions.",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*", "contextMenus"
+  ]
+}

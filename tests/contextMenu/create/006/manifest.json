@@ -1,0 +1,12 @@
+{
+  "name": "tc-context-menu-create-0062",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Specifying values for menu properties: disabled",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*", "contextMenus"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "tc-context-menu-create-001",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Interface check for creating menu items.",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*", "contextMenus"
+  ]
+}

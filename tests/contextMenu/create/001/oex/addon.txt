@@ -1,0 +1,1 @@
+Interface check for creating menu items.

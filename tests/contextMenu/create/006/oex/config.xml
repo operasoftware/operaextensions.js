@@ -1,0 +1,8 @@
+<widget xmlns="http://www.w3.org/ns/widgets">
+	<access origin="http://localhost:80" subdomains="true" />
+	<access origin="http://t" subdomains="true" />
+
+	<name>tc-context-menu-create-006</name>
+	<description><![CDATA[Specifying values for menu properties: disabled]]></description>
+	<feature name="opera:contextmenus" required="false"/>
+</widget>
