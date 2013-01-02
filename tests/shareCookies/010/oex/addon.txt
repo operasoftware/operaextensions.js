@@ -1,0 +1,3 @@
+feature opera:share-cookies, with access subdomains set to false; cookie is not shared on sub domain.
+origin: testsuites.oslo.osa 
+cookie domain: www.testsuites.oslo.osa

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>tc-extensions-share-cookies-015</title>
+    <script type="text/javascript" src="t.js"></script>
+  </head>
+  <body>
+	  <p>Delete private data and then open <a id="link_open" href="http://testsuites.oslo.osa/core/features/widget_tf/core-gadgets/extensions/share-cookies/res/mkc.php">this page</a> in a tab to verify that the cookie set in the iframe below not available now. Since the extension and browser is sharing the main cookie store, this cookie should be gone too.</p>
+	  <iframe src="http://testsuites.oslo.osa/core/features/widget_tf/core-gadgets/extensions/share-cookies/res/mkc.php?setck=name=cookie_set_in_popup_but_delete_this;value=1;"></iframe> 
+  </body>
+</html>

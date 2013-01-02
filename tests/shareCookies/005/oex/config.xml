@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget xmlns="http://www.w3.org/ns/widgets" width="400" height="300" id="test-case:tc-extensions-share-cookies-005">
+    <name>tc-extensions-share-cookies-005</name>
+    <access origin="http://localhost" subdomains="true" />
+	<access origin="http://testsuites.oslo.osa" subdomains="true" />
+    <content src="index.html" />
+	<feature name="opera:share-cookies" required="false">
+		<!-- param children should not affect the feature -->
+		<param name="foo" value="bar"/>
+	</feature>
+</widget>

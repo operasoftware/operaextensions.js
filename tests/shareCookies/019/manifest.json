@@ -1,0 +1,23 @@
+{
+  "name": "tc-extensions-share-cookies-019",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Cookie sharing with confirmation before setting cookie pref. set. - If an extension background process (start document) tries to set a cookie, no dialog should be opened and cookies should not be set.",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {
+    "default_icon": {
+        "16": "/oex/icon.png"
+    }
+  },
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js", "/oex/includes/inc.js"]
+      }
+  ],
+  "permissions": [
+    "tabs", "http://*/*","https://*/*", "cookies"
+  ]
+}

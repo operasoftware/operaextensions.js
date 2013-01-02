@@ -1,0 +1,1 @@
+cookie sharing with access set to "*" and using multiple domains.

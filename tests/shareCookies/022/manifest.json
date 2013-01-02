@@ -1,0 +1,18 @@
+{
+  "name": "tc-extensions-share-cookies-022",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Test document cookies in widgets without any sharing.",
+  "background": {
+      "page": "background.html"
+  },
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js", "/oex/includes/inc.js"]
+      }
+  ],
+  "permissions": [
+    "tabs", "http://*/*","https://*/*", "cookies"
+  ]
+}

@@ -1,0 +1,1 @@
+feature opera:share-cookies, test cookies are available in popup.

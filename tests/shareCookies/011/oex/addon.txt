@@ -1,0 +1,1 @@
+Cookie with httpOnly flag

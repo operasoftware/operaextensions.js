@@ -1,0 +1,18 @@
+{
+  "name": "tc-extensions-share-cookies-012",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Test cookie sharing on HTTPS pages. ",
+  "background": {
+      "page": "background.html"
+  },
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js", "/oex/includes/inc.js"]
+      }
+  ],
+  "permissions": [
+    "tabs", "http://*/*","https://*/*", "cookies"
+  ]
+}

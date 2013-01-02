@@ -1,0 +1,18 @@
+{
+  "name": "tc-extensions-share-cookies-007",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "feature opera:share-cookies, with access origin *, should work though not a recommended functionality;",
+  "background": {
+      "page": "background.html"
+  },
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js", "/oex/includes/inc.js"]
+      }
+  ],
+  "permissions": [
+    "tabs", "http://*/*","https://*/*", "cookies"
+  ]
+}

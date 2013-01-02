@@ -1,0 +1,1 @@
+Test that feature opera:share-cookies is recognised by the UA, when required attribute is true.

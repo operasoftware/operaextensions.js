@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget xmlns="http://www.w3.org/ns/widgets" width="400" height="300" id="test-case:tc-extensions-share-cookies-004">
+    <name>tc-extensions-share-cookies-004</name>
+    <access origin="http://localhost" subdomains="true" />
+	<!-- no access element for the domain where we want cookies to be shared
+		 sharing is not allowed in such  a case.
+	<access origin="http://testsuites.oslo.osa" subdomains="true" />
+	-->
+    <content src="index.html" />
+	<feature name="opera:share-cookies" required="false" />
+</widget>

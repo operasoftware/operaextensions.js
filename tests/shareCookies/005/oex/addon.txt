@@ -1,0 +1,1 @@
+feature opera:share-cookies, with param children; these should be ignored and the feature should work.
