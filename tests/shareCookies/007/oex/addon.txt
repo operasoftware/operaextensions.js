@@ -1,0 +1,1 @@
+feature opera:share-cookies, with access origin *, should work though not a recommended functionality;

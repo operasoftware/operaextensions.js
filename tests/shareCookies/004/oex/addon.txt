@@ -1,0 +1,2 @@
+feature opera:share-cookies defined but no access element. cookies sharing is not valid for any domain.
+

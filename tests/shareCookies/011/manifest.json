@@ -1,0 +1,18 @@
+{
+  "name": "tc-extensions-share-cookies-011",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Cookie with httpOnly flag",
+  "background": {
+      "page": "background.html"
+  },
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js", "/oex/includes/inc.js"]
+      }
+  ],
+  "permissions": [
+    "tabs", "http://*/*","https://*/*", "cookies"
+  ]
+}

@@ -1,0 +1,1 @@
+Cookie sharing in multiple domains declared in access.

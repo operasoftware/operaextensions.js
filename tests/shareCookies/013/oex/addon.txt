@@ -1,0 +1,1 @@
+Test cookie sharing in private tabs. Cookies set in the private tab should not be available to the extension.

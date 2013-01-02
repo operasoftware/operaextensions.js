@@ -1,0 +1,1 @@
+feature opera:share-cookies, required set to false.

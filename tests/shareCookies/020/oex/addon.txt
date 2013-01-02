@@ -1,0 +1,2 @@
+Cookie sharing with confirmation before setting cookie pref. set. If an extension background page tries to set a cookie, no dialog should be opened and cookies should not be set.
+- using a script

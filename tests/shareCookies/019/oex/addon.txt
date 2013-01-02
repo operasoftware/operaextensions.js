@@ -1,0 +1,1 @@
+Cookie sharing with confirmation before setting cookie pref. set. - If an extension background process (start document) tries to set a cookie, no dialog should be opened and cookies should not be set.

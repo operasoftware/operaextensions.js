@@ -1,0 +1,1 @@
+feature opera:share-cookies, added when widget is updated

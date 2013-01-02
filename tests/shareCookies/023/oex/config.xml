@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget xmlns="http://www.w3.org/ns/widgets" width="400" height="300"  id="test-case:tc-extensions-share-cookies-023">
+    <name>tc-extensions-share-cookies-023</name>
+	<feature name="opera:share-cookies" required="false" />
+	<access origin="http://localhost" subdomains="true" />
+	<access origin="http://testsuites.oslo.osa" subdomains="true" />
+</widget>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget xmlns="http://www.w3.org/ns/widgets" width="400" height="300" id="tc:feature-removed" version="999.0">
+    <name>Gadget update removes feature</name>
+	<!-- removed 
+	<feature name="opera:share-cookies" required="false" />
+	-->
+	<access origin="http://localhost" subdomains="true" />
+	<access origin="http://testsuites.oslo.osa" subdomains="true" />
+</widget>

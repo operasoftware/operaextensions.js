@@ -1,0 +1,1 @@
+Cookie is set in an extension page, verify that page in the browser also sees it.

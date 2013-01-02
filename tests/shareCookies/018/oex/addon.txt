@@ -1,0 +1,1 @@
+Cookie sharing with confirmation before setting cookie pref. set. If a visible extension page (popup or other internal page) tries to set a cookie, it need to be confirmed through a dialog.
