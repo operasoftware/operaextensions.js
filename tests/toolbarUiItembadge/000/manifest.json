@@ -1,0 +1,14 @@
+{
+  "name": "000 - exists",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "000 - exists",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
