@@ -1,0 +1,15 @@
+{
+  "name": "008 - createItem w onclick",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "008 - createItem w onclick",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {
+       
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
