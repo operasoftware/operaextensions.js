@@ -623,7 +623,7 @@ var OMessagePort = function( isBackground ) {
       
     }.bind(this));
     
-    this._localPort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+    var onMessageHandler = function( _message, _sender, responseCallback ) {
 
       var localPort = this._localPort;
       
@@ -663,8 +663,14 @@ var OMessagePort = function( isBackground ) {
         
       }
       
-    }.bind(this) );
-
+      if(responseCallback)responseCallback({});
+      
+    }.bind(this);
+    
+    this._localPort.onMessage.addListener( onMessageHandler );
+    chrome.extension.onMessage.addListener( onMessageHandler );
+    
+    
     // Fire 'connect' event once we have all the initial listeners setup on the page
     // so we don't miss any .onconnect call from the extension page
     addDelayedEvent(this, 'dispatchEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
@@ -3598,6 +3604,12 @@ OEC.toolbar = OEC.toolbar || new ToolbarContext();
 var MenuEvent = function(type,args,target){
   var event;
 	
+	var tab = null;
+  var tabs = OEX.tabs.getAll();
+  for(var i=0;i<tabs.length;i++){
+    if(tabs[i].properties.id==args.tab.id&&tabs[i].browserWindow.properties.id==args.tab.windowId)tab = tabs[i];
+  };
+  
 	if(type=='click'){
 		event = OEvent(type,{		
 			documentURL: args.info.pageUrl,
@@ -3606,7 +3618,7 @@ var MenuEvent = function(type,args,target){
 			linkURL: args.info.linkUrl || null,
 			mediaType: args.info.mediaType || null,
 			selectionText: args.info.selectionText || null,
-			source:  OEX.tabs.getSelected() || null,//tab.port must be implemented
+			source: tab,//tab.port should be implemented
 			srcURL: args.info.srcUrl || null
 		});
 	} else event = OEvent(type,args);
@@ -3864,10 +3876,12 @@ var MenuItemProperties = function(obj,initial){
 				updateProperties.parentId = properties.parent.menuItemId;
 			};
 			
-			if(properties.id != "")updateProperties.id = properties.id;//set id
 			
-			if(menuItemId==null)menuItemId = chrome.contextMenus.create(updateProperties);
-			else chrome.contextMenus.update(menuItemId,updateProperties);
+			
+			if(menuItemId==null){
+				if(properties.id != "")updateProperties.id = properties.id;//set id
+				menuItemId = chrome.contextMenus.create(updateProperties);
+			} else chrome.contextMenus.update(menuItemId,updateProperties);
 			
 			/* unsafe code
 			if(

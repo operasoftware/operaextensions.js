@@ -1,9 +1,11 @@
+opera.isReady(function() {
+
 var mi; // Menu item
 var url; // widget:// URL of the widget's icon
 
 
 var folder = menu.createItem({ title: 'folder', type: 'folder', contexts: ['all']});
-var item1 = menu.createItem({ title: 'item1', onclick: function(e){console.log(e);}, contexts: ['all']});
+var item1 = menu.createItem({ title: 'item1', onclick: function(e){console.log(e);}, contexts: ['all'], id:"chura"});
 var item2 = menu.createItem({ title: 'item2', onclick: function(e){console.log('event init');}, contexts: ['all']});
 
 item2.addEventListener('click',function(e){console.log('event add 1');},false);
@@ -66,3 +68,7 @@ test(function() {
   mi.icon = "http://t/resources/images/16x16-navy.png"
   assert_equals(mi.icon, "http://t/resources/images/16x16-navy.png", "The icon should be as specified.")
 }, "Setting the icon property to an absolute http URL.");
+
+
+});
+

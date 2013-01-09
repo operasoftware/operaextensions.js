@@ -351,7 +351,7 @@ var OMessagePort = function( isBackground ) {
       
     }.bind(this));
     
-    this._localPort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+    var onMessageHandler = function( _message, _sender, responseCallback ) {
 
       var localPort = this._localPort;
       
@@ -391,8 +391,14 @@ var OMessagePort = function( isBackground ) {
         
       }
       
-    }.bind(this) );
-
+      if(responseCallback)responseCallback({});
+      
+    }.bind(this);
+    
+    this._localPort.onMessage.addListener( onMessageHandler );
+    chrome.extension.onMessage.addListener( onMessageHandler );
+    
+    
     // Fire 'connect' event once we have all the initial listeners setup on the page
     // so we don't miss any .onconnect call from the extension page
     addDelayedEvent(this, 'dispatchEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
@@ -823,7 +829,7 @@ var MenuEvent = (function(){
     });
     
     Object.defineProperty(event,'target',{enumerable: true,  configurable: false,  get: function(){return target || null;}, set: function(value){}});
-    Object.defineProperty(event,'srcElement',{enumerable: true,  configurable: false,  get: function(){return lastSrcElement || null;}, set: function(value){}});
+    Object.defineProperty(event,'srcElement',{enumerable: true,  configurable: false,  get: function(srcElement){ return function(){return srcElement || null;} }(lastSrcElement), set: function(value){}});
     
     return event;
   };
@@ -886,7 +892,7 @@ var MenuItemProxy = function(id) {
 		return "[object MenuItemProxy]";
 	}});
 	
-  Object.defineProperty(obj,'id',{enumerable: true,  configurable: false,  get: function(){return id;}, set: function(){}});
+  Object.defineProperty(this,'id',{enumerable: true,  configurable: false,  get: function(){return id;}, set: function(){}});
 	
 };
 
@@ -907,12 +913,9 @@ var MenuContextProxy = function() {
       return;
     }
 		
-		alert('content menu event message');
-		//this.dispatchEvent( new MenuEvent('click', {info: e.data.info, tab: null},new MenuItemProxy(e.data.menuItemId)) );
+		this.dispatchEvent( new MenuEvent('click', {info: e.data.info, tab: null},new MenuItemProxy(e.data.menuItemId)) );
     
   }.bind(this));
-	
-	OEX.postMessage({});
 	
 };
 
