@@ -1,16 +1,16 @@
 
 var ToolbarBadge = function( properties ) {
-  
+
   OPromise.call( this );
-  
+
   this.properties = {};
-  
+
   // Set provided properties through object prototype setter functions
   this.properties.textContent = properties.textContent;
   this.properties.backgroundColor = complexColorToHex(properties.backgroundColor);
   this.properties.color = complexColorToHex(properties.color);
   this.properties.display = properties.display;
-  
+
 };
 
 ToolbarBadge.prototype = Object.create( OPromise.prototype );
@@ -18,13 +18,13 @@ ToolbarBadge.prototype = Object.create( OPromise.prototype );
 ToolbarBadge.prototype.apply = function() {
 
   chrome.browserAction.setBadgeBackgroundColor({ "color": (this.backgroundColor || "#f00") });
-  
+
   if( this.display === "block" ) {
     chrome.browserAction.setBadgeText({ "text": this.textContent });
   } else {
     chrome.browserAction.setBadgeText({ "text": "" });
   }
-  
+
 };
 
 // API
@@ -37,11 +37,11 @@ ToolbarBadge.prototype.__defineSetter__("textContent", function( val ) {
   this.properties.textContent = "" + val;
   if( this.properties.display === "block" ) {
     Queue.enqueue(this, function(done) {
-      
+
       chrome.browserAction.setBadgeText({ "text": ("" + val) });
-      
+
       done();
-      
+
     }.bind(this));
   }
 });
@@ -54,11 +54,11 @@ ToolbarBadge.prototype.__defineSetter__("backgroundColor", function( val ) {
   this.properties.backgroundColor = complexColorToHex("" + val);
 
   Queue.enqueue(this, function(done) {
-    
+
     chrome.browserAction.setBadgeBackgroundColor({ "color": this.properties.backgroundColor });
-    
+
     done();
-    
+
   }.bind(this));
 });
 

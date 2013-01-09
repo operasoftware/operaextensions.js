@@ -4,7 +4,7 @@ var BrowserWindow = function(browserWindowProperties) {
   OPromise.call(this);
 
   browserWindowProperties = browserWindowProperties || {};
-  
+
   this.properties = {
     'id': undefined, // not settable on create
     'closed': false, // not settable on create
@@ -28,12 +28,12 @@ var BrowserWindow = function(browserWindowProperties) {
   this.tabs = new BrowserTabManager(this);
 
   this.tabGroups = new BrowserTabGroupManager(this);
-  
+
   if(this.properties.private !== undefined) {
     this.properties.incognito = !!this.properties.private;
     delete this.properties.private;
   }
-  
+
   // Not allowed when creating a new window object
   if(this.properties.closed !== undefined) {
     delete this.properties.closed;
@@ -81,7 +81,7 @@ BrowserWindow.prototype.__defineGetter__("parent", function() {
 
 BrowserWindow.prototype.insert = function(browserTab, child) {
 
-  if (!browserTab || !(browserTab instanceof BrowserTab)) { 
+  if (!browserTab || !(browserTab instanceof BrowserTab)) {
     return;
   }
 
@@ -124,23 +124,23 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
     // IF we're moving within the same window then index will be length - 1
     moveProperties.index = moveProperties.index > 0 ? moveProperties.index - 1 : moveProperties.index;
   }
-  
+
   // Detach tab from existing BrowserWindow parent (if any)
   if (browserTab._windowParent) {
     browserTab._oldWindowParent = browserTab._windowParent;
     browserTab._oldIndex = browserTab.properties.index;
-    
+
     if(browserTab._oldWindowParent !== this) {
       browserTab._windowParent.tabs.removeTab( browserTab );
     }
   }
-  
-  // Attach tab to new BrowserWindow parent 
+
+  // Attach tab to new BrowserWindow parent
   browserTab._windowParent = this;
-  
+
   // Update index within new parent
   browserTab.properties.index = moveProperties.index;
-  
+
   if(this !== browserTab._oldWindowParent) {
     // Attach tab to new parent
     this.tabs.addTab( browserTab, browserTab.properties.index );
@@ -149,11 +149,11 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
   // Queue platform action or fire immediately if this object is resolved
   Queue.enqueue(browserTab, function(done) {
     chrome.tabs.move(
-      browserTab.properties.id, 
+      browserTab.properties.id,
       {
         windowId: moveProperties.windowId || this.properties.id,
         index: moveProperties.index
-      }, 
+      },
       function(_tab) {
         done();
       }.bind(this)
@@ -163,14 +163,14 @@ BrowserWindow.prototype.insert = function(browserTab, child) {
 };
 
 BrowserWindow.prototype.focus = function() {
-  
+
   if(this.properties.focused == true || this.properties.closed == true) {
     return; // already focused or invalid because window is closed
   }
 
   // Set BrowserWindow object to focused state
   this.properties.focused = true;
-  
+
   // unset all other window object's focused state
   for(var i = 0, l = OEX.windows.length; i < l; i++) {
     if(OEX.windows[i] !== this) {
@@ -181,8 +181,8 @@ BrowserWindow.prototype.focus = function() {
   // Queue platform action or fire immediately if this object is resolved
   Queue.enqueue(this, function(done) {
     chrome.windows.update(
-      this.properties.id, 
-      { focused: true }, 
+      this.properties.id,
+      { focused: true },
       function() {
         done();
       }.bind(this)
@@ -192,25 +192,25 @@ BrowserWindow.prototype.focus = function() {
 };
 
 BrowserWindow.prototype.update = function(browserWindowProperties) {
-  
+
   var updateProperties = {};
-  
+
   if(browserWindowProperties.focused !== undefined && browserWindowProperties.focused == true) {
     this.properties.focused = updateProperties.focused = !!browserWindowProperties.focused;
   }
-  
+
   if(browserWindowProperties.top !== undefined && browserWindowProperties.top !== null) {
     this.properties.top = updateProperties.top = parseInt(browserWindowProperties.top, 10);
   }
-  
+
   if(browserWindowProperties.left !== undefined && browserWindowProperties.left !== null) {
     this.properties.left = updateProperties.left = parseInt(browserWindowProperties.left, 10);
   }
-  
+
   if(browserWindowProperties.height !== undefined && browserWindowProperties.height !== null) {
     this.properties.height = updateProperties.height = parseInt(browserWindowProperties.height, 10);
   }
-  
+
   if(browserWindowProperties.width !== undefined && browserWindowProperties.width !== null) {
       this.properties.width = updateProperties.width = parseInt(browserWindowProperties.width, 10);
     }
@@ -220,20 +220,20 @@ BrowserWindow.prototype.update = function(browserWindowProperties) {
     // Queue platform action or fire immediately if this object is resolved
     Queue.enqueue(this, function(done) {
       chrome.windows.update(
-        this.properties.id, 
-        updateProperties, 
+        this.properties.id,
+        updateProperties,
         function() {
           done();
         }.bind(this)
       );
     }.bind(this));
-  
+
   }
 
 }
 
 BrowserWindow.prototype.close = function() {
-  
+
   if( this.properties.closed == true) {
     /*throw new OError(
       "InvalidStateError",
@@ -242,7 +242,7 @@ BrowserWindow.prototype.close = function() {
     );*/
     return;
   }
-  
+
   // Set BrowserWindow object to closed state
   this.properties.closed = true;
 

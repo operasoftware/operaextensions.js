@@ -14,6 +14,6 @@
       }
   ],
   "permissions": [
-    "tabs", "<all_urls>"
+    "tabs", "webRequest", "webRequestBlocking", "contextMenus", "<all_urls>"
   ]
 }
