@@ -258,7 +258,11 @@ var UrlFilterManager = function() {
         
       case 'complete':
       
-        self.eventQueue[tabId].ready = true;
+        if(self.eventQueue[tabId] !== undefined && self.eventQueue[tabId].ready !== undefined ) {
+          
+          self.eventQueue[tabId].ready = true;
+          
+        }
         
         break;
 

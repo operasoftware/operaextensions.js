@@ -12,7 +12,7 @@ Opera.prototype.defineMagicVariable = function(name, getter, setter) {
   }
   var allowedStringifications = {"[object Function]":1, "[object Null]":1};
   if( ! ( ( Object.prototype.toString.call(getter) in allowedStringifications ) &&  
-        ( Object.prototype.toString.call(setter) in allowedStringifications )) {
+        ( Object.prototype.toString.call(setter) in allowedStringifications )) ) {
     return;
   }
   
