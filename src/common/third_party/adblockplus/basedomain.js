@@ -74,7 +74,7 @@ function getBaseDomain(/**String*/ hostname) /**String*/
   // return IP address untouched
   if (isIPv6(hostname) || isIPv4(hostname))
     return hostname;
-  
+
   // decode punycode if exists
   //if (hostname.indexOf('xn--') >= 0)
   //{
@@ -86,7 +86,7 @@ function getBaseDomain(/**String*/ hostname) /**String*/
   var curDomain = hostname;
   var nextDot = curDomain.indexOf('.');
   var tld = 0;
-   
+
   while (true)
   {
     var suffix = publicSuffixes[curDomain];
@@ -95,24 +95,24 @@ function getBaseDomain(/**String*/ hostname) /**String*/
       tld = suffix;
         break;
     }
-     
+
     if (nextDot < 0)
     {
       tld = 1;
       break;
     }
-     
+
     prevDomains.push(curDomain.substring(0,nextDot));
     curDomain = curDomain.substring(nextDot+1);
     nextDot = curDomain.indexOf('.');
   }
-   
+
   while (tld > 0 && prevDomains.length > 0)
   {
     curDomain = prevDomains.pop() + '.' + curDomain;
     tld--;
   }
-  
+
   return curDomain;
 }
 

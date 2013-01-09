@@ -1,12 +1,12 @@
 
 var UrlFilterManager = function() {
-  
+
   OEventTarget.call(this);
-  
+
   // Add rule list management stubs
   this.block = new BlockRuleList( this );
   this.allow = new AllowRuleList( this );
-  
+
   // event queue manager
   this.eventQueue = {
     /*
@@ -14,31 +14,31 @@ var UrlFilterManager = function() {
     ...
     */
   };
-  
+
   // https://github.com/adblockplus/adblockpluschrome/blob/master/background.js
-  
+
   with(require("filterClasses")) {
     this.Filter = Filter;
     this.RegExpFilter = RegExpFilter;
     this.BlockingFilter = BlockingFilter;
     this.WhitelistFilter = WhitelistFilter;
   }
-  
+
   with(require("subscriptionClasses")) {
     this.Subscription = Subscription;
     //this.DownloadableSubscription = DownloadableSubscription;
   }
-  
+
   this.FilterStorage = require("filterStorage").FilterStorage;
-  
+
   this.defaultMatcher = require("matcher").defaultMatcher;
-  
+
   // https://github.com/adblockplus/adblockpluschrome/blob/master/webrequest.js
-  
+
   var self = this;
-  
+
   var frames = {};
-  
+
   function recordFrame(tabId, frameId, parentFrameId, frameUrl) {
     if (!(tabId in frames))
       frames[tabId] = {};
@@ -64,7 +64,7 @@ var UrlFilterManager = function() {
   function forgetTab(tabId) {
     delete frames[tabId];
   }
-  
+
   function checkRequest(type, tabId, url, frameId) {
     if (isFrameWhitelisted(tabId, frameId))
       return false;
@@ -76,10 +76,10 @@ var UrlFilterManager = function() {
     var requestHost = extractHostFromURL(url);
     var documentHost = extractHostFromURL(documentUrl);
     var thirdParty = isThirdParty(requestHost, documentHost);
-    
+
     return self.defaultMatcher.matchesAny(url, type, documentHost, thirdParty);
   }
-  
+
   function isFrameWhitelisted(tabId, frameId, type) {
     var parent = frameId;
     var parentData = getFrameData(tabId, parent);
@@ -98,7 +98,7 @@ var UrlFilterManager = function() {
     }
     return false;
   }
-  
+
   function isWhitelisted(url, parentUrl, type)
   {
     // Ignore fragment identifier
@@ -109,16 +109,16 @@ var UrlFilterManager = function() {
     var result = self.defaultMatcher.matchesAny(url, type || "DOCUMENT", extractHostFromURL(parentUrl || url), false);
     return (result instanceof self.WhitelistFilter ? result : null);
   }
-  
+
   // Parse a single web request url and decide whether we should block or not
   function onBeforeRequest(details) {
-    
+
     if (details.tabId == -1) {
       return {};
     }
 
     var type = details.type;
-    
+
     if (type == "main_frame" || type == "sub_frame") {
       recordFrame(details.tabId, details.frameId, details.parentFrameId, details.url);
     }
@@ -133,11 +133,11 @@ var UrlFilterManager = function() {
     }
 
     var frame = (type != "SUBDOCUMENT" ? details.frameId : details.parentFrameId);
-    
+
     var filter = checkRequest(type, details.tabId, details.url, frame);
-    
+
     if (filter instanceof self.BlockingFilter) {
-      
+
       var msgData = {
         "action": "___O_urlfilter_contentblocked",
         "data": {
@@ -150,29 +150,29 @@ var UrlFilterManager = function() {
       // towards the tab matching the details.tabId value
       // (but delay it until the content script is loaded!)
       if(self.eventQueue[details.tabId] !== undefined && self.eventQueue[details.tabId].ready === true) {
-        
+
         // tab is already online so send contentblocked messages
         chrome.tabs.sendMessage(
-          details.tabId, 
+          details.tabId,
           msgData,
           function() {}
         );
-        
+
       } else {
-        
+
         // queue up this event
         if(self.eventQueue[details.tabId] === undefined) {
           self.eventQueue[details.tabId] = { ready: false, items: [] };
         }
-        
+
         self.eventQueue[details.tabId].items.push( msgData );
-        
+
       }
-      
+
       return { cancel: true };
-      
+
     } else if (filter instanceof self.WhitelistFilter) {
-      
+
       var msgData = {
         "action": "___O_urlfilter_contentunblocked",
         "data": {
@@ -185,91 +185,91 @@ var UrlFilterManager = function() {
       // towards the tab matching the details.tabId value
       // (but delay it until the content script is loaded!)
       if(self.eventQueue[details.tabId] !== undefined && self.eventQueue[details.tabId].ready === true) {
-        
+
         // tab is already online so send contentblocked messages
         chrome.tabs.sendMessage(
-          details.tabId, 
+          details.tabId,
           msgData,
           function() {}
         );
-        
+
       } else {
-        
+
         // queue up this event
         if(self.eventQueue[details.tabId] === undefined) {
           self.eventQueue[details.tabId] = { ready: false, items: [] };
         }
-        
+
         self.eventQueue[details.tabId].items.push( msgData );
-        
+
       }
-      
+
       return {};
-    
+
     } else {
-      
+
       return {};
-      
+
     }
   }
-  
+
   // Listen for webRequest beforeRequest events and block
   // if a rule matches in the associated block RuleList
   chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, { urls: [ "http://*/*", "https://*/*" ] }, [ "blocking" ]);
-  
+
   // Wait for tab to add event listeners for urlfilter and then drain queued up events to that tab
   OEX.addEventListener('controlmessage', function( msg ) {
-    
+
     if( !msg.data || !msg.data.action ) {
       return;
     }
-    
+
     if( msg.data.action !== '___O_urlfilter_DRAINQUEUE' ) {
       return;
     }
-    
+
     // Drain queued events belonging to this tab
     var tabId = msg.source.tabId;
-    
+
     if( self.eventQueue[tabId] !== undefined ) {
-      
+
       for(var i = 0, l = self.eventQueue[tabId].items.length; i < l; i++) {
-       
+
         msg.source.postMessage(self.eventQueue[tabId].items[i]);
-        
+
       }
-      
+
       self.eventQueue[tabId].ready = true; // set to resolved (true)
       self.eventQueue[tabId].items = [];
-      
+
     }
-    
+
   });
-  
+
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    
+
     switch(changeInfo.status) {
-      
+
       case 'loading':
         // kill previous events queue
-        self.eventQueue[tabId] = { ready: false, items: [] }; 
-        
+        self.eventQueue[tabId] = { ready: false, items: [] };
+
         break;
-        
+
       case 'complete':
-      
+
         if(self.eventQueue[tabId] !== undefined && self.eventQueue[tabId].ready !== undefined ) {
-          
+
           self.eventQueue[tabId].ready = true;
-          
+
         }
-        
+
         break;
 
     }
-    
+
   });
-  
+
 };
 
 UrlFilterManager.prototype = Object.create( OEventTarget.prototype );

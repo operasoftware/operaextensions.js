@@ -5,9 +5,9 @@ var RuleList = function( parentObj ) {
 
   // Runtime Rule object storage collection
   this._collection = [];
-  
+
   this.createRule = function(rule, options) {
-    
+
     rule += ""; // force rule argument to be a string
 
     var ruleId = Math.floor( Math.random() * 1e15 );
@@ -103,16 +103,16 @@ var RuleList = function( parentObj ) {
         rule += filterOptions[i];
       }
     }
-    
+
     return { 'id': ruleId, 'rule': rule };
-    
+
   }
-  
+
   this.addRule = function( ruleObj ) {
-    
+
     // Parse rule to a Filter object
       var filter = this._parentObj.Filter.fromText( ruleObj['rule'] );
-      
+
       // Add rule's filter object to AdBlock FilterStorage
       this._parentObj.FilterStorage.addFilter(filter);
 
@@ -121,11 +121,11 @@ var RuleList = function( parentObj ) {
         'id': ruleObj['id'],
         'filter': filter
       });
-    
+
   }
-  
+
   this.removeRule = function( ruleId ) {
-    
+
     for(var i = 0, l = this._collection.length; i < l; i++) {
 
       if( this._collection[i]['id'] && this._collection[i]['id'] == ruleId ) {
@@ -139,13 +139,13 @@ var RuleList = function( parentObj ) {
         break;
       }
     }
-    
+
   }
 
 };
 
 RuleList.prototype.add = function( rule, options ) {
-  
+
   var ruleObj = this.createRule(rule, options);
 
   this.addRule(ruleObj);

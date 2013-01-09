@@ -1467,7 +1467,7 @@ require.scopes["filterStorage"] = (function()
         var parser = new INIParser();
         doneReading(parser);
         return;
-        
+
         IO.readFromFile(sourceFile, true, parser, function(e)
         {
           if (!e && parser.subscriptions.length == 0)

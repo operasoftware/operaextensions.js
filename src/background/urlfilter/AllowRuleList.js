@@ -1,8 +1,8 @@
 
 var AllowRuleList = function( parentObj ) {
-  
+
   RuleList.call(this, parentObj);
-  
+
 };
 
 AllowRuleList.prototype = Object.create( RuleList.prototype );
@@ -17,5 +17,5 @@ AllowRuleList.prototype.add = function( rule, options ) {
   this.addRule(ruleObj);
 
   return ruleObj['id'];
-  
+
 };
