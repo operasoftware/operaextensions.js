@@ -943,20 +943,19 @@ var UrlFilterEventListener = function() {
       case '___O_urlfilter_contentblocked':
       
         // Fire contentblocked event on this object
-        console.log("Some content has been blocked!")
-        this.dispatchEvent( new OEvent('contentblocked', {}) );
+        this.dispatchEvent( new OEvent('contentblocked', msg.data.data || {}) );
         
         break;
         
       case '___O_urlfilter_contentunblocked':
       
         // Fire contentunblocked event on this object
-        this.dispatchEvent( new OEvent('contentunblocked', {}) );
+        this.dispatchEvent( new OEvent('contentunblocked', msg.data.data || {}) );
       
         break;
     }
     
-  });
+  }.bind(this));
   
 };
 
@@ -966,10 +965,11 @@ UrlFilterEventListener.prototype = Object.create( OEventTarget.prototype );
 UrlFilterEventListener.prototype.addEventListener = function(eventName, callback, useCapture) {
   this.on(eventName, callback); // no useCapture
   
-  // Trigger delivery of URLFilter events from background process
-  OEX.postMessage({
-    'action': '___O_urlfilter_drainQueue'
-  });
+  // Trigger delivery of URLFilter events from the background process
+  addDelayedEvent(OEX, 'postMessage', [
+    { 'action': '___O_urlfilter_DRAINQUEUE' }
+  ]);
+  
 };
 
 OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();

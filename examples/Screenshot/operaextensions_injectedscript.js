@@ -351,7 +351,7 @@ var OMessagePort = function( isBackground ) {
       
     }.bind(this));
     
-    this._localPort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+    var onMessageHandler = function( _message, _sender, responseCallback ) {
 
       var localPort = this._localPort;
       
@@ -391,8 +391,14 @@ var OMessagePort = function( isBackground ) {
         
       }
       
-    }.bind(this) );
-
+      if(responseCallback)responseCallback({});
+      
+    }.bind(this);
+    
+    this._localPort.onMessage.addListener( onMessageHandler );
+    chrome.extension.onMessage.addListener( onMessageHandler );
+    
+    
     // Fire 'connect' event once we have all the initial listeners setup on the page
     // so we don't miss any .onconnect call from the extension page
     addDelayedEvent(this, 'dispatchEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
@@ -801,6 +807,122 @@ Opera.prototype.setOverrideHistoryNavigationMode = function(mode) {
 Opera.prototype.__defineGetter__('getOverrideHistoryNavigationMode', function() {
   return "automatic"; // default
 });
+var MenuEvent = (function(){
+  var lastSrcElement = null;
+  
+  document.addEventListener('contextmenu',function(e){
+    lastSrcElement = e.srcElement;    
+  },false);
+  
+  return function(type,args,target){
+    
+    var event = OEvent(type,{
+      
+      documentURL: args.info.pageUrl,
+      pageURL: args.info.pageUrl,
+      isEditable: args.info.editable,
+      linkURL: args.info.linkUrl || null,
+      mediaType: args.info.mediaType || null,
+      selectionText: args.info.selectionText || null,
+      source:  null,
+      srcURL: args.info.srcUrl || null
+    });
+    
+    Object.defineProperty(event,'target',{enumerable: true,  configurable: false,  get: function(){return target || null;}, set: function(value){}});
+    Object.defineProperty(event,'srcElement',{enumerable: true,  configurable: false,  get: function(srcElement){ return function(){return srcElement || null;} }(lastSrcElement), set: function(value){}});
+    
+    return event;
+  };
+  
+})();
+
+MenuEvent.prototype = Object.create( Event.prototype );var MenuEventTarget = function(){
+	var that = this;
+	var target = {};
+	
+	EventTarget.mixin( target );
+	
+	var onclick = null;
+	
+	Object.defineProperty(this,'onclick',{enumerable: true,  configurable: false,  get: function(){
+				return onclick;
+			},
+			set: function(value){
+				if(onclick!=null)this.removeEventListener('click',onclick,false);
+  
+				onclick = value;
+				
+				if(onclick!=null && onclick instanceof Function)this.addEventListener('click',onclick,false);
+				else onclick = null;
+			}
+	});
+	
+	Object.defineProperty(this,'dispatchEvent',{enumerable: false,  configurable: false, writable: false, value: function(event){
+		var currentTarget = this;
+		var stoppedImmediatePropagation = false;
+		Object.defineProperty(event,'currentTarget',{enumerable: true,  configurable: false,  get: function(){return currentTarget;}, set: function(value){}});
+		Object.defineProperty(event,'stopImmediatePropagation',{enumerable: true,  configurable: false, writable: false, value: function(){ stoppedImmediatePropagation = true;}});
+		
+		var allCallbacks = callbacksFor(target),
+		callbacks = allCallbacks[event.type], callbackTuple, callback, binding;
+		
+		
+		if (callbacks)for (var i=0, l=callbacks.length; i<l; i++) {
+			callbackTuple = callbacks[i];
+			callback = callbackTuple[0];
+			binding = callbackTuple[1];      
+			if(!stoppedImmediatePropagation)callback.call(binding, event);
+		};
+		
+	}});
+	Object.defineProperty(this,'addEventListener',{enumerable: true,  configurable: false, writable: false, value: function(eventName, callback, useCapture) {
+		target.on(eventName, callback,this); // no useCapture
+	}});
+	Object.defineProperty(this,'removeEventListener',{enumerable: true,  configurable: false, writable: false, value: function(eventName, callback, useCapture) {
+		target.off(eventName, callback,this); // no useCapture
+	}});
+	
+};
+
+var MenuItemProxy = function(id) {
+  
+  MenuEventTarget.call( this );
+  
+  Object.defineProperty(this,'toString',{enumerable: false,  configurable: false, writable: false, value: function(event){
+		return "[object MenuItemProxy]";
+	}});
+	
+  Object.defineProperty(this,'id',{enumerable: true,  configurable: false,  get: function(){return id;}, set: function(){}});
+	
+};
+
+MenuItemProxy.prototype = Object.create( MenuEventTarget.prototype );
+
+var MenuContextProxy = function() {
+  
+  MenuEventTarget.call( this );
+  
+  Object.defineProperty(this,'toString',{enumerable: false,  configurable: false, writable: false, value: function(event){
+		return "[object MenuContextProxy]";
+	}});
+	
+	
+	OEX.addEventListener('controlmessage', function(e) {
+    
+		if( !e.data || !e.data.action || e.data.action !== '___O_MenuItem_Click') {
+      return;
+    }
+		
+		this.dispatchEvent( new MenuEvent('click', {info: e.data.info, tab: null},new MenuItemProxy(e.data.menuItemId)) );
+    
+  }.bind(this));
+	
+};
+
+MenuContextProxy.prototype = Object.create( MenuEventTarget.prototype );
+
+OEC.menu = OEC.menu || new MenuContextProxy();
+
 
 var UrlFilterEventListener = function() {
   
@@ -821,20 +943,19 @@ var UrlFilterEventListener = function() {
       case '___O_urlfilter_contentblocked':
       
         // Fire contentblocked event on this object
-        console.log("Some content has been blocked!")
-        this.dispatchEvent( new OEvent('contentblocked', {}) );
+        this.dispatchEvent( new OEvent('contentblocked', msg.data.data || {}) );
         
         break;
         
       case '___O_urlfilter_contentunblocked':
       
         // Fire contentunblocked event on this object
-        this.dispatchEvent( new OEvent('contentunblocked', {}) );
+        this.dispatchEvent( new OEvent('contentunblocked', msg.data.data || {}) );
       
         break;
     }
     
-  });
+  }.bind(this));
   
 };
 
@@ -844,10 +965,11 @@ UrlFilterEventListener.prototype = Object.create( OEventTarget.prototype );
 UrlFilterEventListener.prototype.addEventListener = function(eventName, callback, useCapture) {
   this.on(eventName, callback); // no useCapture
   
-  // Trigger delivery of URLFilter events from background process
-  OEX.postMessage({
-    'action': '___O_urlfilter_drainQueue'
-  });
+  // Trigger delivery of URLFilter events from the background process
+  addDelayedEvent(OEX, 'postMessage', [
+    { 'action': '___O_urlfilter_DRAINQUEUE' }
+  ]);
+  
 };
 
 OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();

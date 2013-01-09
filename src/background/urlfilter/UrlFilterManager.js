@@ -141,7 +141,8 @@ var UrlFilterManager = function() {
       var msgData = {
         "action": "___O_urlfilter_contentblocked",
         "data": {
-          // TODO send enough data so that we can fire the event in the injected script
+          // send enough data so that we can fire the event in the injected script
+          "url": details.url
         }
       };
 
@@ -170,6 +171,41 @@ var UrlFilterManager = function() {
       
       return { cancel: true };
       
+    } else if (filter instanceof self.WhitelistFilter) {
+      
+      var msgData = {
+        "action": "___O_urlfilter_contentunblocked",
+        "data": {
+          // send enough data so that we can fire the event in the injected script
+          "url": details.url
+        }
+      };
+
+      // Broadcast contentblocked event control message (i.e. beginning with '___O_')
+      // towards the tab matching the details.tabId value
+      // (but delay it until the content script is loaded!)
+      if(self.eventQueue[details.tabId] !== undefined && self.eventQueue[details.tabId].ready === true) {
+        
+        // tab is already online so send contentblocked messages
+        chrome.tabs.sendMessage(
+          details.tabId, 
+          msgData,
+          function() {}
+        );
+        
+      } else {
+        
+        // queue up this event
+        if(self.eventQueue[details.tabId] === undefined) {
+          self.eventQueue[details.tabId] = { ready: false, items: [] };
+        }
+        
+        self.eventQueue[details.tabId].items.push( msgData );
+        
+      }
+      
+      return {};
+    
     } else {
       
       return {};
@@ -181,14 +217,14 @@ var UrlFilterManager = function() {
   // if a rule matches in the associated block RuleList
   chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, { urls: [ "http://*/*", "https://*/*" ] }, [ "blocking" ]);
   
-  // Wait for tab to add eventlisteners for urlfilter and then drain queued up events to that tab
+  // Wait for tab to add event listeners for urlfilter and then drain queued up events to that tab
   OEX.addEventListener('controlmessage', function( msg ) {
     
     if( !msg.data || !msg.data.action ) {
       return;
     }
     
-    if( msg.data.action !== '___O_urlfilter_drainQueue' ) {
+    if( msg.data.action !== '___O_urlfilter_DRAINQUEUE' ) {
       return;
     }
     
