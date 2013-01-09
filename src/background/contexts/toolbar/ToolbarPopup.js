@@ -1,23 +1,23 @@
 
 var ToolbarPopup = function( properties ) {
-  
+
   OPromise.call( this );
-  
+
   this.properties = {};
-  
+
   // Set provided properties through object prototype setter functions
   this.properties.href = properties.href || "";
   this.properties.width = properties.width;
   this.properties.height = properties.height;
-  
+
 };
 
 ToolbarPopup.prototype = Object.create( OPromise.prototype );
 
 ToolbarPopup.prototype.apply = function() {
-  
+
   chrome.browserAction.setPopup({ "popup": this.href });
-  
+
 };
 
 // API
@@ -28,7 +28,7 @@ ToolbarPopup.prototype.__defineGetter__("href", function() {
 
 ToolbarPopup.prototype.__defineSetter__("href", function( val ) {
   this.properties.href = "" + val;
-  
+
   Queue.enqueue(this, function(done) {
 
     chrome.browserAction.setPopup({ "popup": ("" + val) });

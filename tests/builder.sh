@@ -7,4 +7,4 @@ do
    do
       cp -f ../build/$file $fToR
    done
-done 
+done
