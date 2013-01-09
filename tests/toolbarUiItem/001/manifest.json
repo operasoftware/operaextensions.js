@@ -1,0 +1,12 @@
+{
+  "name": "001 - createItem bad",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "001 - createItem bad",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

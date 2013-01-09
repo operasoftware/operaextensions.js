@@ -19,6 +19,11 @@
   "../src/WidgetProxy.js",
 
   "../src/injectedscript/UserJS.js",
+  
+  "../src/injectedscript/contexts/menu/MenuEvent.js",
+  "../src/common/contexts/menu/MenuEventTarget.js",
+  "../src/injectedscript/contexts/menu/MenuItemProxy.js",
+  "../src/injectedscript/contexts/menu/MenuContextProxy.js",
 
   "../src/injectedscript/urlfilter/UrlFilterEventListener.js",
   "../src/injectedscript/UrlFilter.js",
