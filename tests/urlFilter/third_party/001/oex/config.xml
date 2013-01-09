@@ -1,0 +1,8 @@
+<widget xmlns="http://www.w3.org/ns/widgets">
+	<access origin="http://localhost:80" subdomains="true" />
+	<access origin="http://t" subdomains="true" />
+
+	<name>tc-filter-third_party-001</name>
+	<description><![CDATA[Third party option in the block list, match third-party origin only.]]></description>
+	<feature name="opera:urlfilter"/>
+</widget>

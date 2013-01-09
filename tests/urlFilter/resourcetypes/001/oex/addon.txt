@@ -1,0 +1,1 @@
+Checking values of URLFilter resource type constants.
