@@ -1,0 +1,12 @@
+{
+  "name": "005 - createItem w icon",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "005 - createItem w icon",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

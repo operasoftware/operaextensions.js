@@ -20,7 +20,7 @@ var OMessagePort = function( isBackground ) {
       
     }.bind(this));
     
-    this._localPort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+    var onMessageHandler = function( _message, _sender, responseCallback ) {
 
       var localPort = this._localPort;
       
@@ -60,8 +60,14 @@ var OMessagePort = function( isBackground ) {
         
       }
       
-    }.bind(this) );
-
+      if(responseCallback)responseCallback({});
+      
+    }.bind(this);
+    
+    this._localPort.onMessage.addListener( onMessageHandler );
+    chrome.extension.onMessage.addListener( onMessageHandler );
+    
+    
     // Fire 'connect' event once we have all the initial listeners setup on the page
     // so we don't miss any .onconnect call from the extension page
     addDelayedEvent(this, 'dispatchEvent', [ new OEvent('connect', { "source": this._localPort }) ]);

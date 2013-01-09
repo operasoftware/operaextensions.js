@@ -1,0 +1,14 @@
+{
+  "name": "001 - createItem blank",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "001 - createItem blank",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}

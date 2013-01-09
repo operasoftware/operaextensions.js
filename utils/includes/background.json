@@ -36,6 +36,13 @@
   "../src/background/contexts/toolbar/ToolbarPopup.js",
   "../src/background/contexts/toolbar/ToolbarUIItem.js",
   "../src/background/contexts/Toolbar.js",
+  
+  "../src/background/contexts/menu/MenuEvent.js",
+  "../src/common/contexts/menu/MenuEventTarget.js",
+  "../src/background/contexts/menu/OMenuContext.js",
+  "../src/background/contexts/menu/MenuItem.js",
+  "../src/background/contexts/menu/MenuContext.js",
+  
 
   "../src/common/third_party/adblockplus/adblockplus_compat.js",
   "../src/common/third_party/adblockplus/adblockplus.js",

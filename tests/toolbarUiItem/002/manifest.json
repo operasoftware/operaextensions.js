@@ -1,0 +1,12 @@
+{
+  "name": "002 - createItem title",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "002 - createItem title",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ]
+}
