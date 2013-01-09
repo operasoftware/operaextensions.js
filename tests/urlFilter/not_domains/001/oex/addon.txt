@@ -1,0 +1,1 @@
+Not-Domain options in the block list, full domain matches

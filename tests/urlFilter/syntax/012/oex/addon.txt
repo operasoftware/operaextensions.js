@@ -1,0 +1,1 @@
+Separator wildcard syntax in the allow list.
