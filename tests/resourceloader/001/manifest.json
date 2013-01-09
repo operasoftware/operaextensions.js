@@ -16,6 +16,6 @@
       }
   ],
   "permissions": [
-    "tabs", "http://*/*","https://*/*"
+    "tabs", "webRequest", "webRequestBlocking", "contextMenus", "http://*/*","https://*/*"
   ]
 }

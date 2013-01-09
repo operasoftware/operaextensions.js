@@ -22,7 +22,7 @@
   ],
   "options_page": "options.html",
   "permissions": [
-    "webRequest", "webRequestBlocking", "tabs", "http://*/*", "https://*/*"
+    "tabs", "webRequest", "webRequestBlocking", "contextMenus", "http://*/*", "https://*/*"
   ],
   "browser_action": {}
 }

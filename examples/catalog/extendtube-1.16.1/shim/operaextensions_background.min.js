@@ -623,7 +623,7 @@ var OMessagePort = function( isBackground ) {
       
     }.bind(this));
     
-    this._localPort.onMessage.addListener( function( _message, _sender, responseCallback ) {
+    var onMessageHandler = function( _message, _sender, responseCallback ) {
 
       var localPort = this._localPort;
       
@@ -663,8 +663,14 @@ var OMessagePort = function( isBackground ) {
         
       }
       
-    }.bind(this) );
-
+      if(responseCallback)responseCallback({});
+      
+    }.bind(this);
+    
+    this._localPort.onMessage.addListener( onMessageHandler );
+    chrome.extension.onMessage.addListener( onMessageHandler );
+    
+    
     // Fire 'connect' event once we have all the initial listeners setup on the page
     // so we don't miss any .onconnect call from the extension page
     addDelayedEvent(this, 'dispatchEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
@@ -3595,6 +3601,434 @@ ToolbarUIItem.prototype.__defineGetter__("badge", function() {
 });
 
 OEC.toolbar = OEC.toolbar || new ToolbarContext();
+var MenuEvent = function(type,args,target){
+  var event;
+	
+	if(type=='click'){
+		
+		var tab = null;
+		var tabs = OEX.tabs.getAll();
+		for(var i=0;i<tabs.length;i++){
+			if(tabs[i].properties.id==args.tab.id&&tabs[i].browserWindow.properties.id==args.tab.windowId)tab = tabs[i];
+		};
+		
+		event = OEvent(type,{		
+			documentURL: args.info.pageUrl,
+			pageURL: args.info.pageUrl,
+			isEditable: args.info.editable,
+			linkURL: args.info.linkUrl || null,
+			mediaType: args.info.mediaType || null,
+			selectionText: args.info.selectionText || null,
+			source: tab,//tab.port should be implemented
+			srcURL: args.info.srcUrl || null
+		});
+	} else event = OEvent(type,args);
+	
+	
+	Object.defineProperty(event,'target',{enumerable: true,  configurable: false,  get: function(){return target || null;}, set: function(value){}});
+	
+	return event;
+
+};
+
+MenuEvent.prototype = Object.create( Event.prototype );
+
+var MenuEventTarget = function(){
+	var that = this;
+	var target = {};
+	
+	EventTarget.mixin( target );
+	
+	var onclick = null;
+	
+	Object.defineProperty(this,'onclick',{enumerable: true,  configurable: false,  get: function(){
+				return onclick;
+			},
+			set: function(value){
+				if(onclick!=null)this.removeEventListener('click',onclick,false);
+  
+				onclick = value;
+				
+				if(onclick!=null && onclick instanceof Function)this.addEventListener('click',onclick,false);
+				else onclick = null;
+			}
+	});
+	
+	Object.defineProperty(this,'dispatchEvent',{enumerable: false,  configurable: false, writable: false, value: function(event){
+		var currentTarget = this;
+		var stoppedImmediatePropagation = false;
+		Object.defineProperty(event,'currentTarget',{enumerable: true,  configurable: false,  get: function(){return currentTarget;}, set: function(value){}});
+		Object.defineProperty(event,'stopImmediatePropagation',{enumerable: true,  configurable: false, writable: false, value: function(){ stoppedImmediatePropagation = true;}});
+		
+		var allCallbacks = callbacksFor(target),
+		callbacks = allCallbacks[event.type], callbackTuple, callback, binding;
+		
+		
+		if (callbacks)for (var i=0, l=callbacks.length; i<l; i++) {
+			callbackTuple = callbacks[i];
+			callback = callbackTuple[0];
+			binding = callbackTuple[1];      
+			if(!stoppedImmediatePropagation)callback.call(binding, event);
+		};
+		
+	}});
+	Object.defineProperty(this,'addEventListener',{enumerable: true,  configurable: false, writable: false, value: function(eventName, callback, useCapture) {
+		target.on(eventName, callback,this); // no useCapture
+	}});
+	Object.defineProperty(this,'removeEventListener',{enumerable: true,  configurable: false, writable: false, value: function(eventName, callback, useCapture) {
+		target.off(eventName, callback,this); // no useCapture
+	}});
+	
+};
+
+var OMenuContext = function(internal) {
+  if(internal !== Opera){//only internal creations
+    throw new OError(
+      "NotSupportedError", 
+      "NOT_SUPPORTED_ERR", 
+      DOMException.NOT_SUPPORTED_ERR
+    );
+    return;
+  };
+  
+  MenuEventTarget.call( this );
+  
+  var length = 0;	
+	
+	Object.defineProperty(this,'length',{enumerable: true,  configurable: false,  get: function(){ return length;	}, set: function(value){ }	});
+	
+	function toUint32(value){
+    value = Number(value);
+    value = value < 0 ? Math.ceil(value) : Math.floor(value); 
+    
+    return value - Math.floor(value/Math.pow(2, 32))*Math.pow(2, 32);
+  };
+	
+	
+	Object.defineProperty(this,'addItem',{enumerable: true,  configurable: false, writable: false, value: function(menuItem,before){
+		
+		
+		//too many items
+    if(this instanceof MenuContext && this.length>0){
+      throw new OError(
+        "NotSupportedError", 
+        "NOT_SUPPORTED_ERR", 
+        DOMException.NOT_SUPPORTED_ERR
+      );      
+      return;
+    };
+    
+    //no item to add
+    if( !menuItem || !(menuItem instanceof MenuItem) ) {
+      throw new OError(
+        "TypeMismatchError", 
+        "TYPE_MISMATCH_ERR", 
+        DOMException.TYPE_MISMATCH_ERR
+      );
+      return;
+    }
+		
+    //adding only for folders
+    if(this instanceof MenuItem && this.type!='folder'){      
+			throw new OError(
+        "TypeMismatchError", 
+        "TYPE_MISMATCH_ERR", 
+        DOMException.TYPE_MISMATCH_ERR
+      );
+      return;    
+    };
+    
+    if(Array.prototype.indexOf.apply(this,[menuItem])!=-1)return;//already exist
+    
+    //same parent check
+    if(before===undefined || this instanceof MenuContext)before = this.length;
+    else if(before instanceof MenuItem){
+      var index = Array.prototype.indexOf.apply(this,[before]);
+      if(before.parent != this || index == -1){
+        throw new OError(
+          "HierarchyRequestError", 
+          "HIERARCHY_REQUEST_ERR", 
+          DOMException.HIERARCHY_REQUEST_ERR
+        );
+        return;
+      
+      } else before = index;
+      
+    } else if(before === null)before = this.length;
+    else before = toUint32(before);
+    
+    if(isNaN(before))before = 0;
+    
+    //loop check
+    var parent = this;
+    var noLoop = false;
+    while(!noLoop){
+      if(parent instanceof MenuContext || parent == null)noLoop = true;
+      else if(parent === menuItem){
+        throw new OError(
+          "HierarchyRequestError", 
+          "HIERARCHY_REQUEST_ERR", 
+          DOMException.HIERARCHY_REQUEST_ERR
+        );
+        return;
+      } else parent = parent.parent;
+
+    };
+    
+    
+    Array.prototype.splice.apply(this,[before,0,menuItem]);
+    
+		length = length + 1;
+  
+    if(this instanceof MenuContext)menuItem.dispatchEvent( new MenuEvent('change', {properties : {parent: this} },menuItem));
+		else this.dispatchEvent( new MenuEvent('change', {properties : {parent: this} }, menuItem));
+		
+	}});
+	
+	Object.defineProperty(this,'removeItem',{enumerable: true,  configurable: false, writable: false, value: function(index){
+		if(index===undefined) {
+			throw new OError(
+				"TypeMismatchError", 
+				"TYPE_MISMATCH_ERR", 
+				DOMException.TYPE_MISMATCH_ERR
+			);
+			return;
+		};
+		
+		if(index<0 || index >= length || this[ index ] == undefined)return;  
+		
+		this[ index ].dispatchEvent( new MenuEvent('change', {properties : {parent: null} },this[ index ]));
+		
+		Array.prototype.splice.apply(this,[index,1]);
+		
+		length = length - 1;
+		
+	}});
+	
+	Object.defineProperty(this,'item',{enumerable: true,  configurable: false, writable: false, value: function(index){
+		return this[index] || null;
+	}});
+	
+};
+
+OMenuContext.prototype = Object.create( MenuEventTarget.prototype);
+
+var MenuItemProperties = function(obj,initial){
+	var lock = false;
+	var menuItemId = null;
+	var properties = {
+		id: "",
+		type: "entry",
+		contexts: ["page"],
+		disabled: false,
+		title: "",
+		icon: "",
+		documentURLPatterns: null,
+		targetURLPatterns: null,
+		parent: null
+	};
+	var allowedContexts = ["all", "page", "frame", "selection", "link", "editable", "image", "video", "audio"];
+	var changed = function(){
+		if(!lock)obj.dispatchEvent(new MenuEvent('change',{},obj));
+	}
+	var update = function(props){
+		if(lock)return;
+		
+		lock = true;
+		
+		if(props!=undefined)for(var name in props)if(properties[name]!==undefined){
+			if(name === "type"){
+				
+				if(["entry", "folder", "line"].indexOf(String(props.type).toLowerCase())!=-1)properties.type = String(props.type);
+				
+			} else if(name === "parent"){
+				if(props.parent === null || props.parent instanceof OMenuContext)properties.parent = props.parent;
+				else throw new TypeError();
+				
+			} else if(name === "id")properties.id = String(props.id);
+			else obj[name] = props[name];
+		};		
+		
+		lock = false;
+		//update
+		
+		if(properties.disabled==true||properties.parent==null){
+    
+			if(menuItemId!=null){
+				chrome.contextMenus.remove(menuItemId);
+				menuItemId = null;
+			};
+    
+		} else {
+			
+			var updateProperties = {
+				title: properties.title.length==0?chrome.app.getDetails().name:properties.title,
+				type: properties.type.toLowerCase()=="line"?"separator":"normal" //"normal", "checkbox", "radio", "separator"      
+			};
+			
+			var contexts = properties.contexts.join(',').toLowerCase().split(',').filter(function(element){
+				return allowedContexts.indexOf(element.toLowerCase())!=-1;
+			}); 
+			
+			if(contexts.length==0)updateProperties.contexts = ["page"];
+			else updateProperties.contexts = contexts;
+			
+			if(properties.parent instanceof MenuItem && properties.parent.menuItemId!=undefined){
+				updateProperties.parentId = properties.parent.menuItemId;
+			};
+			
+			
+			
+			if(menuItemId==null){
+				if(properties.id != "")updateProperties.id = properties.id;//set id
+				menuItemId = chrome.contextMenus.create(updateProperties);
+			} else chrome.contextMenus.update(menuItemId,updateProperties);
+			
+			/* unsafe code
+			if(
+				this.properties.parent instanceof MenuContext && this.properties.icon.length>0 //has icon
+				&& !(chrome.app.getDetails().icons && chrome.app.getDetails().icons[16]) // no global 16x16 icon
+			){//set custom root icon 
+				chrome.browserAction.setIcon({path: this.properties.icon });
+			};
+			*/
+			
+		};
+		
+	};
+	
+	var nosetter = function(value){};
+	
+	Object.defineProperty(obj,'id',{enumerable: true,  configurable: false,  get: function(){return properties.id;}, set: nosetter});
+	Object.defineProperty(obj,'type',{enumerable: true,  configurable: false,  get: function(){return properties.type;}, set: nosetter});
+	
+	Object.defineProperty(obj,'contexts',{enumerable: true,  configurable: false,  get: function(){return properties.contexts;}, set: function(value){
+		if(!Array.isArray(value)){
+			throw new TypeError();
+			return;
+		};
+		
+		properties.contexts = value.length==0?value:value.join(',').split(',');
+		changed();
+		
+	}});
+	
+	Object.defineProperty(obj,'disabled',{enumerable: true,  configurable: false,  get: function(){return properties.disabled;}, set: function(value){
+		properties.disabled = Boolean(value);
+		changed();
+	}});
+	
+	Object.defineProperty(obj,'title',{enumerable: true,  configurable: false,  get: function(){return properties.title;}, set: function(value){		
+		properties.title = String(value);
+		changed();
+	}});
+	
+	Object.defineProperty(obj,'icon',{enumerable: true,  configurable: false,  get: function(){return properties.icon;}, set: function(value){
+		if(typeof value === "string"){
+			properties.icon = value;
+			
+			if(properties.icon.indexOf(':')==-1&&properties.icon.indexOf('/')==-1&&properties.icon.length>0)properties.icon = '/'+properties.icon;
+		};
+		
+		changed();
+	}});
+	
+	Object.defineProperty(obj,'documentURLPatterns',{enumerable: true,  configurable: false,  get: function(){return properties.documentURLPatterns;}, set: function(value){
+		
+		if(Array.isArray(value)){
+			properties.documentURLPatterns = [];
+			for(var i=0;i<value.length;i++)properties.documentURLPatterns.push(String(value[i]).toLowerCase());
+		};
+		
+		changed();
+	}});
+	
+	Object.defineProperty(obj,'targetURLPatterns',{enumerable: true,  configurable: false,  get: function(){return properties.targetURLPatterns;}, set: function(value){
+		
+		if(Array.isArray(value)){
+			properties.targetURLPatterns = [];
+			for(var i=0;i<value.length;i++)properties.targetURLPatterns.push(String(value[i]).toLowerCase());
+		};
+		
+		changed();
+	}});
+	
+	Object.defineProperty(obj,'menuItemId',{enumerable: false,  configurable: false,  get: function(){return menuItemId;},set: nosetter});
+	
+	Object.defineProperty(obj,'parent',{enumerable: true,  configurable: false,  get: function(){
+			return properties.parent;
+	}, set: nosetter	});
+	
+	if(initial!=undefined)update(initial);
+	
+	return update;
+};
+
+
+
+var MenuItem = function(internal,properties ) {
+	OMenuContext.apply( this, [internal] );
+	
+	var _apply = MenuItemProperties(this,properties);	
+	
+	//click event	
+	if(properties.onclick!=undefined)this.onclick = properties.onclick;//set initial click handler  
+  	
+	if(this.type.toLowerCase() === 'entry')chrome.contextMenus.onClicked.addListener(function(_info,_tab) {
+    if(this.menuItemId == null || !(this.menuItemId === _info.menuItemId || this.id === _info.menuItemId))return;
+    
+    this.dispatchEvent( new MenuEvent('click', {info: _info, tab: _tab},this) );
+		
+		var event = new MenuEvent('click', {info: _info, tab: _tab},this);
+		
+    OEC.menu.dispatchEvent(event);
+		
+		event.source.postMessage({
+			"action": "___O_MenuItem_Click",
+			"info": _info,
+			"menuItemId": this.id
+		});
+    
+  }.bind(this));
+	
+	this.addEventListener('change',function(e){
+		if(e.target === this)_apply(e.properties);
+		else _apply();
+		
+		for(var i=0;i<this.length;i++)this[i].dispatchEvent(new MenuEvent('change',{properties: e.properties},e.target));
+		
+	},false);
+	
+	Object.defineProperty(this,'toString',{enumerable: false,  configurable: false, writable: false, value: function(event){
+		return "[object MenuItem]";
+	}});
+	
+};
+
+MenuItem.prototype = Object.create( OMenuContext.prototype );
+
+global.MenuItem = MenuItem;
+
+var MenuContext = function(internal) {
+  chrome.contextMenus.removeAll();//clear all items
+  
+	OMenuContext.apply(this,[internal]);
+  
+  Object.defineProperty(this,'toString',{enumerable: false,  configurable: false, writable: false, value: function(event){
+		return "[object MenuContext]";
+	}});
+  
+};
+
+MenuContext.prototype = Object.create( OMenuContext.prototype );
+
+MenuContext.prototype.createItem = function( menuItemProperties ) {
+  return new MenuItem(Opera, menuItemProperties );
+};
+
+global.MenuContext = MenuContext;
+OEC.menu = OEC.menu || new MenuContext(Opera);
+
 
 /*
  * This file is part of the Adblock Plus extension,
@@ -13649,27 +14083,158 @@ var RuleList = function( parentObj ) {
 
   // Runtime Rule object storage collection
   this._collection = [];
+  
+  this.createRule = function(rule, options) {
+    
+    rule += ""; // force rule argument to be a string
+
+    var ruleId = Math.floor( Math.random() * 1e15 );
+
+    // Sanitize options, if any
+
+    options = options || {};
+
+    var opts = {
+      'includeDomains': options.includeDomains || [],
+      'excludeDomains': options.excludeDomains || [],
+      'resources': options.resources || 0xFFFFFFFF,
+      'thirdParty': options.thirdParty || null
+    };
+
+    //  Process options and append to rule argument
+
+    var filterOptions = [];
+
+    var includeDomainsStr = "";
+    var excludeDomainsStr = "";
+
+    if(opts.includeDomains && opts.includeDomains.length > 0) {
+
+      for(var i = 0, l = opts.includeDomains.length; i < l; i++) {
+        if(includeDomainsStr.length > 0) includeDomainsStr += "|"; // add domain seperator (pipe)
+        includeDomainsStr += opts.includeDomains[i];
+      }
+
+    }
+
+    if(opts.excludeDomains && opts.excludeDomains.length > 0) {
+
+      for(var i = 0, l = opts.excludeDomains.length; i < l; i++) {
+        if(excludeDomainsStr.length > 0 || includeDomainsStr.length > 0) excludeDomainsStr += "|"; // add domain seperator (pipe)
+        excludeDomainsStr += "~" + opts.excludeDomains[i];
+      }
+
+    }
+
+    if(includeDomainsStr.length > 0 || excludeDomainsStr.length > 0) {
+
+      var domainsStr = "domain=" + includeDomainsStr + excludeDomainsStr;
+
+      filterOptions.push(domainsStr);
+
+    }
+
+    if(opts.resources && opts.resources !== 0xFFFFFFFF) {
+
+      var typeMap = {
+        1: "other",
+        2: "script",
+        4: "image",
+        8: "stylesheet",
+        16: "object",
+        32: "subdocument",
+        64: "document",
+        128: "refresh",
+        2048: "xmlhttprequest",
+        4096: "object_subrequest",
+        16384: "media",
+        32768: "font"
+      };
+
+      var resourcesListStr = "";
+
+      for(var i = 0, l = 31; i < l; i ++) {
+        if(((opts.resources >> i) % 2 != 0) === true) {
+          var typeStr = typeMap[ Math.pow(2, i) ];
+          if(typeStr) {
+            if(resourcesListStr.length > 0) resourcesListStr += ",";
+            resourcesListStr += typeStr;
+          }
+        }
+      }
+
+      if(resourcesListStr.length > 0) {
+        filterOptions.push(resourcesListStr);
+      }
+
+    }
+
+    if(opts.thirdParty) {
+      filterOptions.push("third-party");
+    }
+
+    if(filterOptions.length > 0) {
+      rule += "$";
+
+      for(var i = 0, l = filterOptions.length; i < l; i++) {
+        if(i !== 0) rule += ","; // add filter options seperator (comma)
+        rule += filterOptions[i];
+      }
+    }
+    
+    return { 'id': ruleId, 'rule': rule };
+    
+  }
+  
+  this.addRule = function( ruleObj ) {
+    
+    // Parse rule to a Filter object
+      var filter = this._parentObj.Filter.fromText( ruleObj['rule'] );
+      
+      // Add rule's filter object to AdBlock FilterStorage
+      this._parentObj.FilterStorage.addFilter(filter);
+
+      // Add rule to current RuleList collection
+      this._collection.push({
+        'id': ruleObj['id'],
+        'filter': filter
+      });
+    
+  }
+  
+  this.removeRule = function( ruleId ) {
+    
+    for(var i = 0, l = this._collection.length; i < l; i++) {
+
+      if( this._collection[i]['id'] && this._collection[i]['id'] == ruleId ) {
+
+        // Remove rule's filter object from AdBlock FilterStorage
+        this._parentObj.FilterStorage.removeFilter(this._collection[i]['filter']);
+
+        // Remove rule from current RuleList collection
+        this._collection.splice(i);
+
+        break;
+      }
+    }
+    
+  }
 
 };
 
-// Implemented in AllowRuleList or BlockRuleList
-RuleList.prototype.add = function( rule, options ) {};
+RuleList.prototype.add = function( rule, options ) {
+  
+  var ruleObj = this.createRule(rule, options);
+
+  this.addRule(ruleObj);
+
+  return ruleObj['id'];
+
+};
 
 RuleList.prototype.remove = function( ruleId ) {
 
-  for(var i = 0, l = this._collection.length; i < l; i++) {
-
-    if( this._collection[i]['id'] && this._collection[i]['id'] == ruleId ) {
-
-      // Remove rule's filter object from AdBlock FilterStorage
-      this._parentObj.FilterStorage.removeFilter(this._collection[i]['filter']);
-
-      // Remove rule from current RuleList collection
-      this._collection.splice(i);
-
-      break;
-    }
-  }
+  this.removeRule( ruleId );
 
 };
 
@@ -13680,118 +14245,6 @@ var BlockRuleList = function( parentObj ) {
 };
 
 BlockRuleList.prototype = Object.create( RuleList.prototype );
-
-BlockRuleList.prototype.add = function( rule, options ) {
-
-  rule += ""; // force rule argument to be a string
-
-  var ruleId = Math.floor( Math.random() * 1e15 );
-
-  // Sanitize options, if any
-
-  options = options || {};
-
-  var opts = {
-    'includeDomains': options.includeDomains || [],
-    'excludeDomains': options.excludeDomains || [],
-    'resources': options.resources || 0xFFFFFFFF,
-    'thirdParty': options.thirdParty || null
-  };
-
-  //  Process options and append to rule argument
-
-  var filterOptions = [];
-
-  var includeDomainsStr = "";
-  var excludeDomainsStr = "";
-
-  if(opts.includeDomains && opts.includeDomains.length > 0) {
-
-    for(var i = 0, l = opts.includeDomains.length; i < l; i++) {
-      if(includeDomainsStr.length > 0) includeDomainsStr += "|"; // add domain seperator (pipe)
-      includeDomainsStr += opts.includeDomains[i];
-    }
-
-  }
-
-  if(opts.excludeDomains && opts.excludeDomains.length > 0) {
-
-    for(var i = 0, l = opts.excludeDomains.length; i < l; i++) {
-      if(excludeDomainsStr.length > 0 || includeDomainsStr.length > 0) excludeDomainsStr += "|"; // add domain seperator (pipe)
-      excludeDomainsStr += "~" + opts.excludeDomains[i];
-    }
-
-  }
-
-  if(includeDomainsStr.length > 0 || excludeDomainsStr.length > 0) {
-
-    var domainsStr = "domain=" + includeDomainsStr + excludeDomainsStr;
-
-    filterOptions.push(domainsStr);
-
-  }
-
-  if(opts.resources && opts.resources !== 0xFFFFFFFF) {
-
-    var typeMap = {
-      1: "other",
-      2: "script",
-      4: "image",
-      8: "stylesheet",
-      16: "object",
-      32: "subdocument",
-      64: "document",
-      128: "refresh",
-      2048: "xmlhttprequest",
-      4096: "object_subrequest",
-      16384: "media",
-      32768: "font"
-    };
-
-    var resourcesListStr = "";
-
-    for(var i = 0, l = 31; i < l; i ++) {
-      if(((opts.resources >> i) % 2 != 0) === true) {
-        var typeStr = typeMap[ Math.pow(2, i) ];
-        if(typeStr) {
-          if(resourcesListStr.length > 0) resourcesListStr += ",";
-          resourcesListStr += typeStr;
-        }
-      }
-    }
-
-    if(resourcesListStr.length > 0) {
-      filterOptions.push(resourcesListStr);
-    }
-
-  }
-
-  if(opts.thirdParty) {
-    filterOptions.push("third-party");
-  }
-
-  if(filterOptions.length > 0) {
-    rule += "$";
-
-    for(var i = 0, l = filterOptions.length; i < l; i++) {
-      if(i !== 0) rule += ","; // add filter options seperator (comma)
-      rule += filterOptions[i];
-    }
-  }
-
-  // Parse rule to a Filter object
-  var filter = this._parentObj.Filter.fromText( rule );
-  // Add rule's filter object to AdBlock FilterStorage
-  this._parentObj.FilterStorage.addFilter(filter);
-
-  // Add rule to current RuleList collection
-  this._collection.push({
-    'id': ruleId,
-    'filter': filter
-  });
-
-  return ruleId;
-};
 var AllowRuleList = function( parentObj ) {
   
   RuleList.call(this, parentObj);
@@ -13802,118 +14255,17 @@ AllowRuleList.prototype = Object.create( RuleList.prototype );
 
 AllowRuleList.prototype.add = function( rule, options ) {
 
-  rule += ""; // force rule argument to be a string
+  var ruleObj = this.createRule(rule, options);
 
-  var ruleId = Math.floor( Math.random() * 1e15 );
+  // Add exclude pattern to rule (@@)
+  ruleObj['rule'] = "@@" + ruleObj['rule'];
 
-  // Sanitize options, if any
+  this.addRule(ruleObj);
 
-  options = options || {};
-
-  var opts = {
-    'includeDomains': options.includeDomains || [],
-    'excludeDomains': options.excludeDomains || [],
-    'resources': options.resources || 0xFFFFFFFF,
-    'thirdParty': options.thirdParty || null
-  };
-
-  //  Process options and append to rule argument
-
-  var filterOptions = [];
-
-  var includeDomainsStr = "";
-  var excludeDomainsStr = "";
-
-  if(opts.includeDomains && opts.includeDomains.length > 0) {
-
-    for(var i = 0, l = opts.includeDomains.length; i < l; i++) {
-      if(includeDomainsStr.length > 0) includeDomainsStr += "|"; // add domain seperator (pipe)
-      includeDomainsStr += opts.includeDomains[i];
-    }
-
-  }
-
-  if(opts.excludeDomains && opts.excludeDomains.length > 0) {
-
-    for(var i = 0, l = opts.excludeDomains.length; i < l; i++) {
-      if(excludeDomainsStr.length > 0 || includeDomainsStr.length > 0) excludeDomainsStr += "|"; // add domain seperator (pipe)
-      excludeDomainsStr += "~" + opts.excludeDomains[i];
-    }
-
-  }
-
-  if(includeDomainsStr.length > 0 || excludeDomainsStr.length > 0) {
-
-    var domainsStr = "domain=" + includeDomainsStr + excludeDomainsStr;
-
-    filterOptions.push(domainsStr);
-
-  }
-
-  if(opts.resources && opts.resources !== 0xFFFFFFFF) {
-
-    var typeMap = {
-      1: "other",
-      2: "script",
-      4: "image",
-      8: "stylesheet",
-      16: "object",
-      32: "subdocument",
-      64: "document",
-      128: "refresh",
-      2048: "xmlhttprequest",
-      4096: "object_subrequest",
-      16384: "media",
-      32768: "font"
-    };
-
-    var resourcesListStr = "";
-
-    for(var i = 0, l = 31; i < l; i ++) {
-      if(((opts.resources >> i) % 2 != 0) === true) {
-        var typeStr = typeMap[ Math.pow(2, i) ];
-        if(typeStr) {
-          if(resourcesListStr.length > 0) resourcesListStr += ",";
-          resourcesListStr += typeStr;
-        }
-      }
-    }
-
-    if(resourcesListStr.length > 0) {
-      filterOptions.push(resourcesListStr);
-    }
-
-  }
-
-  if(opts.thirdParty) {
-    filterOptions.push("third-party");
-  }
-
-  if(filterOptions.length > 0) {
-    rule += "$";
-
-    for(var i = 0, l = filterOptions.length; i < l; i++) {
-      if(i !== 0) rule += ","; // add filter options seperator (comma)
-      rule += filterOptions[i];
-    }
-  }
+  return ruleObj['id'];
   
-  // Add exception clause (@@)
-  rule = "@@" + rule;
-
-  // Parse rule to a Filter object
-  var filter = this._parentObj.Filter.fromText( rule );
-  // Add rule's filter object to AdBlock FilterStorage
-  this._parentObj.FilterStorage.addFilter(filter);
-
-  // Add rule to current RuleList collection
-  this._collection.push({
-    'id': ruleId,
-    'filter': filter
-  });
-
-  return ruleId;
 };
+
 var UrlFilterManager = function() {
   
   OEventTarget.call(this);
@@ -14056,7 +14408,8 @@ var UrlFilterManager = function() {
       var msgData = {
         "action": "___O_urlfilter_contentblocked",
         "data": {
-          // TODO send enough data so that we can fire the event in the injected script
+          // send enough data so that we can fire the event in the injected script
+          "url": details.url
         }
       };
 
@@ -14085,6 +14438,41 @@ var UrlFilterManager = function() {
       
       return { cancel: true };
       
+    } else if (filter instanceof self.WhitelistFilter) {
+      
+      var msgData = {
+        "action": "___O_urlfilter_contentunblocked",
+        "data": {
+          // send enough data so that we can fire the event in the injected script
+          "url": details.url
+        }
+      };
+
+      // Broadcast contentblocked event control message (i.e. beginning with '___O_')
+      // towards the tab matching the details.tabId value
+      // (but delay it until the content script is loaded!)
+      if(self.eventQueue[details.tabId] !== undefined && self.eventQueue[details.tabId].ready === true) {
+        
+        // tab is already online so send contentblocked messages
+        chrome.tabs.sendMessage(
+          details.tabId, 
+          msgData,
+          function() {}
+        );
+        
+      } else {
+        
+        // queue up this event
+        if(self.eventQueue[details.tabId] === undefined) {
+          self.eventQueue[details.tabId] = { ready: false, items: [] };
+        }
+        
+        self.eventQueue[details.tabId].items.push( msgData );
+        
+      }
+      
+      return {};
+    
     } else {
       
       return {};
@@ -14096,14 +14484,14 @@ var UrlFilterManager = function() {
   // if a rule matches in the associated block RuleList
   chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, { urls: [ "http://*/*", "https://*/*" ] }, [ "blocking" ]);
   
-  // Wait for tab to add eventlisteners for urlfilter and then drain queued up events to that tab
+  // Wait for tab to add event listeners for urlfilter and then drain queued up events to that tab
   OEX.addEventListener('controlmessage', function( msg ) {
     
     if( !msg.data || !msg.data.action ) {
       return;
     }
     
-    if( msg.data.action !== '___O_urlfilter_drainQueue' ) {
+    if( msg.data.action !== '___O_urlfilter_DRAINQUEUE' ) {
       return;
     }
     
