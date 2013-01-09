@@ -1,11 +1,11 @@
 
 /**
- * Queue for running multi-object promise-rooted asynchronous 
+ * Queue for running multi-object promise-rooted asynchronous
  * functions serially
  */
 var Queue = (function() {
   var _q = [], _lock = false, _timeout = 1000;
-  
+
   function callNext() {
     _lock = false;
     dequeue(); // auto-execute next queue item
@@ -16,7 +16,7 @@ var Queue = (function() {
       return;
     }
     _lock = true; // only allow one accessor at a time
-    
+
     var item = _q.shift(); // pop the next item from the queue
 
     if (item === undefined) {
@@ -37,13 +37,13 @@ var Queue = (function() {
           console.log(item.obj.isResolved);
           item.obj.trigger('promise:resolved'); // manual trigger / resolve
         }, _timeout);
-      
+
         // execute queue item when obj resolves
         item.obj.on('promise:resolved', function() {
           if(timer) global.clearTimeout(timer);
-        
+
           item.obj.isResolved = true; // set too late in rsvp.js
-        
+
           item.fn.call(item.obj, callNext);
         });
       }
