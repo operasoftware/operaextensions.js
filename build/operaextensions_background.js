@@ -3256,6 +3256,7 @@ BrowserTabGroupManager.prototype.create = function() {
 BrowserTabGroupManager.prototype.getAll = function() {
   return []; // always empty
 };
+
 OEX.windows = OEX.windows || new BrowserWindowManager();
 
 OEX.tabs = OEX.tabs || new RootBrowserTabManager();
@@ -4631,6 +4632,7 @@ XMLHttpRequest.prototype.channel =
     return this;
   }
 };
+
 /*
  * This file is part of the Adblock Plus extension,
  * Copyright (C) 2006-2012 Eyeo GmbH
@@ -8099,6 +8101,7 @@ require.scopes["synchronizer"] = (function()
   }
   return exports;
 })();
+
 var publicSuffixes = {
     "0.bg": 1,
     "1.bg": 1,
@@ -13835,6 +13838,7 @@ var publicSuffixes = {
     "\u7f51\u7edc.cn": 1,
     "\u7f51\u7edc.hk": 1
 };
+
 /*!
  * Parts of original code from ipv6.js <https://github.com/beaugunderson/javascript-ipv6>
  * Copyright 2011 Beau Gunderson
@@ -14077,6 +14081,7 @@ URI.prototype =
     return this.spec.substring(0, this._hostPortEnd);
   }
 };
+
 var RuleList = function( parentObj ) {
 
   this._parentObj = parentObj;
@@ -14245,6 +14250,7 @@ var BlockRuleList = function( parentObj ) {
 };
 
 BlockRuleList.prototype = Object.create( RuleList.prototype );
+
 var AllowRuleList = function( parentObj ) {
 
   RuleList.call(this, parentObj);
