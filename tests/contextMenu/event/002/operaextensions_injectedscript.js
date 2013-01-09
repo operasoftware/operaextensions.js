@@ -749,9 +749,12 @@ global.widget = global.widget || new OWidgetObjProxy();
 EventTarget.mixin( Opera.prototype );
 
 Opera.prototype.defineMagicVariable = function(name, getter, setter) {
-
-  if((!getter || Object.prototype.toString.call(getter) !== "[object Function]") || 
-        (!setter || Object.prototype.toString.call(setter) !== "[object Function]")) {
+  if( getter === undefined || setter === undefined ){
+    return;
+  }
+  var allowedStringifications = {"[object Function]":1, "[object Null]":1};
+  if( ! ( ( Object.prototype.toString.call(getter) in allowedStringifications ) &&  
+        ( Object.prototype.toString.call(setter) in allowedStringifications )) ) {
     return;
   }
   
@@ -767,6 +770,7 @@ Opera.prototype.defineMagicVariable = function(name, getter, setter) {
   }
   
   document.getElementsByTagName('head')[0].appendChild( magicScriptEl );
+  document.getElementsByTagName('head')[0].removeChild( magicScriptEl );
   
 };
 
@@ -782,6 +786,7 @@ Opera.prototype.defineMagicFunction = function(name, implementation) {
   magicScriptEl.textContent = "var " + name + " = " + implementation.toString() + ";";
 
   document.getElementsByTagName('head')[0].appendChild( magicScriptEl );
+  document.getElementsByTagName('head')[0].removeChild( magicScriptEl );
 
 };
 
@@ -923,6 +928,56 @@ MenuContextProxy.prototype = Object.create( MenuEventTarget.prototype );
 
 OEC.menu = OEC.menu || new MenuContextProxy();
 
+
+var UrlFilterEventListener = function() {
+  
+  OEventTarget.call(this);
+  
+  // listen for block events sent from the background process 
+  // and fire in this content script
+  
+  OEX.addEventListener('controlmessage', function( msg ) {
+    
+    if( !msg.data || !msg.data.action ) {
+      return;
+    }
+    
+    switch( msg.data.action ) {
+      
+      // Set up all storage properties
+      case '___O_urlfilter_contentblocked':
+      
+        // Fire contentblocked event on this object
+        this.dispatchEvent( new OEvent('contentblocked', msg.data.data || {}) );
+        
+        break;
+        
+      case '___O_urlfilter_contentunblocked':
+      
+        // Fire contentunblocked event on this object
+        this.dispatchEvent( new OEvent('contentunblocked', msg.data.data || {}) );
+      
+        break;
+    }
+    
+  }.bind(this));
+  
+};
+
+UrlFilterEventListener.prototype = Object.create( OEventTarget.prototype );
+
+// Override
+UrlFilterEventListener.prototype.addEventListener = function(eventName, callback, useCapture) {
+  this.on(eventName, callback); // no useCapture
+  
+  // Trigger delivery of URLFilter events from the background process
+  addDelayedEvent(OEX, 'postMessage', [
+    { 'action': '___O_urlfilter_DRAINQUEUE' }
+  ]);
+  
+};
+
+OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
 
   if (global.opera) {
     isReady = true;

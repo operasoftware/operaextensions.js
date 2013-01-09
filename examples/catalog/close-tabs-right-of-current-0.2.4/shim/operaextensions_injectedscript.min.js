@@ -749,9 +749,12 @@ global.widget = global.widget || new OWidgetObjProxy();
 EventTarget.mixin( Opera.prototype );
 
 Opera.prototype.defineMagicVariable = function(name, getter, setter) {
-
-  if((!getter || Object.prototype.toString.call(getter) !== "[object Function]") || 
-        (!setter || Object.prototype.toString.call(setter) !== "[object Function]")) {
+  if( getter === undefined || setter === undefined ){
+    return;
+  }
+  var allowedStringifications = {"[object Function]":1, "[object Null]":1};
+  if( ! ( ( Object.prototype.toString.call(getter) in allowedStringifications ) &&  
+        ( Object.prototype.toString.call(setter) in allowedStringifications )) ) {
     return;
   }
   
@@ -767,6 +770,7 @@ Opera.prototype.defineMagicVariable = function(name, getter, setter) {
   }
   
   document.getElementsByTagName('head')[0].appendChild( magicScriptEl );
+  document.getElementsByTagName('head')[0].removeChild( magicScriptEl );
   
 };
 
@@ -782,6 +786,7 @@ Opera.prototype.defineMagicFunction = function(name, implementation) {
   magicScriptEl.textContent = "var " + name + " = " + implementation.toString() + ";";
 
   document.getElementsByTagName('head')[0].appendChild( magicScriptEl );
+  document.getElementsByTagName('head')[0].removeChild( magicScriptEl );
 
 };
 
