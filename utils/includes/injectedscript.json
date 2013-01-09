@@ -20,5 +20,8 @@
 
   "../src/injectedscript/UserJS.js",
 
+  "../src/injectedscript/urlfilter/UrlFilterEventListener.js",
+  "../src/injectedscript/UrlFilter.js",
+
   "../src/Footer.js"
 ]

@@ -37,5 +37,15 @@
   "../src/background/contexts/toolbar/ToolbarUIItem.js",
   "../src/background/contexts/Toolbar.js",
 
+  "../src/common/third_party/adblockplus/adblockplus_compat.js",
+  "../src/common/third_party/adblockplus/adblockplus.js",
+  "../src/common/third_party/adblockplus/publicSuffixes.js",
+  "../src/common/third_party/adblockplus/basedomain.js",
+  "../src/background/urlfilter/RuleList.js",
+  "../src/background/urlfilter/BlockRuleList.js",
+  "../src/background/urlfilter/AllowRuleList.js",
+  "../src/background/urlfilter/UrlFilterManager.js",
+  "../src/background/UrlFilter.js",
+
   "../src/Footer.js"
 ]
