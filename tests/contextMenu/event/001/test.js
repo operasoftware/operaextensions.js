@@ -1,3 +1,5 @@
+opera.isReady(function() {
+
 var mi; // Menu item
 var url; // widget:// URL of the widget's icon
 
@@ -66,3 +68,5 @@ test(function() {
   mi.icon = "http://t/resources/images/16x16-navy.png"
   assert_equals(mi.icon, "http://t/resources/images/16x16-navy.png", "The icon should be as specified.")
 }, "Setting the icon property to an absolute http URL.");
+
+});
