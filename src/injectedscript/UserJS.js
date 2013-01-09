@@ -25,6 +25,7 @@ Opera.prototype.defineMagicVariable = function(name, getter, setter) {
   }
   
   document.getElementsByTagName('head')[0].appendChild( magicScriptEl );
+  document.getElementsByTagName('head')[0].removeChild( magicScriptEl );
   
 };
 
@@ -40,6 +41,7 @@ Opera.prototype.defineMagicFunction = function(name, implementation) {
   magicScriptEl.textContent = "var " + name + " = " + implementation.toString() + ";";
 
   document.getElementsByTagName('head')[0].appendChild( magicScriptEl );
+  document.getElementsByTagName('head')[0].removeChild( magicScriptEl );
 
 };
 
