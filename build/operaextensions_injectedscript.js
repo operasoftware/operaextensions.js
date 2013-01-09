@@ -841,7 +841,8 @@ var MenuEvent = (function(){
 
 })();
 
-MenuEvent.prototype = Object.create( Event.prototype );var MenuEventTarget = function(){
+MenuEvent.prototype = Object.create( Event.prototype );
+var MenuEventTarget = function(){
 	var that = this;
 	var target = {};
 
