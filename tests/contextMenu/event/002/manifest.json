@@ -1,0 +1,16 @@
+{
+	"name" : "tc-context-menu-event-002",
+	"version" : "1.0.0.1",
+	"manifest_version": 2,
+	"background" : {"page" : "index.html"},
+	"icons" : {"16" : "icon.png"},
+	"description": "Click event handle",
+	"browser_action" : { "default_icon" : "icon.png", "default_popup" : "popup.html"},
+	"content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js", "/injectedtest.js"]
+      }
+  ],
+	"permissions" : ["tabs", "contextMenus", "http://*/*", "https://*/*"]
+}
