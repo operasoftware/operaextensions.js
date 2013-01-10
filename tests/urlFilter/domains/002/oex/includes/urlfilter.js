@@ -1,4 +1,4 @@
-opera.isReady({
+opera.isReady(function() {
     opera.extension.urlfilter.addEventListener("contentblocked", function(evt) {
     	opera.extension.postMessage({
     		type: "contentblocked",

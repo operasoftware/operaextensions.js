@@ -1,4 +1,4 @@
-opera.isReady({
+opera.isReady(function() {
     var tests = {}; // Asynchronous tests
     var timer = null;
     

@@ -1,4 +1,4 @@
-opera.isReady({
+opera.isReady(function() {
     test(function() {
     	assert_equals(types("other"), 1)
     }, "Value of RESOURCE_OTHER");
