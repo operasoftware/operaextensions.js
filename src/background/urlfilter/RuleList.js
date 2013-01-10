@@ -9,6 +9,15 @@ var RuleList = function( parentObj ) {
   this.createRule = function(rule, options) {
 
     rule += ""; // force rule argument to be a string
+    
+    // strip leading/trailing whitespace from rule
+    rule = rule.replace(/\s*$/,''); // rtrim
+    rule = rule.replace(/^\s*/,''); // ltrim
+    
+    console.log(rule === "");
+    if(rule === "") {
+      return { 'id': 0, 'rule': null };
+    }
 
     var ruleId = Math.floor( Math.random() * 1e15 );
 
@@ -148,7 +157,9 @@ RuleList.prototype.add = function( rule, options ) {
 
   var ruleObj = this.createRule(rule, options);
 
-  this.addRule(ruleObj);
+  if(ruleObj['rule'] !== null) {
+    this.addRule(ruleObj);
+  }
 
   return ruleObj['id'];
 

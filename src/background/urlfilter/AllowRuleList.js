@@ -11,10 +11,14 @@ AllowRuleList.prototype.add = function( rule, options ) {
 
   var ruleObj = this.createRule(rule, options);
 
-  // Add exclude pattern to rule (@@)
-  ruleObj['rule'] = "@@" + ruleObj['rule'];
+  if(ruleObj['rule'] !== null) {
 
-  this.addRule(ruleObj);
+    // Add exclude pattern to rule (@@)
+    ruleObj['rule'] = "@@" + ruleObj['rule'];
+
+    this.addRule(ruleObj);
+
+  }
 
   return ruleObj['id'];
 
