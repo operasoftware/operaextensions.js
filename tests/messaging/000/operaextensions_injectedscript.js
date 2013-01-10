@@ -1,30 +1,30 @@
 !(function( global ) {
-  
+
   var Opera = function() {};
-  
+
   Opera.prototype.REVISION = '1';
-  
+
   Opera.prototype.version = function() {
     return this.REVISION;
   };
-  
+
   Opera.prototype.buildNumber = function() {
     return this.REVISION;
   };
-  
+
   Opera.prototype.postError = function( str ) {
     console.log( str );
   };
 
   var opera = global.opera || new Opera();
-  
+
   var isReady = false;
-  
+
   var _delayedExecuteEvents = [
     // Example:
     // { 'target': opera.extension, 'methodName': 'message', 'args': event }
   ];
-  
+
   function addDelayedEvent(target, methodName, args) {
     if(isReady) {
       target[methodName].apply(target, args);
@@ -44,7 +44,7 @@ var deferredComponentsLoadStatus = {
   // ...etc
 };
 
-// Events to delay until window 'load' event has been 
+// Events to delay until window 'load' event has been
 // fired by opera.isReady() below
 var delayedExecuteEvents = [
   // Example:
@@ -302,9 +302,9 @@ var OEvent = function(eventType, eventProperties) {
 };
 
 var OEventTarget = function() {
-  
+
   EventTarget.mixin( this );
-  
+
 };
 
 OEventTarget.prototype.constructor = OEventTarget;
@@ -333,34 +333,34 @@ OEventTarget.prototype.dispatchEvent = function( eventObj ) {
 var OMessagePort = function( isBackground ) {
 
   OEventTarget.call( this );
-  
+
   this._isBackground = isBackground || false;
-  
+
   this._localPort = null;
-  
+
   // Every process, except the background process needs to connect up ports
   if( !this._isBackground ) {
-    
+
     this._localPort = chrome.extension.connect({ "name": ("" + Math.floor( Math.random() * 1e16)) });
-    
+
     this._localPort.onDisconnect.addListener(function() {
-    
+
       this.dispatchEvent( new OEvent( 'disconnect', { "source": this._localPort } ) );
-      
+
       this._localPort = null;
-      
+
     }.bind(this));
-    
+
     var onMessageHandler = function( _message, _sender, responseCallback ) {
 
       var localPort = this._localPort;
-      
+
       if(_message && _message.action && _message.action.indexOf('___O_') === 0) {
 
         // Fire controlmessage events *immediately*
         this.dispatchEvent( new OEvent(
-          'controlmessage', 
-          { 
+          'controlmessage',
+          {
             "data": _message,
             "source": {
               postMessage: function( data ) {
@@ -370,15 +370,15 @@ var OMessagePort = function( isBackground ) {
             }
           }
         ) );
-        
+
       } else {
-        
+
         // Fire 'message' event once we have all the initial listeners setup on the page
         // so we don't miss any .onconnect call from the extension page.
         // Or immediately if the shim isReady
         addDelayedEvent(this, 'dispatchEvent', [ new OEvent(
-          'message', 
-          { 
+          'message',
+          {
             "data": _message,
             "source": {
               postMessage: function( data ) {
@@ -388,47 +388,47 @@ var OMessagePort = function( isBackground ) {
             }
           }
         ) ]);
-        
+
       }
-      
+
       if(responseCallback)responseCallback({});
-      
+
     }.bind(this);
-    
+
     this._localPort.onMessage.addListener( onMessageHandler );
     chrome.extension.onMessage.addListener( onMessageHandler );
-    
-    
+
+
     // Fire 'connect' event once we have all the initial listeners setup on the page
     // so we don't miss any .onconnect call from the extension page
     addDelayedEvent(this, 'dispatchEvent', [ new OEvent('connect', { "source": this._localPort }) ]);
-    
+
   }
-  
+
 };
 
 OMessagePort.prototype = Object.create( OEventTarget.prototype );
 
 OMessagePort.prototype.postMessage = function( data ) {
-  
+
   if( !this._isBackground ) {
     if(this._localPort) {
-      
+
       this._localPort.postMessage( data );
-      
+
     }
   } else {
-    
+
     this.broadcastMessage( data );
-        
+
   }
-  
+
 };
 
 var OperaExtension = function() {
-  
+
   OMessagePort.call( this, false );
-  
+
 };
 
 OperaExtension.prototype = Object.create( OMessagePort.prototype );
@@ -437,15 +437,15 @@ OperaExtension.prototype.__defineGetter__('bgProcess', function() {
   return chrome.extension.getBackgroundPage();
 });
 
-// Add Screenshot API to Injected Script processes only 
+// Add Screenshot API to Injected Script processes only
 OperaExtension.prototype.getScreenshot = function( callback ) {
-  
+
   var screenshotCallback = function( msg ) {
 
     if( !msg.data || !msg.data.action || msg.data.action !== '___O_getScreenshot_RESPONSE' || !msg.data.dataUrl ) {
       return;
     }
-    
+
     // Convert the returned dataUrl in to an ImageData object and
     // return via callback function argument
     var canvas = document.createElement('canvas');
@@ -455,27 +455,27 @@ OperaExtension.prototype.getScreenshot = function( callback ) {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img,0,0);
-      
+
       var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      
+
       // Return the ImageData object to the callee
       callback.call( this, imageData );
     };
     img.src = msg.data.dataUrl;
-    
+
     // Tear down this event listener
     OEX.removeEventListener('controlmessage', screenshotCallback);
-    
+
   }.bind(this);
-  
+
   // Set up this event listener
   OEX.addEventListener('controlmessage', screenshotCallback);
-  
+
   // Request the screenshot from the background process
   OEX.postMessage({
     "action": "___O_getScreenshot_REQUEST"
   });
-  
+
 };
 
 // Generate API stubs
@@ -526,20 +526,20 @@ OperaExtension.prototype.getFile = function(path) {
 };
 
 var OStorageProxy = function () {
-  
-  // All attributes and methods defined in this class must be non-enumerable, 
+
+  // All attributes and methods defined in this class must be non-enumerable,
   // hence the structure of this class and the use of Object.defineProperty.
-  
+
   Object.defineProperty(this, "length", { value : 0, writable:true });
-  
-  Object.defineProperty(OStorageProxy.prototype, "getItem", { 
+
+  Object.defineProperty(OStorageProxy.prototype, "getItem", {
     value: function( key ) {
       var val = this[key];
       return val === undefined ? null : val;
     }
   });
-  
-  Object.defineProperty(OStorageProxy.prototype, "key", { 
+
+  Object.defineProperty(OStorageProxy.prototype, "key", {
     value: function( i ) {
       var size = 0;
       for (var i in this) {
@@ -551,13 +551,13 @@ var OStorageProxy = function () {
       return null;
     }
   });
-  
-  Object.defineProperty(OStorageProxy.prototype, "removeItem", { 
+
+  Object.defineProperty(OStorageProxy.prototype, "removeItem", {
     value: function( key, proxiedChange ) {
       if( this.hasOwnProperty( key ) ) {
         delete this[key];
         this.length--;
-        
+
         if( !proxiedChange ) {
           // Send control message to remove item from background store
           OEX.postMessage({
@@ -570,14 +570,14 @@ var OStorageProxy = function () {
       }
     }
   });
-  
-  Object.defineProperty(OStorageProxy.prototype, "setItem", { 
+
+  Object.defineProperty(OStorageProxy.prototype, "setItem", {
     value: function( key, value, proxiedChange ) {
       if( !this[key] ) {
         this.length++;
       }
       this[key] = value;
-      
+
       if( !proxiedChange ) {
         // Send control message to set item in background store
         OEX.postMessage({
@@ -590,8 +590,8 @@ var OStorageProxy = function () {
       }
     }
   });
-  
-  Object.defineProperty(OStorageProxy.prototype, "clear", { 
+
+  Object.defineProperty(OStorageProxy.prototype, "clear", {
     value: function( proxiedChange ) {
       for(var i in this) {
         if( this.hasOwnProperty( i ) ) {
@@ -599,7 +599,7 @@ var OStorageProxy = function () {
         }
       }
       this.length = 0;
-      
+
       if( !proxiedChange ) {
         // Send control message to clear all items from background store
         OEX.postMessage({
@@ -615,31 +615,31 @@ var OStorageProxy = function () {
 OStorageProxy.prototype = Object.create( Storage.prototype );
 
 var OWidgetObjProxy = function() {
-  
+
   OEventTarget.call(this);
-  
+
   this.properties = {};
   
   // LocalStorage shim
   this._preferences = new OStorageProxy();
   this._preferencesSet = {};
-  
+
   OEX.addEventListener('controlmessage', function( msg ) {
-    
+
     if( !msg.data || !msg.data.action ) {
       return;
     }
-    
+
     switch( msg.data.action ) {
-      
+
       // Set up all storage properties
       case '___O_widget_setup_RESPONSE':
-      
+
         // Copy properties
         for(var i in msg.data.attrs) {
           this.properties[ i ] = msg.data.attrs[ i ];
         }
-        
+
         // Set WIDGET_API_LOADED feature to LOADED
         deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
 
@@ -651,52 +651,52 @@ var OWidgetObjProxy = function() {
             this._preferences.length++;
           }
         }
-        
+
         // Set WIDGET_PREFERENCES_LOADED feature to LOADED
         deferredComponentsLoadStatus['WIDGET_PREFERENCES_LOADED'] = true;
-      
+
         break;
-        
+
       // Update a storage item
       case '___O_widgetPreferences_setItem_RESPONSE':
-        
+
         this._preferences.setItem( msg.data.data.key, msg.data.data.val, true );
-        
+
         break;
-      
+
       // Remove a storage item
       case '___O_widgetPreferences_removeItem_RESPONSE':
 
         this._preferences.removeItem( msg.data.data.key, true );
 
         break;
-        
+
       // Clear all storage items
       case '___O_widgetPreferences_clear_RESPONSE':
 
         this._preferences.clear( true );
 
         break;
-        
+
       default:
         break;
     }
-    
-  }.bind(this), false); 
-  
+
+  }.bind(this), false);
+
   // Setup widget API via proxy
   OEX.postMessage({
     "action": "___O_widget_setup_REQUEST"
   });
-  
-  // When the page unloads, take all items that have been 
+
+  // When the page unloads, take all items that have been
   // added with preference.blah or preferences['blah']
   // (instead of the catachable .setItem) and push these
   // preferences to the background script
   global.addEventListener('beforeunload', function() {
     // TODO implement widget.preferences page unload behavior
   }, false);
-  
+
 };
 
 OWidgetObjProxy.prototype = Object.create( OEventTarget.prototype );
@@ -749,39 +749,44 @@ global.widget = global.widget || new OWidgetObjProxy();
 EventTarget.mixin( Opera.prototype );
 
 Opera.prototype.defineMagicVariable = function(name, getter, setter) {
-
-  if((!getter || Object.prototype.toString.call(getter) !== "[object Function]") || 
-        (!setter || Object.prototype.toString.call(setter) !== "[object Function]")) {
+  if( getter === undefined || setter === undefined ){
     return;
   }
-  
+  var allowedStringifications = {"[object Function]":1, "[object Null]":1};
+  if( ! ( (Object.prototype.toString.call(getter) in allowedStringifications) &&  
+        (Object.prototype.toString.call(setter) in allowedStringifications)) ) {
+    return;
+  }
+
   var magicScriptEl = document.createElement('script');
   magicScriptEl.setAttribute('type', 'text/javascript');
 
-  if (getter && Object.prototype.toString.call(getter) === "[object Function]") {
+  if (Object.prototype.toString.call(getter) === "[object Function]") {
     magicScriptEl.textContent += "window.__defineGetter__('" + name + "', " + getter.toString() + ");\n";
   }
-  
+
   if (setter && Object.prototype.toString.call(setter) === "[object Function]") {
     magicScriptEl.textContent += "window.__defineSetter__('" + name + "', " + setter.toString() + ");\n";
   }
-  
+
   document.getElementsByTagName('head')[0].appendChild( magicScriptEl );
-  
+  document.getElementsByTagName('head')[0].removeChild( magicScriptEl );
+
 };
 
 Opera.prototype.defineMagicFunction = function(name, implementation) {
-  
+
   if(!implementation || Object.prototype.toString.call(implementation) !== "[object Function]") {
     return;
   }
-  
+
   var magicScriptEl = document.createElement('script');
   magicScriptEl.setAttribute('type', 'text/javascript');
-  
+
   magicScriptEl.textContent = "var " + name + " = " + implementation.toString() + ";";
 
   document.getElementsByTagName('head')[0].appendChild( magicScriptEl );
+  document.getElementsByTagName('head')[0].removeChild( magicScriptEl );
 
 };
 
@@ -809,15 +814,15 @@ Opera.prototype.__defineGetter__('getOverrideHistoryNavigationMode', function() 
 });
 var MenuEvent = (function(){
   var lastSrcElement = null;
-  
+
   document.addEventListener('contextmenu',function(e){
-    lastSrcElement = e.srcElement;    
+    lastSrcElement = e.srcElement;
   },false);
-  
+
   return function(type,args,target){
-    
+
     var event = OEvent(type,{
-      
+
       documentURL: args.info.pageUrl,
       pageURL: args.info.pageUrl,
       isEditable: args.info.editable,
@@ -827,53 +832,54 @@ var MenuEvent = (function(){
       source:  null,
       srcURL: args.info.srcUrl || null
     });
-    
+
     Object.defineProperty(event,'target',{enumerable: true,  configurable: false,  get: function(){return target || null;}, set: function(value){}});
     Object.defineProperty(event,'srcElement',{enumerable: true,  configurable: false,  get: function(srcElement){ return function(){return srcElement || null;} }(lastSrcElement), set: function(value){}});
-    
+
     return event;
   };
-  
+
 })();
 
-MenuEvent.prototype = Object.create( Event.prototype );var MenuEventTarget = function(){
+MenuEvent.prototype = Object.create( Event.prototype );
+var MenuEventTarget = function(){
 	var that = this;
 	var target = {};
-	
+
 	EventTarget.mixin( target );
-	
+
 	var onclick = null;
-	
+
 	Object.defineProperty(this,'onclick',{enumerable: true,  configurable: false,  get: function(){
 				return onclick;
 			},
 			set: function(value){
 				if(onclick!=null)this.removeEventListener('click',onclick,false);
-  
+
 				onclick = value;
-				
+
 				if(onclick!=null && onclick instanceof Function)this.addEventListener('click',onclick,false);
 				else onclick = null;
 			}
 	});
-	
+
 	Object.defineProperty(this,'dispatchEvent',{enumerable: false,  configurable: false, writable: false, value: function(event){
 		var currentTarget = this;
 		var stoppedImmediatePropagation = false;
 		Object.defineProperty(event,'currentTarget',{enumerable: true,  configurable: false,  get: function(){return currentTarget;}, set: function(value){}});
 		Object.defineProperty(event,'stopImmediatePropagation',{enumerable: true,  configurable: false, writable: false, value: function(){ stoppedImmediatePropagation = true;}});
-		
+
 		var allCallbacks = callbacksFor(target),
 		callbacks = allCallbacks[event.type], callbackTuple, callback, binding;
-		
-		
+
+
 		if (callbacks)for (var i=0, l=callbacks.length; i<l; i++) {
 			callbackTuple = callbacks[i];
 			callback = callbackTuple[0];
-			binding = callbackTuple[1];      
+			binding = callbackTuple[1];
 			if(!stoppedImmediatePropagation)callback.call(binding, event);
 		};
-		
+
 	}});
 	Object.defineProperty(this,'addEventListener',{enumerable: true,  configurable: false, writable: false, value: function(eventName, callback, useCapture) {
 		target.on(eventName, callback,this); // no useCapture
@@ -881,48 +887,104 @@ MenuEvent.prototype = Object.create( Event.prototype );var MenuEventTarget = fun
 	Object.defineProperty(this,'removeEventListener',{enumerable: true,  configurable: false, writable: false, value: function(eventName, callback, useCapture) {
 		target.off(eventName, callback,this); // no useCapture
 	}});
-	
+
 };
 
 var MenuItemProxy = function(id) {
-  
+
   MenuEventTarget.call( this );
-  
+
   Object.defineProperty(this,'toString',{enumerable: false,  configurable: false, writable: false, value: function(event){
 		return "[object MenuItemProxy]";
 	}});
-	
+
   Object.defineProperty(this,'id',{enumerable: true,  configurable: false,  get: function(){return id;}, set: function(){}});
-	
+
 };
 
 MenuItemProxy.prototype = Object.create( MenuEventTarget.prototype );
 
 var MenuContextProxy = function() {
-  
+
   MenuEventTarget.call( this );
-  
+
   Object.defineProperty(this,'toString',{enumerable: false,  configurable: false, writable: false, value: function(event){
 		return "[object MenuContextProxy]";
 	}});
-	
-	
+
+
 	OEX.addEventListener('controlmessage', function(e) {
-    
+
 		if( !e.data || !e.data.action || e.data.action !== '___O_MenuItem_Click') {
       return;
     }
-		
+
 		this.dispatchEvent( new MenuEvent('click', {info: e.data.info, tab: null},new MenuItemProxy(e.data.menuItemId)) );
-    
+
   }.bind(this));
-	
+
 };
 
 MenuContextProxy.prototype = Object.create( MenuEventTarget.prototype );
 
+
+
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('contextMenus')!=-1){
+
 OEC.menu = OEC.menu || new MenuContextProxy();
 
+}
+
+
+var UrlFilterEventListener = function() {
+
+  OEventTarget.call(this);
+
+  // listen for block events sent from the background process
+  // and fire in this content script
+
+  OEX.addEventListener('controlmessage', function( msg ) {
+
+    if( !msg.data || !msg.data.action ) {
+      return;
+    }
+
+    switch( msg.data.action ) {
+
+      // Set up all storage properties
+      case '___O_urlfilter_contentblocked':
+
+        // Fire contentblocked event on this object
+        this.dispatchEvent( new OEvent('contentblocked', msg.data.data || {}) );
+
+        break;
+
+      case '___O_urlfilter_contentunblocked':
+
+        // Fire contentunblocked event on this object
+        this.dispatchEvent( new OEvent('contentunblocked', msg.data.data || {}) );
+
+        break;
+    }
+
+  }.bind(this));
+
+};
+
+UrlFilterEventListener.prototype = Object.create( OEventTarget.prototype );
+
+// Override
+UrlFilterEventListener.prototype.addEventListener = function(eventName, callback, useCapture) {
+  this.on(eventName, callback); // no useCapture
+
+  // Trigger delivery of URLFilter events from the background process
+  addDelayedEvent(OEX, 'postMessage', [
+    { 'action': '___O_urlfilter_DRAINQUEUE' }
+  ]);
+
+};
+
+OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
 
   if (global.opera) {
     isReady = true;
@@ -930,7 +992,7 @@ OEC.menu = OEC.menu || new MenuContextProxy();
     // Make scripts also work in Opera <= version 12
     opera.isReady = function(fn) {
       fn.call(opera);
-      
+
       // Run delayed events (if any)
       for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
         var o = _delayedExecuteEvents[i];
@@ -940,7 +1002,7 @@ OEC.menu = OEC.menu || new MenuContextProxy();
     };
 
   } else {
-  
+
     opera.isReady = (function() {
 
       var fns = {
@@ -956,7 +1018,7 @@ OEC.menu = OEC.menu || new MenuContextProxy();
         hasFired_DOMContentLoaded = true;
         global.document.removeEventListener("DOMContentLoaded", handle_DomContentLoaded, true);
       }, true);
-    
+
       global.addEventListener("load", function handle_Load() {
         hasFired_Load = true;
         global.removeEventListener("load", handle_Load, true);
@@ -973,7 +1035,7 @@ OEC.menu = OEC.menu || new MenuContextProxy();
                   Object.prototype.toString.call(fn) !== "[object Function]") {
               return;
             }
-          
+
             if (isReady) {
               fn.call(global);
             } else {
@@ -984,7 +1046,7 @@ OEC.menu = OEC.menu || new MenuContextProxy();
             _target.call(target, name, fn, usecapture);
           }
         };
-      
+
         // Replace target.on[_name] with custom setter function
         target.__defineSetter__("on" + _name.toLowerCase(), function( fn ) {
           // call code block just created above...
@@ -1020,38 +1082,38 @@ OEC.menu = OEC.menu || new MenuContextProxy();
             fns['isready'][i].call(global);
           }
           fns['isready'] = []; // clear
-          
+
           var domContentLoadedTimeoutOverride = new Date().getTime() + 3000;
 
           // Synthesize and fire the document domcontentloaded event
           (function fireDOMContentLoaded() {
-            
+
             var currentTime = new Date().getTime();
 
             // Check for hadFired_Load in case we missed DOMContentLoaded
             // event, in which case, we syntesize DOMContentLoaded here
             // (always synthesized in Chromium Content Scripts)
             if (hasFired_DOMContentLoaded || hasFired_Load || currentTime >= domContentLoadedTimeoutOverride) {
-              
+
               fireEvent('domcontentloaded', global.document);
-              
+
               if(currentTime >= domContentLoadedTimeoutOverride) {
                 console.warn('document.domcontentloaded event fired on check timeout');
               }
-              
+
               var loadTimeoutOverride = new Date().getTime() + 3000;
-              
+
               // Synthesize and fire the window load event
               // after the domcontentloaded event has been
               // fired
               (function fireLoad() {
-                
+
                 var currentTime = new Date().getTime();
 
                 if (hasFired_Load || currentTime >= loadTimeoutOverride) {
 
                   fireEvent('load', window);
-                  
+
                   if(currentTime >= loadTimeoutOverride) {
                     console.warn('window.load event fired on check timeout');
                   }
@@ -1068,9 +1130,9 @@ OEC.menu = OEC.menu || new MenuContextProxy();
                     fireLoad();
                   }, 50);
                 }
-                
+
               })();
-              
+
             } else {
               global.setTimeout(function() {
                 fireDOMContentLoaded();
@@ -1085,9 +1147,9 @@ OEC.menu = OEC.menu || new MenuContextProxy();
       }
 
       var holdTimeoutOverride = new Date().getTime() + 3000;
-    
+
       (function holdReady() {
-        
+
         var currentTime = new Date().getTime();
 
         if (currentTime >= holdTimeoutOverride) {
