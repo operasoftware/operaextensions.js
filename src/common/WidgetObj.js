@@ -3,32 +3,16 @@ var OWidgetObj = function() {
 
   OEventTarget.call(this);
 
-  this.properties = {};
+  this.properties = chrome.app.getDetails();
+  
+  // Set WIDGET_API_LOADED feature to LOADED
+  deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
 
   // LocalStorage shim
   this._preferences = new OStorage();
 
   // Set WIDGET_PREFERENCES_LOADED feature to LOADED
   deferredComponentsLoadStatus['WIDGET_PREFERENCES_LOADED'] = true;
-
-  // Setup the widget interface
-  var xhr = new XMLHttpRequest();
-
-  xhr.open("GET", '/manifest.json', false);
-
-  xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4) {
-          this.properties = JSON.parse(xhr.responseText);
-
-          // Set extension id from base URL
-          this.properties.id = /^chrome\-extension\:\/\/(.*)\/$/.exec(chrome.extension.getURL(""))[1];
-
-          // Set WIDGET_API_LOADED feature to LOADED
-          deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
-      }
-  }.bind(this);
-
-  xhr.send();
 
   // Setup widget object proxy listener
   // for injected scripts and popups to connect to

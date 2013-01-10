@@ -4,25 +4,7 @@ var OWidgetObjProxy = function() {
   OEventTarget.call(this);
 
   this.properties = {};
-  // Setup the widget interface
-  var xhr = new XMLHttpRequest();
-
-  xhr.open("GET", '/manifest.json', false);
-
-  xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4) {
-          this.properties = JSON.parse(xhr.responseText);
-
-          // Set extension id from base URL
-          this.properties.id = /^chrome\-extension\:\/\/(.*)\/$/.exec(chrome.extension.getURL(""))[1];
-
-          // Set WIDGET_API_LOADED feature to LOADED
-          deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
-      }
-  }.bind(this);
-
-  xhr.send();
-
+  
   // LocalStorage shim
   this._preferences = new OStorageProxy();
   this._preferencesSet = {};
@@ -39,9 +21,9 @@ var OWidgetObjProxy = function() {
       case '___O_widget_setup_RESPONSE':
 
         // Copy properties
-        /*for(var i in msg.data.attrs) {
+        for(var i in msg.data.attrs) {
           this.properties[ i ] = msg.data.attrs[ i ];
-        }*/
+        }
 
         // Set WIDGET_API_LOADED feature to LOADED
         deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
