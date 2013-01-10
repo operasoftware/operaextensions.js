@@ -3241,11 +3241,23 @@ BrowserTabGroupManager.prototype.getAll = function() {
   return []; // always empty
 };
 
-OEX.windows = OEX.windows || new BrowserWindowManager();
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
 
-OEX.tabs = OEX.tabs || new RootBrowserTabManager();
+  OEX.windows = OEX.windows || new BrowserWindowManager();
 
-OEX.tabGroups = OEX.tabGroups || new BrowserTabGroupManager();
+}
+
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
+
+  OEX.tabs = OEX.tabs || new RootBrowserTabManager();
+
+}
+
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
+
+  OEX.tabGroups = OEX.tabGroups || new BrowserTabGroupManager();
+
+}
 
 var ToolbarContext = function() {
 
@@ -3585,7 +3597,11 @@ ToolbarUIItem.prototype.__defineGetter__("badge", function() {
   return this.properties.badge;
 });
 
-OEC.toolbar = OEC.toolbar || new ToolbarContext();
+if(widget && widget.properties && widget.properties.browser_action !== undefined && widget.properties.browser_action !== null ) {
+
+  OEC.toolbar = OEC.toolbar || new ToolbarContext();
+
+}
 var MenuEvent = function(type,args,target){
   var event;
 
@@ -14093,7 +14109,6 @@ var RuleList = function( parentObj ) {
     rule = rule.replace(/\s*$/,''); // rtrim
     rule = rule.replace(/^\s*/,''); // ltrim
     
-    console.log(rule === "");
     if(rule === "") {
       return { 'id': 0, 'rule': null };
     }
@@ -14294,7 +14309,12 @@ var UrlFilterManager = function() {
   // event queue manager
   this.eventQueue = {
     /*
-    tabId: [ { eventdetails }, { eventDetails }, { eventDetails } ],
+    tabId: [
+      'ready': false,
+      'contentblocked': [ { eventdetails }, { eventDetails }, { eventDetails } ],
+      'contentunblocked': [ { eventdetails }, { eventDetails }, { eventDetails } ],
+      'contentallowed': [ { eventdetails }, { eventDetails }, { eventDetails } ] 
+    ],
     ...
     */
   };
@@ -14446,10 +14466,10 @@ var UrlFilterManager = function() {
 
         // queue up this event
         if(self.eventQueue[details.tabId] === undefined) {
-          self.eventQueue[details.tabId] = { ready: false, items: [] };
+          self.eventQueue[details.tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
         }
 
-        self.eventQueue[details.tabId].items.push( msgData );
+        self.eventQueue[details.tabId]['contentblocked'].push( msgData );
 
       }
 
@@ -14481,16 +14501,47 @@ var UrlFilterManager = function() {
 
         // queue up this event
         if(self.eventQueue[details.tabId] === undefined) {
-          self.eventQueue[details.tabId] = { ready: false, items: [] };
+          self.eventQueue[details.tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
         }
 
-        self.eventQueue[details.tabId].items.push( msgData );
+        self.eventQueue[details.tabId]['contentunblocked'].push( msgData );
 
       }
 
       return {};
 
     } else {
+      
+      var msgData = {
+        "action": "___O_urlfilter_contentallowed",
+        "data": {
+          // send enough data so that we can fire the event in the injected script
+          "url": details.url
+        }
+      };
+
+      // Broadcast contentblocked event control message (i.e. beginning with '___O_')
+      // towards the tab matching the details.tabId value
+      // (but delay it until the content script is loaded!)
+      if(self.eventQueue[details.tabId] !== undefined && self.eventQueue[details.tabId].ready === true) {
+
+        // tab is already online so send contentblocked messages
+        chrome.tabs.sendMessage(
+          details.tabId,
+          msgData,
+          function() {}
+        );
+
+      } else {
+
+        // queue up this event
+        if(self.eventQueue[details.tabId] === undefined) {
+          self.eventQueue[details.tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
+        }
+
+        self.eventQueue[details.tabId]['contentallowed'].push( msgData );
+
+      }
 
       return {};
 
@@ -14508,23 +14559,25 @@ var UrlFilterManager = function() {
       return;
     }
 
-    if( msg.data.action !== '___O_urlfilter_DRAINQUEUE' ) {
+    if( msg.data.action !== '___O_urlfilter_DRAINQUEUE' || !msg.data.eventType ) {
       return;
     }
 
     // Drain queued events belonging to this tab
     var tabId = msg.source.tabId;
-
+    
     if( self.eventQueue[tabId] !== undefined ) {
+      
+      var eventQueue = self.eventQueue[tabId][ msg.data.eventType ];
 
-      for(var i = 0, l = self.eventQueue[tabId].items.length; i < l; i++) {
+      for(var i = 0, l = eventQueue.length; i < l; i++) {
 
-        msg.source.postMessage(self.eventQueue[tabId].items[i]);
+        msg.source.postMessage(eventQueue[i]);
 
       }
 
       self.eventQueue[tabId].ready = true; // set to resolved (true)
-      self.eventQueue[tabId].items = [];
+      self.eventQueue[tabId][ msg.data.eventType ] = []; // reset event queue
 
     }
 
@@ -14536,7 +14589,7 @@ var UrlFilterManager = function() {
 
       case 'loading':
         // kill previous events queue
-        self.eventQueue[tabId] = { ready: false, items: [] };
+        self.eventQueue[tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
 
         break;
 
@@ -14573,7 +14626,12 @@ UrlFilterManager.prototype.RESOURCE_OBJECT_SUBREQUEST = 0x00001000; //  4096
 UrlFilterManager.prototype.RESOURCE_MEDIA             = 0x00004000; // 16384
 UrlFilterManager.prototype.RESOURCE_FONT              = 0x00008000; // 32768
 
-OEX.urlfilter = OEX.urlfilter || new UrlFilterManager();
+if(widget && widget.properties && widget.properties.permissions 
+    && widget.properties.permissions.indexOf('webRequest') != -1 && widget.properties.permissions.indexOf('webRequestBlocking') != -1 ) {
+
+  OEX.urlfilter = OEX.urlfilter || new UrlFilterManager();
+
+}
 
   if (global.opera) {
     isReady = true;
