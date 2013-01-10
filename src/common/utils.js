@@ -11,7 +11,7 @@ function isObjectEmpty(obj) {
 /**
  * GENERAL OEX SHIM UTILITY FUNCTIONS
  */
- 
+
 /**
  * Chromium doesn't support complex colors in places so
  * this function will convert colors from rgb, rgba, hsv,
@@ -22,14 +22,14 @@ function isObjectEmpty(obj) {
  * with which to apply alpha blending (if any).
  */
 function complexColorToHex(color, backgroundColorVal) {
-  
+
   if(color === undefined || color === null) {
     return color;
   }
-  
+
   // Force covert color to String
   color = color + "";
-  
+
   // X11/W3C Color Names List
   var colorKeywords = { aliceblue: [240,248,255], antiquewhite: [250,235,215], aqua: [0,255,255], aquamarine: [127,255,212],
   azure: [240,255,255], beige: [245,245,220], bisque: [255,228,196], black: [0,0,0], blanchedalmond: [255,235,205],
@@ -197,7 +197,7 @@ function complexColorToHex(color, backgroundColorVal) {
       return "#" + DectoHex(rgbVal[0] || 255) + DectoHex(rgbVal[1] || 255) + DectoHex(rgbVal[2] || 255);
     }
   }
-  
+
   return "#f00"; // default in case of error
 
 };

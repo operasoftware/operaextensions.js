@@ -19,7 +19,7 @@ var OWidgetObj = function() {
   xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
           this.properties = JSON.parse(xhr.responseText);
-          
+
           // Set extension id from base URL
           this.properties.id = /^chrome\-extension\:\/\/(.*)\/$/.exec(chrome.extension.getURL(""))[1];
 
