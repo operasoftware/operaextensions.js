@@ -8,6 +8,6 @@
   },
   "browser_action": {},
   "permissions": [
-    "tabs", "http://*/*","https://*/*", "contextMenus"
+    "tabs", "http://*/*","https://*/*"
   ]
 }
