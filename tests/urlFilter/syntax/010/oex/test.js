@@ -32,5 +32,5 @@ opera.isReady(function() {
     var data = "<!DOCTYPE html>"
              + "<img src='https://ssl.opera.com:8012/resources/images/pass.png'>"
 
-    createTab({url: getProxyURL(data)});
+    createTab({url: getProxyURL(encodeURIComponent(window.btoa(data)))});
 });

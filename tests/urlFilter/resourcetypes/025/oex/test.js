@@ -24,7 +24,7 @@ opera.isReady(function() {
 
     var data = "<!DOCTYPE html><meta http-equiv='refresh' content='0;http://t/resources/fail.html'>PASS";
 
-    createTab({url: getProxyURL(data)});
+    createTab({url: getProxyURL(encodeURIComponent(window.btoa(data)))});
 
     /*
     "other":*            urlfilter.RESOURCE_OTHER,             //

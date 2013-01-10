@@ -24,7 +24,7 @@ opera.isReady(function() {
     
     var data = "<!DOCTYPE html><link rel='stylesheet' href='http://t/resources/fail.css'>If you can read this, the stylesheet was blocked. PASS only if a contentblocked event was fired.";
     
-    createTab({url: getProxyURL(data)});
+    createTab({url: getProxyURL(encodeURIComponent(window.btoa(data)))});
     
     /*
     "other":*            urlfilter.RESOURCE_OTHER,             //
