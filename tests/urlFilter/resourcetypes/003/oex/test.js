@@ -24,7 +24,7 @@ opera.isReady({
     
     var data = "<!DOCTYPE html><img src='http://t/resources/images/fail.png'>";
     
-    createTab({url: createDataURL(data)});
+    createTab({url: getProxyURL(data)});
     
     /*
     "other":*            urlfilter.RESOURCE_OTHER,             //

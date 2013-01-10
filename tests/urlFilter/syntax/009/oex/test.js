@@ -32,5 +32,5 @@ opera.isReady({
              + "<img src='https://ssl.opera.com:8012/resources/images/fail.png'>"
              + "<img src='https://ssl.opera.com:8012/resources/images/pass.png'>"
 
-    createTab({url: createDataURL(data)});
+    createTab({url: getProxyURL(data)});
 });
