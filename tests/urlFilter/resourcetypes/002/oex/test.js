@@ -24,5 +24,5 @@ opera.isReady(function() {
     
     var data = "<!DOCTYPE html><script src='http://t/resources/scripts/external.js'></script>";
     
-    createTab({url: getProxyURL(data)});
+    createTab({url: getProxyURL(encodeURIComponent(window.btoa(data)))});
 });

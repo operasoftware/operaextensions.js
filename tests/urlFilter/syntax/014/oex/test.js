@@ -37,5 +37,5 @@ opera.isReady(function() {
              + "<img src='http://t.oslo.osa/resources/images/pass.png'>"
              + "<img src='https://t.oslo.osa/resources/images/pass.png'>"
 
-    createTab({url: getProxyURL(data)});
+    createTab({url: getProxyURL(encodeURIComponent(window.btoa(data)))});
 });

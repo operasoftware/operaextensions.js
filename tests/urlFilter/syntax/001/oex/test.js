@@ -48,5 +48,5 @@ opera.isReady(function() {
              + "<img src='http://t/resources/images/fail.png?onechar'>"
              + "<img src='http://t/resources/images/fail.png?twochar'>"
 
-    createTab({url: getProxyURL(data)});
+    createTab({url: getProxyURL(encodeURIComponent(window.btoa(data)))});
 });

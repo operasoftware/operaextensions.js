@@ -22,5 +22,5 @@ opera.isReady(function(){
     }
     
     var data = "<!DOCTYPE html><p><img src='http://t/resources/images/fail.png'><img src='http://t/resources/images/pass.png'>";
-    createTab({url: getProxyURL(data)});
+    createTab({url: getProxyURL(encodeURIComponent(window.btoa(data)))});
 });

@@ -23,7 +23,7 @@ opera.extension.onmessage = function(evt) {
 
 var data = "<!DOCTYPE html><object data='http://t/resources/objects/fail.swf'>";
 
-createTab({url: getProxyURL(data)});
+createTab({url: getProxyURL(encodeURIComponent(window.btoa(data)))});
 
 /*
 "other":*            urlfilter.RESOURCE_OTHER,             //

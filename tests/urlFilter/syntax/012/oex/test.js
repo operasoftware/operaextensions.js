@@ -72,5 +72,5 @@ opera.isReady(function() {
     	}
     }
 
-    createTab({url: getProxyURL(data)});
+    createTab({url: getProxyURL(encodeURIComponent(window.btoa(data)))});
 });

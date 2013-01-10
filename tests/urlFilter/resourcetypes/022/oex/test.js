@@ -24,7 +24,7 @@ opera.isReady(function() {
 
     var data = "<!DOCTYPE html><iframe src='http://t/resources/fail.html'></iframe>";
 
-    createTab({url: getProxyURL(data)});
+    createTab({url: getProxyURL(encodeURIComponent(window.btoa(data)))});
 
     /*
     "other":*            urlfilter.RESOURCE_OTHER,             //

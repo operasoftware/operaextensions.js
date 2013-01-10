@@ -24,5 +24,5 @@ opera.isReady(function() {
 
     var data = "<!DOCTYPE html><body background='http://t/resources/images/fail.png'><p>You should not see a background image.";
 
-    createTab({url: getProxyURL(data)});
+    createTab({url: getProxyURL(encodeURIComponent(window.btoa(data)))});
 });
