@@ -13,6 +13,6 @@
       }
   ],
   "permissions": [
-    "tabs", "webRequest", "webRequestBlocking", "contextMenus", "http://*/*","https://*/*", "webRequest", "webRequestBlocking"
+    "tabs", "webRequest", "webRequestBlocking", "contextMenus", "webRequestBlocking", "contextMenus", "contextMenus", "http://*/*","https://*/*", "webRequest", "webRequestBlocking", "contextMenus"
   ]
 }
