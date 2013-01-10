@@ -1,0 +1,1 @@
+Wildcard syntax in the allow list, matching any host

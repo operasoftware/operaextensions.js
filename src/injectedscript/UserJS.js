@@ -12,35 +12,35 @@ Opera.prototype.defineMagicVariable = function(name, getter, setter) {
   }
   var allowedStringifications = {"[object Function]":1, "[object Null]":1};
   if( ! ( (Object.prototype.toString.call(getter) in allowedStringifications) &&  
-        (Object.prototype.toString.call(setter) in allowedStringifications)) {
+        (Object.prototype.toString.call(setter) in allowedStringifications)) ) {
     return;
   }
-  
+
   var magicScriptEl = document.createElement('script');
   magicScriptEl.setAttribute('type', 'text/javascript');
 
   if (Object.prototype.toString.call(getter) === "[object Function]") {
     magicScriptEl.textContent += "window.__defineGetter__('" + name + "', " + getter.toString() + ");\n";
   }
-  
+
   if (setter && Object.prototype.toString.call(setter) === "[object Function]") {
     magicScriptEl.textContent += "window.__defineSetter__('" + name + "', " + setter.toString() + ");\n";
   }
-  
+
   document.getElementsByTagName('head')[0].appendChild( magicScriptEl );
   document.getElementsByTagName('head')[0].removeChild( magicScriptEl );
-  
+
 };
 
 Opera.prototype.defineMagicFunction = function(name, implementation) {
-  
+
   if(!implementation || Object.prototype.toString.call(implementation) !== "[object Function]") {
     return;
   }
-  
+
   var magicScriptEl = document.createElement('script');
   magicScriptEl.setAttribute('type', 'text/javascript');
-  
+
   magicScriptEl.textContent = "var " + name + " = " + implementation.toString() + ";";
 
   document.getElementsByTagName('head')[0].appendChild( magicScriptEl );

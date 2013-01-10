@@ -1,8 +1,8 @@
 
 var OperaExtension = function() {
-  
+
   OMessagePort.call( this, false );
-  
+
 };
 
 OperaExtension.prototype = Object.create( OMessagePort.prototype );

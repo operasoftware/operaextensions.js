@@ -1,19 +1,19 @@
 
 var OStorageProxy = function () {
-  
-  // All attributes and methods defined in this class must be non-enumerable, 
+
+  // All attributes and methods defined in this class must be non-enumerable,
   // hence the structure of this class and the use of Object.defineProperty.
-  
+
   Object.defineProperty(this, "length", { value : 0, writable:true });
-  
-  Object.defineProperty(OStorageProxy.prototype, "getItem", { 
+
+  Object.defineProperty(OStorageProxy.prototype, "getItem", {
     value: function( key ) {
       var val = this[key];
       return val === undefined ? null : val;
     }
   });
-  
-  Object.defineProperty(OStorageProxy.prototype, "key", { 
+
+  Object.defineProperty(OStorageProxy.prototype, "key", {
     value: function( i ) {
       var size = 0;
       for (var i in this) {
@@ -25,13 +25,13 @@ var OStorageProxy = function () {
       return null;
     }
   });
-  
-  Object.defineProperty(OStorageProxy.prototype, "removeItem", { 
+
+  Object.defineProperty(OStorageProxy.prototype, "removeItem", {
     value: function( key, proxiedChange ) {
       if( this.hasOwnProperty( key ) ) {
         delete this[key];
         this.length--;
-        
+
         if( !proxiedChange ) {
           // Send control message to remove item from background store
           OEX.postMessage({
@@ -44,14 +44,14 @@ var OStorageProxy = function () {
       }
     }
   });
-  
-  Object.defineProperty(OStorageProxy.prototype, "setItem", { 
+
+  Object.defineProperty(OStorageProxy.prototype, "setItem", {
     value: function( key, value, proxiedChange ) {
       if( !this[key] ) {
         this.length++;
       }
       this[key] = value;
-      
+
       if( !proxiedChange ) {
         // Send control message to set item in background store
         OEX.postMessage({
@@ -64,8 +64,8 @@ var OStorageProxy = function () {
       }
     }
   });
-  
-  Object.defineProperty(OStorageProxy.prototype, "clear", { 
+
+  Object.defineProperty(OStorageProxy.prototype, "clear", {
     value: function( proxiedChange ) {
       for(var i in this) {
         if( this.hasOwnProperty( i ) ) {
@@ -73,7 +73,7 @@ var OStorageProxy = function () {
         }
       }
       this.length = 0;
-      
+
       if( !proxiedChange ) {
         // Send control message to clear all items from background store
         OEX.postMessage({

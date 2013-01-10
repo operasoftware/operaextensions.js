@@ -1,8 +1,8 @@
 
 var OperaExtension = function() {
-  
+
   OBackgroundMessagePort.call( this );
-  
+
 };
 
 OperaExtension.prototype = Object.create( OBackgroundMessagePort.prototype );
