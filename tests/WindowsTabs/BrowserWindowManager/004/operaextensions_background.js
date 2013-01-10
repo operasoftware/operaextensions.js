@@ -14097,7 +14097,6 @@ var RuleList = function( parentObj ) {
     rule = rule.replace(/\s*$/,''); // rtrim
     rule = rule.replace(/^\s*/,''); // ltrim
     
-    console.log(rule === "");
     if(rule === "") {
       return { 'id': 0, 'rule': null };
     }
@@ -14298,7 +14297,12 @@ var UrlFilterManager = function() {
   // event queue manager
   this.eventQueue = {
     /*
-    tabId: [ { eventdetails }, { eventDetails }, { eventDetails } ],
+    tabId: [
+      'ready': false,
+      'contentblocked': [ { eventdetails }, { eventDetails }, { eventDetails } ],
+      'contentunblocked': [ { eventdetails }, { eventDetails }, { eventDetails } ],
+      'contentallowed': [ { eventdetails }, { eventDetails }, { eventDetails } ] 
+    ],
     ...
     */
   };
@@ -14450,10 +14454,10 @@ var UrlFilterManager = function() {
 
         // queue up this event
         if(self.eventQueue[details.tabId] === undefined) {
-          self.eventQueue[details.tabId] = { ready: false, items: [] };
+          self.eventQueue[details.tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
         }
 
-        self.eventQueue[details.tabId].items.push( msgData );
+        self.eventQueue[details.tabId]['contentblocked'].push( msgData );
 
       }
 
@@ -14485,16 +14489,47 @@ var UrlFilterManager = function() {
 
         // queue up this event
         if(self.eventQueue[details.tabId] === undefined) {
-          self.eventQueue[details.tabId] = { ready: false, items: [] };
+          self.eventQueue[details.tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
         }
 
-        self.eventQueue[details.tabId].items.push( msgData );
+        self.eventQueue[details.tabId]['contentunblocked'].push( msgData );
 
       }
 
       return {};
 
     } else {
+      
+      var msgData = {
+        "action": "___O_urlfilter_contentallowed",
+        "data": {
+          // send enough data so that we can fire the event in the injected script
+          "url": details.url
+        }
+      };
+
+      // Broadcast contentblocked event control message (i.e. beginning with '___O_')
+      // towards the tab matching the details.tabId value
+      // (but delay it until the content script is loaded!)
+      if(self.eventQueue[details.tabId] !== undefined && self.eventQueue[details.tabId].ready === true) {
+
+        // tab is already online so send contentblocked messages
+        chrome.tabs.sendMessage(
+          details.tabId,
+          msgData,
+          function() {}
+        );
+
+      } else {
+
+        // queue up this event
+        if(self.eventQueue[details.tabId] === undefined) {
+          self.eventQueue[details.tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
+        }
+
+        self.eventQueue[details.tabId]['contentallowed'].push( msgData );
+
+      }
 
       return {};
 
@@ -14512,23 +14547,25 @@ var UrlFilterManager = function() {
       return;
     }
 
-    if( msg.data.action !== '___O_urlfilter_DRAINQUEUE' ) {
+    if( msg.data.action !== '___O_urlfilter_DRAINQUEUE' || !msg.data.eventType ) {
       return;
     }
 
     // Drain queued events belonging to this tab
     var tabId = msg.source.tabId;
-
+    
     if( self.eventQueue[tabId] !== undefined ) {
+      
+      var eventQueue = self.eventQueue[tabId][ msg.data.eventType ];
 
-      for(var i = 0, l = self.eventQueue[tabId].items.length; i < l; i++) {
+      for(var i = 0, l = eventQueue.length; i < l; i++) {
 
-        msg.source.postMessage(self.eventQueue[tabId].items[i]);
+        msg.source.postMessage(eventQueue[i]);
 
       }
 
       self.eventQueue[tabId].ready = true; // set to resolved (true)
-      self.eventQueue[tabId].items = [];
+      self.eventQueue[tabId][ msg.data.eventType ] = []; // reset event queue
 
     }
 
@@ -14540,7 +14577,7 @@ var UrlFilterManager = function() {
 
       case 'loading':
         // kill previous events queue
-        self.eventQueue[tabId] = { ready: false, items: [] };
+        self.eventQueue[tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
 
         break;
 

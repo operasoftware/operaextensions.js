@@ -959,6 +959,13 @@ var UrlFilterEventListener = function() {
         this.dispatchEvent( new OEvent('contentunblocked', msg.data.data || {}) );
 
         break;
+        
+      case '___O_urlfilter_contentallowed':
+
+        // Fire contentallowed event on this object
+        this.dispatchEvent( new OEvent('contentallowed', msg.data.data || {}) );
+
+        break;
     }
 
   }.bind(this));
@@ -971,9 +978,11 @@ UrlFilterEventListener.prototype = Object.create( OEventTarget.prototype );
 UrlFilterEventListener.prototype.addEventListener = function(eventName, callback, useCapture) {
   this.on(eventName, callback); // no useCapture
 
+  console.log('drain queue: ' + eventName);
+
   // Trigger delivery of URLFilter events from the background process
   addDelayedEvent(OEX, 'postMessage', [
-    { 'action': '___O_urlfilter_DRAINQUEUE' }
+    { 'action': '___O_urlfilter_DRAINQUEUE', 'eventType': eventName }
   ]);
 
 };

@@ -14,7 +14,6 @@ var RuleList = function( parentObj ) {
     rule = rule.replace(/\s*$/,''); // rtrim
     rule = rule.replace(/^\s*/,''); // ltrim
     
-    console.log(rule === "");
     if(rule === "") {
       return { 'id': 0, 'rule': null };
     }
