@@ -2,13 +2,14 @@ function getProperties( object, depth, prefix ) {
     prefix = prefix||"";
     var t = "";
     for( key in object ) {
-	t += prefix + "" + "[" + key  + "] " + typeof object[key] + " " + object[key] + "\n";
-	if( typeof object[key] == "object" && depth>0 ) {
-              t += getProperties( object[key], depth-1, "[" + key  + "]" + prefix );
-	}
-	if( depth==0 ){
-	    t += "------------Max depth reached \n";
-	}
+	 t += prefix + "" + "[" + key  + "] " + typeof object[key] + " " + object[key] + "\n";
+         if( typeof object[key] == "object" && depth>0 )
+         {
+             t += getProperties( object[key], depth-1, "[" + key  + "]" + prefix );
+         }
+         if( depth==0 ){
+             t += "------------Max depth reached \n";
+         }
     }
     return t;
 }
@@ -27,7 +28,7 @@ function POST( result, msg ) {
       opera.postError( "Submitted this result to SPARTAN:\t" + dataResult + "\n" + dataMessage);
     }
 
-    var value = "Extensions: 000 - back broadCast userjs \t" + result + "\n" + msg;
+    var value = "Extensions: 001 - back broadCast popup \t" + result + "\n" + msg;
     opera.postError( "==BackgroundProcess==\n" + value );
 
     if (opera.extension && opera.extension.tabs){
