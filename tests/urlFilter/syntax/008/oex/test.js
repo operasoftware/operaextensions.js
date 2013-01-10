@@ -42,5 +42,5 @@ opera.isReady({
              + "<img src='http://t/resources/images/pass.png'>"
              + "<img src='http://t/resources/images/pass.gif'>"
 
-    createTab({url: createDataURL(data)});
+    createTab({url: getProxyURL(data)});
 });

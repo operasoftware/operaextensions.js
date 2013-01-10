@@ -24,7 +24,7 @@ opera.isReady({
 
     var data = "<!DOCTYPE html><script src='http://t/resources/scripts/external.js'></script>";
 
-    createTab({url: createDataURL(data)});
+    createTab({url: getProxyURL(data)});
 
     /*
     "other":*            urlfilter.RESOURCE_OTHER,             //

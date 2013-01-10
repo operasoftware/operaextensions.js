@@ -36,5 +36,5 @@ opera.isReady({
              + "<img src='http://t/resources/images/fail.png'>"
              + "<img src='https://t/resources/images/fail.png'>"
 
-    createTab({url: createDataURL(data)});
+    createTab({url: getProxyURL(data)});
 });

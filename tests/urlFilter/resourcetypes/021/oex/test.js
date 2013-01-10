@@ -24,7 +24,7 @@ opera.isReady({
 
     var data = "<!DOCTYPE html><embed src='http://t/resources/objects/fail.swf'>";
 
-    createTab({url: createDataURL(data)});
+    createTab({url: getProxyURL(data)});
 
     /*
     "other":*            urlfilter.RESOURCE_OTHER,             //

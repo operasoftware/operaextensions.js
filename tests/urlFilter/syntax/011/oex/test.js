@@ -66,5 +66,5 @@ opera.isReady({
     }
 
 
-    createTab({url: createDataURL(data)});
+    createTab({url: getProxyURL(data)});
 });
