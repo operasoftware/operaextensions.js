@@ -59,6 +59,10 @@ function createDataURL(data) {
 	return "data:text/html;base64," + window.btoa(data);
 }
 
+function getProxyURL(data) {
+  return "http://t/core/features/widget_tf/core-gadgets/extensions/url-filter/proxy.php?data=" + data;
+}
+
 function types(types) {
 	var contentType = 0;
 	var map = {
