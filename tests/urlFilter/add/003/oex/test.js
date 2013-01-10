@@ -1,4 +1,4 @@
-opera.isReady(function()
+opera.isReady(function(){
     var tests = {}; // Asynchronous tests
     
     tests["block"] = async_test("Adding filter to block content.");
