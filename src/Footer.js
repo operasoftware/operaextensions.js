@@ -5,7 +5,7 @@
     // Make scripts also work in Opera <= version 12
     opera.isReady = function(fn) {
       fn.call(opera);
-      
+
       // Run delayed events (if any)
       for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
         var o = _delayedExecuteEvents[i];
@@ -15,7 +15,7 @@
     };
 
   } else {
-  
+
     opera.isReady = (function() {
 
       var fns = {
@@ -31,7 +31,7 @@
         hasFired_DOMContentLoaded = true;
         global.document.removeEventListener("DOMContentLoaded", handle_DomContentLoaded, true);
       }, true);
-    
+
       global.addEventListener("load", function handle_Load() {
         hasFired_Load = true;
         global.removeEventListener("load", handle_Load, true);
@@ -48,7 +48,7 @@
                   Object.prototype.toString.call(fn) !== "[object Function]") {
               return;
             }
-          
+
             if (isReady) {
               fn.call(global);
             } else {
@@ -59,7 +59,7 @@
             _target.call(target, name, fn, usecapture);
           }
         };
-      
+
         // Replace target.on[_name] with custom setter function
         target.__defineSetter__("on" + _name.toLowerCase(), function( fn ) {
           // call code block just created above...
@@ -95,38 +95,38 @@
             fns['isready'][i].call(global);
           }
           fns['isready'] = []; // clear
-          
+
           var domContentLoadedTimeoutOverride = new Date().getTime() + 3000;
 
           // Synthesize and fire the document domcontentloaded event
           (function fireDOMContentLoaded() {
-            
+
             var currentTime = new Date().getTime();
 
             // Check for hadFired_Load in case we missed DOMContentLoaded
             // event, in which case, we syntesize DOMContentLoaded here
             // (always synthesized in Chromium Content Scripts)
             if (hasFired_DOMContentLoaded || hasFired_Load || currentTime >= domContentLoadedTimeoutOverride) {
-              
+
               fireEvent('domcontentloaded', global.document);
-              
+
               if(currentTime >= domContentLoadedTimeoutOverride) {
                 console.warn('document.domcontentloaded event fired on check timeout');
               }
-              
+
               var loadTimeoutOverride = new Date().getTime() + 3000;
-              
+
               // Synthesize and fire the window load event
               // after the domcontentloaded event has been
               // fired
               (function fireLoad() {
-                
+
                 var currentTime = new Date().getTime();
 
                 if (hasFired_Load || currentTime >= loadTimeoutOverride) {
 
                   fireEvent('load', window);
-                  
+
                   if(currentTime >= loadTimeoutOverride) {
                     console.warn('window.load event fired on check timeout');
                   }
@@ -143,9 +143,9 @@
                     fireLoad();
                   }, 50);
                 }
-                
+
               })();
-              
+
             } else {
               global.setTimeout(function() {
                 fireDOMContentLoaded();
@@ -160,9 +160,9 @@
       }
 
       var holdTimeoutOverride = new Date().getTime() + 3000;
-    
+
       (function holdReady() {
-        
+
         var currentTime = new Date().getTime();
 
         if (currentTime >= holdTimeoutOverride) {

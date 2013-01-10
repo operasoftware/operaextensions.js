@@ -1,0 +1,1 @@
+Separator wildcard syntax in the block list. (Requires selftest support for special contentallowed event. See test 011a)

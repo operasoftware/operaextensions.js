@@ -1,0 +1,18 @@
+{
+  "name": "tc-filter-third_party-002",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Third party option in the block list, match same-origin only.",
+  "background": {
+      "page": "background.html"
+  },
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js", "/oex/includes/urlfilter.js"]
+      }
+  ],
+  "permissions": [
+    "tabs", "http://*/*","https://*/*", "webRequest", "webRequestBlocking", "contextMenus"
+  ]
+}

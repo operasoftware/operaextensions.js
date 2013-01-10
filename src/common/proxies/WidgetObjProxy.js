@@ -1,30 +1,30 @@
 
 var OWidgetObjProxy = function() {
-  
+
   OEventTarget.call(this);
-  
+
   this.properties = {};
-  
+
   // LocalStorage shim
   this._preferences = new OStorageProxy();
   this._preferencesSet = {};
-  
+
   OEX.addEventListener('controlmessage', function( msg ) {
-    
+
     if( !msg.data || !msg.data.action ) {
       return;
     }
-    
+
     switch( msg.data.action ) {
-      
+
       // Set up all storage properties
       case '___O_widget_setup_RESPONSE':
-      
+
         // Copy properties
         for(var i in msg.data.attrs) {
           this.properties[ i ] = msg.data.attrs[ i ];
         }
-        
+
         // Set WIDGET_API_LOADED feature to LOADED
         deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
 
@@ -36,52 +36,52 @@ var OWidgetObjProxy = function() {
             this._preferences.length++;
           }
         }
-        
+
         // Set WIDGET_PREFERENCES_LOADED feature to LOADED
         deferredComponentsLoadStatus['WIDGET_PREFERENCES_LOADED'] = true;
-      
+
         break;
-        
+
       // Update a storage item
       case '___O_widgetPreferences_setItem_RESPONSE':
-        
+
         this._preferences.setItem( msg.data.data.key, msg.data.data.val, true );
-        
+
         break;
-      
+
       // Remove a storage item
       case '___O_widgetPreferences_removeItem_RESPONSE':
 
         this._preferences.removeItem( msg.data.data.key, true );
 
         break;
-        
+
       // Clear all storage items
       case '___O_widgetPreferences_clear_RESPONSE':
 
         this._preferences.clear( true );
 
         break;
-        
+
       default:
         break;
     }
-    
-  }.bind(this), false); 
-  
+
+  }.bind(this), false);
+
   // Setup widget API via proxy
   OEX.postMessage({
     "action": "___O_widget_setup_REQUEST"
   });
-  
-  // When the page unloads, take all items that have been 
+
+  // When the page unloads, take all items that have been
   // added with preference.blah or preferences['blah']
   // (instead of the catachable .setItem) and push these
   // preferences to the background script
   global.addEventListener('beforeunload', function() {
     // TODO implement widget.preferences page unload behavior
   }, false);
-  
+
 };
 
 OWidgetObjProxy.prototype = Object.create( OEventTarget.prototype );

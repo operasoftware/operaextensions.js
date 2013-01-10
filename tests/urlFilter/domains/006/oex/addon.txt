@@ -1,0 +1,1 @@
+Domain options in the allow list, ignore port number

@@ -1,0 +1,1 @@
+Check that the filter applies to objects using resources option.
