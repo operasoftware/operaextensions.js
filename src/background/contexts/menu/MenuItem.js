@@ -192,5 +192,4 @@ var MenuItem = function(internal,properties ) {
 
 MenuItem.prototype = Object.create( OMenuContext.prototype );
 
-global.MenuItem = MenuItem;
 
