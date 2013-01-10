@@ -3241,11 +3241,23 @@ BrowserTabGroupManager.prototype.getAll = function() {
   return []; // always empty
 };
 
-OEX.windows = OEX.windows || new BrowserWindowManager();
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
 
-OEX.tabs = OEX.tabs || new RootBrowserTabManager();
+  OEX.windows = OEX.windows || new BrowserWindowManager();
 
-OEX.tabGroups = OEX.tabGroups || new BrowserTabGroupManager();
+}
+
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
+
+  OEX.tabs = OEX.tabs || new RootBrowserTabManager();
+
+}
+
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
+
+  OEX.tabGroups = OEX.tabGroups || new BrowserTabGroupManager();
+
+}
 
 var ToolbarContext = function() {
 
@@ -3585,7 +3597,11 @@ ToolbarUIItem.prototype.__defineGetter__("badge", function() {
   return this.properties.badge;
 });
 
-OEC.toolbar = OEC.toolbar || new ToolbarContext();
+if(widget && widget.properties && widget.properties.browser_action !== undefined && widget.properties.browser_action !== null ) {
+
+  OEC.toolbar = OEC.toolbar || new ToolbarContext();
+
+}
 var MenuEvent = function(type,args,target){
   var event;
 
@@ -14610,7 +14626,12 @@ UrlFilterManager.prototype.RESOURCE_OBJECT_SUBREQUEST = 0x00001000; //  4096
 UrlFilterManager.prototype.RESOURCE_MEDIA             = 0x00004000; // 16384
 UrlFilterManager.prototype.RESOURCE_FONT              = 0x00008000; // 32768
 
-OEX.urlfilter = OEX.urlfilter || new UrlFilterManager();
+if(widget && widget.properties && widget.properties.permissions 
+    && widget.properties.permissions.indexOf('webRequest') != -1 && widget.properties.permissions.indexOf('webRequestBlocking') != -1 ) {
+
+  OEX.urlfilter = OEX.urlfilter || new UrlFilterManager();
+
+}
 
   if (global.opera) {
     isReady = true;
