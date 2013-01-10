@@ -13,7 +13,7 @@
       }
   ],
   "permissions": [
-    "tabs", "webRequest", "webRequestBlocking", "contextMenus", "http://*/*","https://*/*"
+    "tabs", "http://*/*","https://*/*"
   ],
   "web_accessible_resources": [
     "/oex/resources/opera.png"
