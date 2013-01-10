@@ -4,7 +4,7 @@ var OWidgetObjProxy = function() {
   OEventTarget.call(this);
 
   this.properties = {};
-
+  
   // LocalStorage shim
   this._preferences = new OStorageProxy();
   this._preferencesSet = {};

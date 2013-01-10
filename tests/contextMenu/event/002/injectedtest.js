@@ -1,3 +1,6 @@
+
+window.bchrome = chrome;
+
 opera.isReady(function() {
 
 opera.contexts.menu.onclick = function(e){

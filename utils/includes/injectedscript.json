@@ -24,6 +24,7 @@
   "../src/common/contexts/menu/MenuEventTarget.js",
   "../src/injectedscript/contexts/menu/MenuItemProxy.js",
   "../src/injectedscript/contexts/menu/MenuContextProxy.js",
+  "../src/injectedscript/contexts/Menu.js",
 
   "../src/injectedscript/urlfilter/UrlFilterEventListener.js",
   "../src/injectedscript/UrlFilter.js",

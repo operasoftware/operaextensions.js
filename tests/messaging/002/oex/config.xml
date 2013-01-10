@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets">
+	<name>002 - back broadCast both</name>
+	<description>Please click on the button after the tabs finish loading. Once the popup loads, a broadcast will be sent out.</description>
+  <access origin="http://localhost/"/>
+  <access origin="http://www.opera.com/"/>
+</widget>

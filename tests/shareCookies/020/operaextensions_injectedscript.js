@@ -619,7 +619,7 @@ var OWidgetObjProxy = function() {
   OEventTarget.call(this);
 
   this.properties = {};
-
+  
   // LocalStorage shim
   this._preferences = new OStorageProxy();
   this._preferencesSet = {};
@@ -927,7 +927,13 @@ var MenuContextProxy = function() {
 
 MenuContextProxy.prototype = Object.create( MenuEventTarget.prototype );
 
+
+
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('contextMenus')!=-1){
+
 OEC.menu = OEC.menu || new MenuContextProxy();
+
+}
 
 
 var UrlFilterEventListener = function() {
