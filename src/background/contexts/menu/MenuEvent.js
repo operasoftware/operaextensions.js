@@ -1,15 +1,15 @@
 var MenuEvent = function(type,args,target){
   var event;
-	
+
 	if(type=='click'){
-		
+
 		var tab = null;
 		var tabs = OEX.tabs.getAll();
 		for(var i=0;i<tabs.length;i++){
 			if(tabs[i].properties.id==args.tab.id&&tabs[i].browserWindow.properties.id==args.tab.windowId)tab = tabs[i];
 		};
-		
-		event = OEvent(type,{		
+
+		event = OEvent(type,{
 			documentURL: args.info.pageUrl,
 			pageURL: args.info.pageUrl,
 			isEditable: args.info.editable,
@@ -20,10 +20,10 @@ var MenuEvent = function(type,args,target){
 			srcURL: args.info.srcUrl || null
 		});
 	} else event = OEvent(type,args);
-	
-	
+
+
 	Object.defineProperty(event,'target',{enumerable: true,  configurable: false,  get: function(){return target || null;}, set: function(value){}});
-	
+
 	return event;
 
 };

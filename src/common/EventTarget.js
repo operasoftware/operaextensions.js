@@ -1,8 +1,8 @@
 
 var OEventTarget = function() {
-  
+
   EventTarget.mixin( this );
-  
+
 };
 
 OEventTarget.prototype.constructor = OEventTarget;
