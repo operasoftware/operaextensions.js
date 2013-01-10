@@ -7,6 +7,6 @@
       "page": "background.html"
   },
   "permissions": [
-    "tabs", "webRequest", "webRequestBlocking", "contextMenus"
+    "tabs"
   ]
 }

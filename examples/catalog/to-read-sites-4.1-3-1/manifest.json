@@ -6,7 +6,7 @@
   "author": {
     "name": "michalborek",
     "href": "http://www.greenpath.pl"
-	},
+  },
   "icons": {
     "18": "icon_18.png",
     "32": "icon@2x.png",
@@ -31,7 +31,7 @@
   ],
   "options_page": "options.html",
   "permissions": [
-    "tabs", "webRequest", "webRequestBlocking", "contextMenus", "<all_urls>"
+    "tabs", "<all_urls>"
   ],
   "browser_action": {}
 }
