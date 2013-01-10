@@ -14,7 +14,7 @@ var OWidgetObj = function() {
   // Setup the widget interface
   var xhr = new XMLHttpRequest();
 
-  xhr.open("GET", '/manifest.json', true);
+  xhr.open("GET", '/manifest.json', false);
 
   xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
