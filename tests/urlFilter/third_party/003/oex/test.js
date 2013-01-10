@@ -1,4 +1,4 @@
-opera.isReady({
+opera.isReady(function() {
     var tests = {}; // Asynchronous tests
 
     tests["t"] = async_test("The rule should block resources from the same-origin.");

@@ -1,4 +1,4 @@
-opera.isReady({
+opera.isReady(function() {
     var tests = {}; // Asynchronous tests
 
     tests["port"] = async_test("The wildcard should match the port.");

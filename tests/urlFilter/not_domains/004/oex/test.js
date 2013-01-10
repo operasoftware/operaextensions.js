@@ -1,4 +1,4 @@
-opera.isReady({
+opera.isReady(function() {
     var tests = {}; // Asynchronous tests
     var count = 0, allowCount = 0, blockCount = 0; // Message count
     

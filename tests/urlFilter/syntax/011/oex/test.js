@@ -1,4 +1,4 @@
-opera.isReady({
+opera.isReady(function() {
     var tests = {} // Asynchronous tests
     var failurl = "http://t/resources/images/fail.png#"
     var passurl = "http://t/resources/images/pass.png#"
