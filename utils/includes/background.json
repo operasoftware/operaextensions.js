@@ -42,6 +42,7 @@
   "../src/background/contexts/menu/OMenuContext.js",
   "../src/background/contexts/menu/MenuItem.js",
   "../src/background/contexts/menu/MenuContext.js",
+  "../src/background/contexts/Menu.js",
 
   "../src/common/third_party/adblockplus/adblockplus_compat.js",
   "../src/common/third_party/adblockplus/adblockplus.js",

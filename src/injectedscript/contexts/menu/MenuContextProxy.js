@@ -21,5 +21,5 @@ var MenuContextProxy = function() {
 
 MenuContextProxy.prototype = Object.create( MenuEventTarget.prototype );
 
-OEC.menu = OEC.menu || new MenuContextProxy();
+
 

@@ -15,6 +15,3 @@ MenuContext.prototype.createItem = function( menuItemProperties ) {
   return new MenuItem(Opera, menuItemProperties );
 };
 
-global.MenuContext = MenuContext;
-OEC.menu = OEC.menu || new MenuContext(Opera);
-

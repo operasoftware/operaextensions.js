@@ -37,13 +37,20 @@ var MenuItemProperties = function(obj,initial){
 		lock = false;
 		//update
 
-		if(properties.disabled==true||properties.parent==null){
+		if(properties.parent==null || (properties.parent instanceof MenuItem && properties.parent.menuItemId!=null) ){
 
 			if(menuItemId!=null){
 				chrome.contextMenus.remove(menuItemId);
 				menuItemId = null;
 			};
-
+			
+		} else if(properties.disabled==true){
+			
+			if(menuItemId!=null){
+				chrome.contextMenus.remove(menuItemId);
+				menuItemId = null;
+			};
+			
 		} else {
 
 			var updateProperties = {
@@ -58,7 +65,7 @@ var MenuItemProperties = function(obj,initial){
 			if(contexts.length==0)updateProperties.contexts = ["page"];
 			else updateProperties.contexts = contexts;
 
-			if(properties.parent instanceof MenuItem && properties.parent.menuItemId!=undefined){
+			if(properties.parent instanceof MenuItem && properties.parent.menuItemId!=null){
 				updateProperties.parentId = properties.parent.menuItemId;
 			};
 
@@ -192,5 +199,4 @@ var MenuItem = function(internal,properties ) {
 
 MenuItem.prototype = Object.create( OMenuContext.prototype );
 
-global.MenuItem = MenuItem;
 
