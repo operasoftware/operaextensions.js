@@ -11,15 +11,15 @@ Opera.prototype.defineMagicVariable = function(name, getter, setter) {
     return;
   }
   var allowedStringifications = {"[object Function]":1, "[object Null]":1};
-  if( ! ( ( Object.prototype.toString.call(getter) in allowedStringifications ) &&  
-        ( Object.prototype.toString.call(setter) in allowedStringifications )) {
+  if( ! ( (Object.prototype.toString.call(getter) in allowedStringifications) &&  
+        (Object.prototype.toString.call(setter) in allowedStringifications)) {
     return;
   }
   
   var magicScriptEl = document.createElement('script');
   magicScriptEl.setAttribute('type', 'text/javascript');
 
-  if (getter && Object.prototype.toString.call(getter) === "[object Function]") {
+  if (Object.prototype.toString.call(getter) === "[object Function]") {
     magicScriptEl.textContent += "window.__defineGetter__('" + name + "', " + getter.toString() + ");\n";
   }
   
