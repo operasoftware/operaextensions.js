@@ -938,32 +938,16 @@ var OWidgetObj = function() {
 
   OEventTarget.call(this);
 
-  this.properties = {};
+  this.properties = chrome.app.getDetails();
+  
+  // Set WIDGET_API_LOADED feature to LOADED
+  deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
 
   // LocalStorage shim
   this._preferences = new OStorage();
 
   // Set WIDGET_PREFERENCES_LOADED feature to LOADED
   deferredComponentsLoadStatus['WIDGET_PREFERENCES_LOADED'] = true;
-
-  // Setup the widget interface
-  var xhr = new XMLHttpRequest();
-
-  xhr.open("GET", '/manifest.json', true);
-
-  xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4) {
-          this.properties = JSON.parse(xhr.responseText);
-
-          // Set extension id from base URL
-          this.properties.id = /^chrome\-extension\:\/\/(.*)\/$/.exec(chrome.extension.getURL(""))[1];
-
-          // Set WIDGET_API_LOADED feature to LOADED
-          deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
-      }
-  }.bind(this);
-
-  xhr.send();
 
   // Setup widget object proxy listener
   // for injected scripts and popups to connect to
@@ -3257,11 +3241,23 @@ BrowserTabGroupManager.prototype.getAll = function() {
   return []; // always empty
 };
 
-OEX.windows = OEX.windows || new BrowserWindowManager();
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
 
-OEX.tabs = OEX.tabs || new RootBrowserTabManager();
+  OEX.windows = OEX.windows || new BrowserWindowManager();
 
-OEX.tabGroups = OEX.tabGroups || new BrowserTabGroupManager();
+}
+
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
+
+  OEX.tabs = OEX.tabs || new RootBrowserTabManager();
+
+}
+
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
+
+  OEX.tabGroups = OEX.tabGroups || new BrowserTabGroupManager();
+
+}
 
 var ToolbarContext = function() {
 
@@ -3601,7 +3597,11 @@ ToolbarUIItem.prototype.__defineGetter__("badge", function() {
   return this.properties.badge;
 });
 
-OEC.toolbar = OEC.toolbar || new ToolbarContext();
+if(widget && widget.properties && widget.properties.browser_action !== undefined && widget.properties.browser_action !== null ) {
+
+  OEC.toolbar = OEC.toolbar || new ToolbarContext();
+
+}
 var MenuEvent = function(type,args,target){
   var event;
 
@@ -3853,13 +3853,20 @@ var MenuItemProperties = function(obj,initial){
 		lock = false;
 		//update
 
-		if(properties.disabled==true||properties.parent==null){
+		if(properties.parent==null || (properties.parent instanceof MenuItem && properties.parent.menuItemId!=null) ){
 
 			if(menuItemId!=null){
 				chrome.contextMenus.remove(menuItemId);
 				menuItemId = null;
 			};
-
+			
+		} else if(properties.disabled==true){
+			
+			if(menuItemId!=null){
+				chrome.contextMenus.remove(menuItemId);
+				menuItemId = null;
+			};
+			
 		} else {
 
 			var updateProperties = {
@@ -3874,7 +3881,7 @@ var MenuItemProperties = function(obj,initial){
 			if(contexts.length==0)updateProperties.contexts = ["page"];
 			else updateProperties.contexts = contexts;
 
-			if(properties.parent instanceof MenuItem && properties.parent.menuItemId!=undefined){
+			if(properties.parent instanceof MenuItem && properties.parent.menuItemId!=null){
 				updateProperties.parentId = properties.parent.menuItemId;
 			};
 
@@ -4008,7 +4015,6 @@ var MenuItem = function(internal,properties ) {
 
 MenuItem.prototype = Object.create( OMenuContext.prototype );
 
-global.MenuItem = MenuItem;
 
 var MenuContext = function(internal) {
   chrome.contextMenus.removeAll();//clear all items
@@ -4027,8 +4033,14 @@ MenuContext.prototype.createItem = function( menuItemProperties ) {
   return new MenuItem(Opera, menuItemProperties );
 };
 
+if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('contextMenus')!=-1){
+
+global.MenuItem = MenuItem;
 global.MenuContext = MenuContext;
+
 OEC.menu = OEC.menu || new MenuContext(Opera);
+
+}
 
 
 /*
@@ -14614,7 +14626,12 @@ UrlFilterManager.prototype.RESOURCE_OBJECT_SUBREQUEST = 0x00001000; //  4096
 UrlFilterManager.prototype.RESOURCE_MEDIA             = 0x00004000; // 16384
 UrlFilterManager.prototype.RESOURCE_FONT              = 0x00008000; // 32768
 
-OEX.urlfilter = OEX.urlfilter || new UrlFilterManager();
+if(widget && widget.properties && widget.properties.permissions 
+    && widget.properties.permissions.indexOf('webRequest') != -1 && widget.properties.permissions.indexOf('webRequestBlocking') != -1 ) {
+
+  OEX.urlfilter = OEX.urlfilter || new UrlFilterManager();
+
+}
 
   if (global.opera) {
     isReady = true;
