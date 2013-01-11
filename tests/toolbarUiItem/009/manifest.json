@@ -1,0 +1,16 @@
+{
+  "name": "009 - createItem w event listener click",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "009 - createItem w event listener click",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {},
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ]
+}

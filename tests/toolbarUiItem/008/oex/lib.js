@@ -28,7 +28,7 @@ function POST(result, msg) {
 	opera.postError("Submitted this result to SPARTAN:\t" + dataResult
 		+ "\n" + dataMessage);
     }
-    var value = "Extensions: 002 - createItem title \t" + result + "\n" + msg;
+    var value = "Extensions: 008 - createItem w onclick \t" + result + "\n" + msg;
     opera.postError("==BackgroundProcess==\n" + value);
     if (opera.extension && opera.extension.tabs){opera.extension.tabs.create({
         url : "data:text/html, " + result + "<br />" + msg,
