@@ -52,7 +52,7 @@ var UrlFilterEventListener = function() {
 
       // Set up all storage properties
       case '___O_urlfilter_contentblocked':
-        console.log(msg.data.data.url);
+
         // Reconcile element from blocked url
         msg.data.data.element = this.matchUrlToInPageElement(msg.data.data.url);
 
