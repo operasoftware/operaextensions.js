@@ -1,4 +1,4 @@
-!(function( global ) {
+!(function( global, manifest ) {
 
   var Opera = function() {};
 
@@ -618,7 +618,7 @@ var OWidgetObjProxy = function() {
 
   OEventTarget.call(this);
 
-  this.properties = {};
+  this.properties = manifest || {};
   
   // LocalStorage shim
   this._preferences = new OStorageProxy();
@@ -929,7 +929,7 @@ MenuContextProxy.prototype = Object.create( MenuEventTarget.prototype );
 
 
 
-if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('contextMenus')!=-1){
+if(manifest && manifest.permissions && manifest.permissions.indexOf('contextMenus')!=-1){
 
 OEC.menu = OEC.menu || new MenuContextProxy();
 
@@ -1203,4 +1203,35 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
   // Make API available on the window DOM object
   global.opera = opera;
 
-})( window );
+})( window, (function(){
+  
+var manifest = null;
+try{
+
+  manifest = chrome.app.getDetails();
+  
+  if(manifest==null){
+  
+  
+      var xhr = new XMLHttpRequest();
+  
+      xhr.onloadend = function(){
+          if (xhr.readyState==xhr.DONE && xhr.status==200){
+            manifest = JSON.parse(xhr.responseText);
+            
+            manifest.id = /^chrome\-extension\:\/\/(.*)\/$/.exec(chrome.extension.getURL(""))[1];
+            
+          };
+      };
+  
+      xhr.open('GET',chrome.extension.getURL('') + 'manifest.json',false);
+  
+      xhr.send(null);
+  
+  };
+  
+  } catch(e){ manifest = null;};
+
+return manifest;
+
+})());
