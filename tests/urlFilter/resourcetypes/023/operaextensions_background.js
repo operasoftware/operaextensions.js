@@ -3505,6 +3505,7 @@ var ToolbarUIItem = function( properties ) {
   this.properties.icon = properties.icon || "";
   this.properties.popup = new ToolbarPopup( properties.popup || {} );
   this.properties.badge = new ToolbarBadge( properties.badge || {} );
+  if(properties.onclick){this.onclick = properties.onclick;}
 
 };
 
@@ -3520,7 +3521,7 @@ ToolbarUIItem.prototype.apply = function() {
   }
 
   // Apply title property
-  chrome.browserAction.setTitle({ "title": (this.title) });
+  chrome.browserAction.setTitle({ "title": this.title });
 
   // Apply icon property
   chrome.browserAction.setIcon({ "path": this.icon });
@@ -3566,7 +3567,7 @@ ToolbarUIItem.prototype.__defineSetter__("title", function( val ) {
 
   Queue.enqueue(this, function(done) {
 
-    chrome.browserAction.setTitle({ "title": (this.title) });
+    chrome.browserAction.setTitle({ "title": this.title });
 
     done();
 
@@ -14123,7 +14124,7 @@ var RuleList = function( parentObj ) {
       'includeDomains': options.includeDomains || [],
       'excludeDomains': options.excludeDomains || [],
       'resources': options.resources || 0xFFFFFFFF,
-      'thirdParty': options.thirdParty || null
+      'thirdParty': options.thirdParty !== undefined ? options.thirdParty : null
     };
 
     //  Process options and append to rule argument
@@ -14194,8 +14195,10 @@ var RuleList = function( parentObj ) {
 
     }
 
-    if(opts.thirdParty) {
+    if(opts.thirdParty === true) {
       filterOptions.push("third-party");
+    } else if (opts.thirdParty === false) {
+      filterOptions.push("~third-party");
     }
 
     if(filterOptions.length > 0) {

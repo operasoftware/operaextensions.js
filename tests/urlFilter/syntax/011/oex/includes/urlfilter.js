@@ -18,4 +18,14 @@ opera.isReady(function() {
     		tagName: evt.element ? evt.element.tagName : null
     	});
     }, false);
+    
+    opera.extension.urlfilter.addEventListener("contentallowed", function(evt) {
+    	opera.extension.postMessage({
+    		type: "contentallowed",
+    		url: evt.url,
+    		hostname: window.location.hostname,
+    		location: window.location.href,
+    		tagName: evt.element ? evt.element.tagName : null
+    	});
+    }, false);
 });
