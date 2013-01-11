@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets">
+	<name>010 - createItem display block</name>
+	<description>Description</description>
+  <access origin="http://localhost/"/>
+  <access origin="http://www.opera.com/"/>
+</widget>
