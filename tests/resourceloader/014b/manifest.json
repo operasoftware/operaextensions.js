@@ -16,6 +16,6 @@
     "tabs", "http://*/*","https://*/*"
   ],
   "web_accessible_resources": [
-    "/oex/resources/opera.png"
+    "/oex/resources/opera.png", "/manifest.json"
   ]
 }

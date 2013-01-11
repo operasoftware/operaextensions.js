@@ -16,6 +16,6 @@
     "tabs", "http://*/*","https://*/*"
   ],
   "web_accessible_resources": [
-    "/oex/resources/file.txt"
+    "/oex/resources/file.txt", "/manifest.json"
   ]
 }

@@ -8,5 +8,8 @@
   },
   "permissions": [
     "tabs", "http://*/*","https://*/*",  "background" 
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
   ]
 }
