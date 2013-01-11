@@ -6,9 +6,7 @@
   "background": {
       "page": "background.html"
   },
-  "browser_action": {
-       
-  },
+  "browser_action": {},
   "permissions": [
     "tabs", "http://*/*","https://*/*"
   ],
