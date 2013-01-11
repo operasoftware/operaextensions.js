@@ -1,0 +1,16 @@
+{
+  "name": "014 - Item enumerate",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "014 - Item enumerate",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {},
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ]
+}
