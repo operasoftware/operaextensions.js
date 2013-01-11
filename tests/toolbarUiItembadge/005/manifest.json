@@ -1,0 +1,16 @@
+{
+  "name": "005 - createItem backgroundColor rgba",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "005 - createItem backgroundColor rgba",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {},
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ]
+}
