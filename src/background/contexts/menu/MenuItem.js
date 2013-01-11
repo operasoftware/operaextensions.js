@@ -37,7 +37,7 @@ var MenuItemProperties = function(obj,initial){
 		lock = false;
 		//update
 
-		if(properties.parent==null || (properties.parent instanceof MenuItem && properties.parent.menuItemId!=null) ){
+		if(properties.parent==null || (properties.parent instanceof MenuItem && properties.parent.menuItemId==null) ){
 
 			if(menuItemId!=null){
 				chrome.contextMenus.remove(menuItemId);
