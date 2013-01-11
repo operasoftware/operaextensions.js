@@ -45,6 +45,8 @@ UrlFilterEventListener.prototype = Object.create( OEventTarget.prototype );
 
 // Override
 UrlFilterEventListener.prototype.addEventListener = function(eventName, callback, useCapture) {
+  eventName = (eventName + "").toLowerCase(); // force to lower case string
+  
   this.on(eventName, callback); // no useCapture
 
   console.log('drain queue: ' + eventName);
