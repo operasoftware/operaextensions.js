@@ -1,4 +1,4 @@
-if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('contextMenus')!=-1){
+if(manifest && manifest.permissions && manifest.permissions.indexOf('contextMenus')!=-1){
 
 global.MenuItem = MenuItem;
 global.MenuContext = MenuContext;
