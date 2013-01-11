@@ -10,6 +10,7 @@ var ToolbarUIItem = function( properties ) {
   this.properties.icon = properties.icon || "";
   this.properties.popup = new ToolbarPopup( properties.popup || {} );
   this.properties.badge = new ToolbarBadge( properties.badge || {} );
+  if(properties.onclick){this.onclick = properties.onclick;}
 
 };
 
@@ -25,7 +26,7 @@ ToolbarUIItem.prototype.apply = function() {
   }
 
   // Apply title property
-  chrome.browserAction.setTitle({ "title": (this.title) });
+  chrome.browserAction.setTitle({ "title": this.title });
 
   // Apply icon property
   chrome.browserAction.setIcon({ "path": this.icon });
@@ -71,7 +72,7 @@ ToolbarUIItem.prototype.__defineSetter__("title", function( val ) {
 
   Queue.enqueue(this, function(done) {
 
-    chrome.browserAction.setTitle({ "title": (this.title) });
+    chrome.browserAction.setTitle({ "title": this.title });
 
     done();
 
