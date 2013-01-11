@@ -1,0 +1,16 @@
+{
+  "name": "012 - createItem w event listener remove",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "012 - createItem w event listener remove",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {},
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ]
+}
