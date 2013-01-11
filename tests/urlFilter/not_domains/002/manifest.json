@@ -1,5 +1,5 @@
 {
-  "name": "tc-extensions-url-filter-not_domains-001",
+  "name": "tc-extensions-url-filter-not_domains-002",
   "version": "1.0",
   "manifest_version": 2,
   "description": "Not-Domain options in the allow list, full domain matches.",

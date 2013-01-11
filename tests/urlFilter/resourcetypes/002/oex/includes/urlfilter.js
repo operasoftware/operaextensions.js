@@ -1,5 +1,6 @@
 opera.isReady(function() {
     opera.extension.urlfilter.addEventListener("contentblocked", function(evt) {
+      console.log(evt);
     	opera.extension.postMessage({
     		type: "contentblocked",
     		url: evt.url,
@@ -10,6 +11,7 @@ opera.isReady(function() {
     }, false);
 
     opera.extension.urlfilter.addEventListener("contentunblocked", function(evt) {
+      console.log(evt);
     	opera.extension.postMessage({
     		type: "contentunblocked",
     		url: evt.url,
