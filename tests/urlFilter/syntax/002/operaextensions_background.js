@@ -14433,7 +14433,7 @@ var UrlFilterManager = function() {
     } else if (type == "main_frame") {
       type = "DOCUMENT";
     } else {
-      type = type.toUpperCase();
+      type = (type + "").toUpperCase();
     }
 
     var frame = (type != "SUBDOCUMENT" ? details.frameId : details.parentFrameId);
@@ -14559,7 +14559,7 @@ var UrlFilterManager = function() {
       return;
     }
 
-    if( msg.data.action !== '___O_urlfilter_DRAINQUEUE' || !msg.data.eventType ) {
+    if( msg.data.action != '___O_urlfilter_DRAINQUEUE' || !msg.data.eventType ) {
       return;
     }
 
@@ -14567,6 +14567,7 @@ var UrlFilterManager = function() {
     var tabId = msg.source.tabId;
     
     if( self.eventQueue[tabId] !== undefined ) {
+      self.eventQueue[tabId].ready = true; // set to resolved (true)
       
       var eventQueue = self.eventQueue[tabId][ msg.data.eventType ];
 
@@ -14575,8 +14576,7 @@ var UrlFilterManager = function() {
         msg.source.postMessage(eventQueue[i]);
 
       }
-
-      self.eventQueue[tabId].ready = true; // set to resolved (true)
+      
       self.eventQueue[tabId][ msg.data.eventType ] = []; // reset event queue
 
     }
@@ -14588,8 +14588,13 @@ var UrlFilterManager = function() {
     switch(changeInfo.status) {
 
       case 'loading':
+      
         // kill previous events queue
-        self.eventQueue[tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
+        if(self.eventQueue[tabId] === undefined) {
+          self.eventQueue[tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
+        } else {
+          self.eventQueue[tabId].ready = false;
+        }
 
         break;
 

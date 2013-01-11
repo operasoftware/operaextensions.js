@@ -134,7 +134,7 @@ var UrlFilterManager = function() {
     } else if (type == "main_frame") {
       type = "DOCUMENT";
     } else {
-      type = type.toUpperCase();
+      type = (type + "").toUpperCase();
     }
 
     var frame = (type != "SUBDOCUMENT" ? details.frameId : details.parentFrameId);
