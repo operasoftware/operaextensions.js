@@ -3,7 +3,7 @@ var OWidgetObj = function() {
 
   OEventTarget.call(this);
 
-  this.properties = chrome.app.getDetails();
+  this.properties = manifest || chrome.app.getDetails();
   
   // Set WIDGET_API_LOADED feature to LOADED
   deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
