@@ -28,7 +28,7 @@ var RuleList = function( parentObj ) {
       'includeDomains': options.includeDomains || [],
       'excludeDomains': options.excludeDomains || [],
       'resources': options.resources || 0xFFFFFFFF,
-      'thirdParty': options.thirdParty || null
+      'thirdParty': options.thirdParty !== undefined ? options.thirdParty : null
     };
 
     //  Process options and append to rule argument
@@ -99,8 +99,10 @@ var RuleList = function( parentObj ) {
 
     }
 
-    if(opts.thirdParty) {
+    if(opts.thirdParty === true) {
       filterOptions.push("third-party");
+    } else if (opts.thirdParty === false) {
+      filterOptions.push("~third-party");
     }
 
     if(filterOptions.length > 0) {

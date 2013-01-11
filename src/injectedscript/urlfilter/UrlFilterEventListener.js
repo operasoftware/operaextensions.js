@@ -12,10 +12,10 @@ var UrlFilterEventListener = function() {
     // SCRIPT (script), IMAGE (img, image), STYLESHEET (link rel='stylesheet'), 
     // OBJECT (object, embed), SUB-DOCUMENT (iframe), MEDIA (audio, video),
     // OTHER (e.g. but not limited to: input, textarea, etc)
-    var els = global.document.querySelectorAll("[src],link[rel='stylesheet'][href],object[data]");
+    var els = global.document.querySelectorAll("[src],link[rel='stylesheet'][href],object[data],body[background]");
     
     for(var i = 0, l = els.length; i < l; i++) {
-      var key = els[ i ].src || els[ i ].href || els[ i ].data;
+      var key = global.encodeURIComponent( els[ i ].src || els[ i ].href || els[ i ].data || els[ i ].background );
       
       if(this.pageSrcElements[ key ] === undefined ) {
         this.pageSrcElements[ key ] = [];
@@ -26,9 +26,11 @@ var UrlFilterEventListener = function() {
   }.bind(this), false);
   
   this.matchUrlToInPageElement = function( url ) {
-    if( this.pageSrcElements[url] !== undefined && this.pageSrcElements[url].length > 0 ) {
+    var key = global.encodeURIComponent( url );
+    
+    if( this.pageSrcElements[key] !== undefined && this.pageSrcElements[key].length > 0 ) {
       
-      return this.pageSrcElements[url].shift();
+      return this.pageSrcElements[key].shift();
       
     } 
     
@@ -50,7 +52,7 @@ var UrlFilterEventListener = function() {
 
       // Set up all storage properties
       case '___O_urlfilter_contentblocked':
-        
+        console.log(msg.data.data.url);
         // Reconcile element from blocked url
         msg.data.data.element = this.matchUrlToInPageElement(msg.data.data.url);
 
