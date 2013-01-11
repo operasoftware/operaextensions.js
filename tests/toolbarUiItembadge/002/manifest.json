@@ -1,0 +1,17 @@
+{
+  "name": "002 - createItem textContent",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "002 - createItem textContent",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ]
+}

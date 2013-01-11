@@ -1,0 +1,18 @@
+{
+  "name": "003 - back connect userjs",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "003 - back connect userjs",
+  "background": {
+      "page": "background.html"
+  },
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js", "/oex/includes/base.js"]
+      }
+  ],
+  "permissions": [
+    "tabs", "http://*/*","https://*/*", "contextMenus"
+  ]
+}

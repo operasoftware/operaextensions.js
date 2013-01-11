@@ -14,5 +14,11 @@
   ],
   "permissions": [
     "tabs", "http://*/*","https://*/*", "webRequest", "webRequestBlocking"
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
   ]
 }

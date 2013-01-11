@@ -1,0 +1,17 @@
+{
+  "name": "004 - createItem backgroundColor name",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "004 - createItem backgroundColor name",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ]
+}

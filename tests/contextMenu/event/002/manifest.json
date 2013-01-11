@@ -12,5 +12,8 @@
         "js": ["/operaextensions_injectedscript.js", "/injectedtest.js"]
       }
   ],
-	"permissions" : ["tabs", "contextMenus", "http://*/*", "https://*/*"]
+	"permissions" : ["tabs", "contextMenus", "http://*/*", "https://*/*"],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ]
 }
