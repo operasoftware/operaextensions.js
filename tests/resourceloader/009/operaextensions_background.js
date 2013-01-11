@@ -1,4 +1,4 @@
-!(function( global ) {
+!(function( global, manifest ) {
 
   var Opera = function() {};
 
@@ -938,7 +938,7 @@ var OWidgetObj = function() {
 
   OEventTarget.call(this);
 
-  this.properties = chrome.app.getDetails();
+  this.properties = manifest || chrome.app.getDetails();
   
   // Set WIDGET_API_LOADED feature to LOADED
   deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
@@ -3241,19 +3241,19 @@ BrowserTabGroupManager.prototype.getAll = function() {
   return []; // always empty
 };
 
-if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
+if(manifest && manifest.permissions && manifest.permissions.indexOf('tabs') != -1) {
 
   OEX.windows = OEX.windows || new BrowserWindowManager();
 
 }
 
-if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
+if(manifest && manifest.permissions && manifest.permissions.indexOf('tabs') != -1) {
 
   OEX.tabs = OEX.tabs || new RootBrowserTabManager();
 
 }
 
-if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('tabs') != -1) {
+if(manifest && manifest.permissions && manifest.permissions.indexOf('tabs') != -1) {
 
   OEX.tabGroups = OEX.tabGroups || new BrowserTabGroupManager();
 
@@ -3597,7 +3597,7 @@ ToolbarUIItem.prototype.__defineGetter__("badge", function() {
   return this.properties.badge;
 });
 
-if(widget && widget.properties && widget.properties.browser_action !== undefined && widget.properties.browser_action !== null ) {
+if(manifest && manifest.browser_action !== undefined && manifest.browser_action !== null ) {
 
   OEC.toolbar = OEC.toolbar || new ToolbarContext();
 
@@ -3853,7 +3853,7 @@ var MenuItemProperties = function(obj,initial){
 		lock = false;
 		//update
 
-		if(properties.parent==null || (properties.parent instanceof MenuItem && properties.parent.menuItemId!=null) ){
+		if(properties.parent==null || (properties.parent instanceof MenuItem && properties.parent.menuItemId==null) ){
 
 			if(menuItemId!=null){
 				chrome.contextMenus.remove(menuItemId);
@@ -4033,7 +4033,7 @@ MenuContext.prototype.createItem = function( menuItemProperties ) {
   return new MenuItem(Opera, menuItemProperties );
 };
 
-if(widget && widget.properties && widget.properties.permissions && widget.properties.permissions.indexOf('contextMenus')!=-1){
+if(manifest && manifest.permissions && manifest.permissions.indexOf('contextMenus')!=-1){
 
 global.MenuItem = MenuItem;
 global.MenuContext = MenuContext;
@@ -14626,8 +14626,7 @@ UrlFilterManager.prototype.RESOURCE_OBJECT_SUBREQUEST = 0x00001000; //  4096
 UrlFilterManager.prototype.RESOURCE_MEDIA             = 0x00004000; // 16384
 UrlFilterManager.prototype.RESOURCE_FONT              = 0x00008000; // 32768
 
-if(widget && widget.properties && widget.properties.permissions 
-    && widget.properties.permissions.indexOf('webRequest') != -1 && widget.properties.permissions.indexOf('webRequestBlocking') != -1 ) {
+if(manifest && manifest.permissions && manifest.permissions.indexOf('webRequest') != -1 && manifest.permissions.indexOf('webRequestBlocking') != -1 ) {
 
   OEX.urlfilter = OEX.urlfilter || new UrlFilterManager();
 
@@ -14841,4 +14840,35 @@ if(widget && widget.properties && widget.properties.permissions
   // Make API available on the window DOM object
   global.opera = opera;
 
-})( window );
+})( window, (function(){
+  
+var manifest = null;
+try{
+
+  manifest = chrome.app.getDetails();
+  
+  if(manifest==null){
+  
+  
+      var xhr = new XMLHttpRequest();
+  
+      xhr.onloadend = function(){
+          if (xhr.readyState==xhr.DONE && xhr.status==200){
+            manifest = JSON.parse(xhr.responseText);
+            
+            manifest.id = /^chrome\-extension\:\/\/(.*)\/$/.exec(chrome.extension.getURL(""))[1];
+            
+          };
+      };
+  
+      xhr.open('GET',chrome.extension.getURL('') + 'manifest.json',false);
+  
+      xhr.send(null);
+  
+  };
+  
+  } catch(e){ manifest = null;};
+
+return manifest;
+
+})());
