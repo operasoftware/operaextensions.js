@@ -3505,6 +3505,7 @@ var ToolbarUIItem = function( properties ) {
   this.properties.icon = properties.icon || "";
   this.properties.popup = new ToolbarPopup( properties.popup || {} );
   this.properties.badge = new ToolbarBadge( properties.badge || {} );
+  if(properties.onclick){this.onclick = properties.onclick;}
 
 };
 
@@ -3520,7 +3521,7 @@ ToolbarUIItem.prototype.apply = function() {
   }
 
   // Apply title property
-  chrome.browserAction.setTitle({ "title": (this.title) });
+  chrome.browserAction.setTitle({ "title": this.title });
 
   // Apply icon property
   chrome.browserAction.setIcon({ "path": this.icon });
@@ -3566,7 +3567,7 @@ ToolbarUIItem.prototype.__defineSetter__("title", function( val ) {
 
   Queue.enqueue(this, function(done) {
 
-    chrome.browserAction.setTitle({ "title": (this.title) });
+    chrome.browserAction.setTitle({ "title": this.title });
 
     done();
 
@@ -14123,7 +14124,7 @@ var RuleList = function( parentObj ) {
       'includeDomains': options.includeDomains || [],
       'excludeDomains': options.excludeDomains || [],
       'resources': options.resources || 0xFFFFFFFF,
-      'thirdParty': options.thirdParty || null
+      'thirdParty': options.thirdParty !== undefined ? options.thirdParty : null
     };
 
     //  Process options and append to rule argument
@@ -14194,8 +14195,10 @@ var RuleList = function( parentObj ) {
 
     }
 
-    if(opts.thirdParty) {
+    if(opts.thirdParty === true) {
       filterOptions.push("third-party");
+    } else if (opts.thirdParty === false) {
+      filterOptions.push("~third-party");
     }
 
     if(filterOptions.length > 0) {
@@ -14433,7 +14436,7 @@ var UrlFilterManager = function() {
     } else if (type == "main_frame") {
       type = "DOCUMENT";
     } else {
-      type = type.toUpperCase();
+      type = (type + "").toUpperCase();
     }
 
     var frame = (type != "SUBDOCUMENT" ? details.frameId : details.parentFrameId);
@@ -14559,7 +14562,7 @@ var UrlFilterManager = function() {
       return;
     }
 
-    if( msg.data.action !== '___O_urlfilter_DRAINQUEUE' || !msg.data.eventType ) {
+    if( msg.data.action != '___O_urlfilter_DRAINQUEUE' || !msg.data.eventType ) {
       return;
     }
 
@@ -14567,6 +14570,7 @@ var UrlFilterManager = function() {
     var tabId = msg.source.tabId;
     
     if( self.eventQueue[tabId] !== undefined ) {
+      self.eventQueue[tabId].ready = true; // set to resolved (true)
       
       var eventQueue = self.eventQueue[tabId][ msg.data.eventType ];
 
@@ -14575,8 +14579,7 @@ var UrlFilterManager = function() {
         msg.source.postMessage(eventQueue[i]);
 
       }
-
-      self.eventQueue[tabId].ready = true; // set to resolved (true)
+      
       self.eventQueue[tabId][ msg.data.eventType ] = []; // reset event queue
 
     }
@@ -14588,8 +14591,13 @@ var UrlFilterManager = function() {
     switch(changeInfo.status) {
 
       case 'loading':
+      
         // kill previous events queue
-        self.eventQueue[tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
+        if(self.eventQueue[tabId] === undefined) {
+          self.eventQueue[tabId] = { 'ready': false, 'contentblocked': [], 'contentunblocked': [], 'contentallowed': [] };
+        } else {
+          self.eventQueue[tabId].ready = false;
+        }
 
         break;
 
