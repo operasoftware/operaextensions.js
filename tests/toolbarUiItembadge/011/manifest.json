@@ -1,0 +1,16 @@
+{
+  "name": "011 - Item display toggle",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "011 - Item display toggle",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {},
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ]
+}
