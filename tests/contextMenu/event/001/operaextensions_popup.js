@@ -721,6 +721,7 @@ global.widget = global.widget || new OWidgetObjProxy();
 
       var fns = {
             "isready": [],
+            "readystatechange": [],
             "domcontentloaded": [],
             "load": []
           };
@@ -737,6 +738,20 @@ global.widget = global.widget || new OWidgetObjProxy();
         hasFired_Load = true;
         global.removeEventListener("load", handle_Load, true);
       }, true);
+      
+      global.document.addEventListener("readystatechange", function(event) {
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+        if( global.document.readyState !== 'interactive' && global.document.readyState !== 'complete' ) {
+          fireEvent('readystatechange', global.document);
+        } else {
+          global.document.readyState = 'loading';
+        }
+      }, true);
+      
+      var _readyState = "uninitialized";
+      global.document.__defineSetter__('readyState', function(val) { _readyState = val; });
+      global.document.__defineGetter__('readyState', function() { return _readyState; });
 
       function interceptAddEventListener(target, _name) {
 
@@ -772,6 +787,7 @@ global.widget = global.widget || new OWidgetObjProxy();
       interceptAddEventListener(global, 'load');
       interceptAddEventListener(global.document, 'domcontentloaded');
       interceptAddEventListener(global, 'domcontentloaded'); // handled bubbled DOMContentLoaded
+      interceptAddEventListener(global.document, 'readystatechange');
 
       function fireEvent(name, target) {
         var evtName = name.toLowerCase();
@@ -781,7 +797,6 @@ global.widget = global.widget || new OWidgetObjProxy();
         for (var i = 0, len = fns[evtName].length; i < len; i++) {
           fns[evtName][i].call(target, evt);
         }
-        fns[evtName] = [];
       }
 
       function ready() {
@@ -809,6 +824,9 @@ global.widget = global.widget || new OWidgetObjProxy();
             // (always synthesized in Chromium Content Scripts)
             if (hasFired_DOMContentLoaded || hasFired_Load || currentTime >= domContentLoadedTimeoutOverride) {
 
+              global.document.readyState = 'interactive';
+              fireEvent('readystatechange', global.document);
+
               fireEvent('domcontentloaded', global.document);
 
               if(currentTime >= domContentLoadedTimeoutOverride) {
@@ -825,6 +843,9 @@ global.widget = global.widget || new OWidgetObjProxy();
                 var currentTime = new Date().getTime();
 
                 if (hasFired_Load || currentTime >= loadTimeoutOverride) {
+                  
+                  global.document.readyState = 'complete';
+                  fireEvent('readystatechange', global.document);
 
                   fireEvent('load', window);
 
