@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+<head>
+<title>BackgroundProcess</title>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+<link type="text/css" rel="stylesheet" href="../resources/javascript/syntaxhighlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../resources/css/stylesheet.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+</head>
+
+<body>
+<h1>BackgroundProcess</h1>
+
+<!-- ============ Attributes START =========== -->
+
+<h2>Attributes</h2>
+   
+   <h3 id="onconnect">
+       onconnect
+   </h3>
+
+   <dl>
+     <dt><code>null&nbsp;onconnect</code></dt>
+       <dd>This event listener is invoked when an injected script, popup or options environment is created that can be communicated with. The event's source is a <code>messagePort</code> to the connecting environment.
+<pre class="brush: js">
+opera.extension.onconnect = &nbsp;function(event)&nbsp;  {
+  window.opera.postError('Connected. Event source: ' + event.source);
+}
+</pre></dd>
+   </dl>
+
+   
+   <h3 id="ondisconnect">
+       ondisconnect
+   </h3>
+
+   <dl>
+     <dt><code>null&nbsp;ondisconnect</code></dt>
+       <dd>This event listener is invoked when an injected script, popup or options environment is destroyed and can no longer be communicated with. The source is a <code>messagePort</code> to the disconnecting environment, used only for comparative purposes. The port itself may be closed.
+<pre class="brush: js">
+opera.extension.ondisconnect = &nbsp;function(event)&nbsp;  {
+  window.opera.postError('Disconnected. Event source: ' + event.source);
+}
+</pre></dd>
+   </dl>
+
+   
+   <h3 id="onmessage">
+       onmessage
+   </h3>
+
+   <dl>
+     <dt><code>null&nbsp;onmessage</code></dt>
+       <dd>This event listener is invoked when a message is received from injected script, popup or options page. The source is a <code>messagePort</code> to the connecting environment.
+<pre class="brush: js">
+opera.extension.onmessage = &nbsp;function(event)&nbsp; {
+  window.opera.postError('Message received. Event source: ' + event.source);
+}
+</pre></dd>
+   </dl>
+
+   
+   <h3 id="tabs">
+       tabs
+   </h3>
+
+   <dl>
+     <dt><code>Tabs&nbsp;tabs</code></dt>
+       <dd>This attribute contains the <code>Tabs</code> associated with this extension. Only those tabs which have an injected script from this extension applied to them are available.</dd>
+   </dl>
+
+   
+   <h3 id="windows">
+       windows
+   </h3>
+
+   <dl>
+     <dt><code><a href="BrowserWindows.html">BrowserWindows</a>&nbsp;windows</code></dt>
+       <dd>This attribute contains the <code>BrowserWindows</code> associated with this extension. Only those windows which contain tabs accessible by this extension are available.</dd>
+   </dl>
+
+   
+
+
+<!-- ============ Attributes END =========== -->
+
+<!-- ============ METHOD DETAIL START ========== -->
+
+<h2>Methods</h2>
+
+<!-- One single method detail entry -->
+
+
+   <h3 id="addEventListener">
+     addEventListener
+   </H3>
+
+   <p>
+     <code>void addEventListener (&lt;DOMString&gt; type, eventListerner, &lt;boolean&gt; useCapture)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>type</code> -  Type of event. Allowed values are: <code>message</code>, <code>disconnect</code>, and <code>connect</code>.  
+     </dd>
+   
+     <dd>
+     <code>useCapture</code> -  Boolean, keep <code>false</code> for now. <strong>Note:</strong> this value currently has no purpose.   
+     </dd>
+   
+     <dd>
+     <code>eventListener</code> -  The function to be executed when the event occurs.  
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method is used to listen for events being dispatched. For the Background Process, 
+this inlcudes "connect", "message", "disconnect". 
+<pre class="brush: js">
+opera.extension.addEventListener('connect', function(event) {
+  window.opera.postError('Connected. Event source: ' + event.source);
+}, false);
+
+opera.extension.addEventListener('message', function(event) {
+  window.opera.postError('Message received. Event source: ' + event.source);
+  opera.extension.broadcastMessage('Message sent to injected script');
+}, false);
+
+opera.extension.addEventListener('disconnect', function(event) {
+  window.opera.postError('Disconnected. Event source: ' + event.source);
+}, false);
+</pre></div>
+   
+
+
+   
+
+
+
+   <h3 id="broadcastMessage">
+     broadcastMessage
+   </H3>
+
+   <p>
+     <code>void broadcastMessage (&lt;DOMString&gt; data)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>data</code> -  Data to be broadcasted.   
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method is used to broadcast data to all connected injected script and popup environments associated with the extension.
+<pre class="brush: js">
+opera.extension.broadcastMessage('Message broadcast.');
+</pre></div>
+   
+
+
+   
+
+
+
+   <h3 id="removeEventListener">
+     removeEventListener
+   </H3>
+
+   <p>
+     <code>void removeEventListener (&lt;DOMString&gt; type, eventListerner, &lt;boolean&gt; useCapture)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>type</code> -  Type of event. Allowed values are: <code>message</code>, <code>disconnect</code>, and <code>connect</code>.   
+     </dd>
+   
+     <dd>
+     <code>useCapture</code> -  Boolean, keep <code>false</code> for now. <strong>Note:</strong> this value currently has no purpose.   
+     </dd>
+   
+     <dd>
+     <code>eventListener</code> -  The function to be removed.  
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method removes a listener from receiving an event</div>
+   
+
+
+   
+
+
+
+
+<!-- ============ METHOD DETAIL END ========== -->
+<!-- Google Analytics -->
+<script src="../resources/other/ga.js"></script>
+

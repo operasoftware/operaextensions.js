@@ -1,0 +1,305 @@
+<!doctype html>
+<html>
+<head>
+<title>BrowserWindows</title>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+<link type="text/css" rel="stylesheet" href="../resources/javascript/syntaxhighlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../resources/css/stylesheet.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+</head>
+
+<body>
+<h1>BrowserWindows</h1>
+
+<!-- ============ Attributes START =========== -->
+
+
+<!-- ============ Attributes END =========== -->
+
+<!-- ============ METHOD DETAIL START ========== -->
+
+<h2>Methods</h2>
+
+<!-- One single method detail entry -->
+
+
+   <h3 id="addEventListener">
+     addEventListener
+   </H3>
+
+   <p>
+     <code>void addEventListener ()</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>type</code> -  Type of event. Allowed values are: <code>focus</code>, <code>close</code>, <code>create</code> and <code>blur</code>.  
+     </dd>
+   
+     <dd>
+     <code>eventListener</code> -  The function that is executed when the event occurs.  
+     </dd>
+   
+     <dd>
+     <code>useCapture</code> -  Boolean, keep <code>false</code> for now. <strong>Note:</strong> this value currently has no purpose.   
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method is used to listen for events being dispatched.</div>
+   
+
+
+   
+
+
+
+   <h3 id="create">
+     create
+   </H3>
+
+   <p>
+     <code><a href="BrowserWindows.html">BrowserWindows</a> create ()</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method creates a new browser window.</div>
+   
+
+
+   
+   <dl>
+     <dt>Returns:</dt>
+     <dd>BrowserWindows   </dd>
+   </dl>
+   
+
+
+
+   <h3 id="getAll">
+     getAll
+   </H3>
+
+   <p>
+     <code>BrowserWindows[] getAll ()</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method returns a list of all <code>BrowserWindows</code> objects that cointain injected script from this extension.</div>
+   
+
+
+   
+   <dl>
+     <dt>Returns:</dt>
+     <dd>An array of <code>BrowserWindows</code>.  </dd>
+   </dl>
+   
+
+
+
+   <h3 id="getFocused">
+     getFocused
+   </H3>
+
+   <p>
+     <code><a href="BrowserWindows.html">BrowserWindows</a> getFocused ()</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method returns the last <code>ExtensionWindow</code> from this extension that received focus.</div>
+   
+
+
+   
+   <dl>
+     <dt>Returns:</dt>
+     <dd>The <code>BrowserWindows</code> that was last focused by the user or by a script.</dd>
+   </dl>
+   
+
+
+
+   <h3 id="onblur">
+     onblur
+   </H3>
+
+   <p>
+     <code>void onblur (&lt;Function&gt; functionObj)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>functionObj</code> -  The function that is executed when a browser window is blurred / loses focus.   
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This event is fired when a browser window is blurred / loses focus.</div>
+   
+
+
+   
+
+
+
+   <h3 id="onclose">
+     onclose
+   </H3>
+
+   <p>
+     <code>void onclose (&lt;Function&gt; functionObj)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>functionObj</code> -  The function that is executed when a browser window is closed.   
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This event is fired when a browser window is closed.</div>
+   
+
+
+   
+
+
+
+   <h3 id="oncreate">
+     oncreate
+   </H3>
+
+   <p>
+     <code>void oncreate (&lt;Function&gt; functionObj)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>functionObj</code> -  The function that is executed when a new browser window is created.   
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This event is fired when a new browser window is created by the user or via a script.</div>
+   
+
+
+   
+
+
+
+   <h3 id="onfocus">
+     onfocus
+   </H3>
+
+   <p>
+     <code>void onfocus (functionObj)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>The</code> -  function that is executed when a browser window is focused.   
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This event is fired when a browser window is focused</div>
+   
+
+
+   
+
+
+
+   <h3 id="removeEventListener">
+     removeEventListener
+   </H3>
+
+   <p>
+     <code>void removeEventListener ()</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>type</code> -  Type of event. Allowed values are: <code>focus</code>, <code>close</code>, <code>create</code> and <code>blur</code>.  
+     </dd>
+   
+     <dd>
+     <code>eventListener</code> -  The function to be removed.  
+     </dd>
+   
+     <dd>
+     <code>useCapture</code> -  Boolean, keep <code>false</code> for now. <strong>Note:</strong> this value currently has no purpose.   
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method removes a listener from receiving an event.</div>
+   
+
+
+   
+
+
+
+
+<!-- ============ METHOD DETAIL END ========== -->
+<!-- Google Analytics -->
+<script src="../resources/other/ga.js"></script>
+

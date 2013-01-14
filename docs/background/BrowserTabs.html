@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+<head>
+<title>BrowserTabs</title>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+<link type="text/css" rel="stylesheet" href="../resources/javascript/syntaxhighlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../resources/css/stylesheet.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+</head>
+
+<body>
+<h1>BrowserTabs</h1>
+
+<!-- ============ Attributes START =========== -->
+
+<h2>Attributes</h2>
+   
+   <h3 id="onblur">
+       onblur
+   </h3>
+
+   <dl>
+     <dt><code>null&nbsp;onblur</code></dt>
+       <dd>The function assigned to this attribue will be called  when  a <code>BrowserTab</code> is blurred / loses focus.</dd>
+   </dl>
+
+   
+   <h3 id="onclose">
+       onclose
+   </h3>
+
+   <dl>
+     <dt><code>null&nbsp;onclose</code></dt>
+       <dd>The function assigned to this attribue will be called  when  a <code>BrowserTab</code> is closed.</dd>
+   </dl>
+
+   
+   <h3 id="oncreate">
+       oncreate
+   </h3>
+
+   <dl>
+     <dt><code>null&nbsp;oncreate</code></dt>
+       <dd>The function assigned to this attribue will be called  when  a <code>BrowserTab</code> is created.</dd>
+   </dl>
+
+   
+   <h3 id="onfocus">
+       onfocus
+   </h3>
+
+   <dl>
+     <dt><code>null&nbsp;onfocus</code></dt>
+       <dd>The function assigned to this attribue will be called  when  a <code>BrowserTab</code> is focused.</dd>
+   </dl>
+
+   
+
+
+<!-- ============ Attributes END =========== -->
+
+<!-- ============ METHOD DETAIL START ========== -->
+
+<h2>Methods</h2>
+
+<!-- One single method detail entry -->
+
+
+   <h3 id="addEventListener">
+     addEventListener
+   </H3>
+
+   <p>
+     <code>void addEventListener ()</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>type</code> -  Type of event. Allowed values are: <code>focus</code>, <code>close</code>, <code>create</code> and <code>blur</code>.  
+     </dd>
+   
+     <dd>
+     <code>eventListener</code> -  The function to be executed when the event occurs.  
+     </dd>
+   
+     <dd>
+     <code>useCapture</code> -  Boolean, keep <code>false</code> for now. <strong>Note:</strong> this value currently has no purpose.   
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method is used to listen for events being dispatched.</div>
+   
+
+
+   
+
+
+
+   <h3 id="create">
+     create
+   </H3>
+
+   <p>
+     <code><a href="BrowserTab.html">BrowserTab</a> create ( &lt;<a href="BrowserTabProperties.html">BrowserTabProperties</a>&gt; props )</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>props</code> -  The properties to use when creating the tab.  
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method creates and returns a new <code>BrowserTab</code>.</div>
+   
+
+
+   
+   <dl>
+     <dt>Returns:</dt>
+     <dd>BrowserTab  </dd>
+   </dl>
+   
+
+
+
+   <h3 id="getFocused">
+     getFocused
+   </H3>
+
+   <p>
+     <code><a href="BrowserTab.html">BrowserTab</a> getFocused ()</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>The property returns the currently focused <code>BrowserTab</code>.</div>
+   
+
+
+   
+   <dl>
+     <dt>Returns:</dt>
+     <dd>{BrowserTab} The currently focused <code>BrowserTab</code>. If Opera itself is not currently in focus or the currently focused tab is not accessible by the background process, this will return <code>null</code>. For a tab to be accessible by the background process, it must have an injected script running in it.  </dd>
+   </dl>
+   
+
+
+
+   <h3 id="removeEventListener">
+     removeEventListener
+   </H3>
+
+   <p>
+     <code>void removeEventListener ()</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>type</code> -  Type of event. Allowed values are: <code>focus</code>, <code>close</code>, <code>create</code> and <code>blur</code>.  
+     </dd>
+   
+     <dd>
+     <code>eventListener</code> -  The function to be removed.  
+     </dd>
+   
+     <dd>
+     <code>useCapture</code> -  Boolean, keep <code>false</code> for now. <strong>Note:</strong> this value currently has no purpose.   
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method removes a listener from receiving an event.</div>
+   
+
+
+   
+
+
+
+
+<!-- ============ METHOD DETAIL END ========== -->
+<!-- Google Analytics -->
+<script src="../resources/other/ga.js"></script>
+
