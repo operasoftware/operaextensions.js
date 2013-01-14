@@ -1,4 +1,4 @@
-!(function( global, manifest ) {
+!(function( global ) {
 
   var Opera = function() {};
 
@@ -17,6 +17,8 @@
   };
 
   var opera = global.opera || new Opera();
+  
+  var manifest = chrome.app.getDetails(); // null in injected scripts / popups
 
   var isReady = false;
 
@@ -929,11 +931,11 @@ MenuContextProxy.prototype = Object.create( MenuEventTarget.prototype );
 
 
 
-if(manifest && manifest.permissions && manifest.permissions.indexOf('contextMenus')!=-1){
+//if(manifest && manifest.permissions && manifest.permissions.indexOf('contextMenus')!=-1){
 
 OEC.menu = OEC.menu || new MenuContextProxy();
 
-}
+//}
 
 
 var UrlFilterEventListener = function() {
@@ -962,17 +964,22 @@ var UrlFilterEventListener = function() {
     
   }.bind(this), false);
   
-  this.matchUrlToInPageElement = function( url ) {
-    var key = global.encodeURIComponent( url );
+  Object.defineProperty(this, 'matchUrlToInPageElement', {
+    enumerable: false,  
+    configurable: false, 
+    writable: false, 
+    value: function( url ) {
+      var key = global.encodeURIComponent( url );
     
-    if( this.pageSrcElements[key] !== undefined && this.pageSrcElements[key].length > 0 ) {
+      if( this.pageSrcElements[key] !== undefined && this.pageSrcElements[key].length > 0 ) {
       
-      return this.pageSrcElements[key].shift();
+        return this.pageSrcElements[key].shift();
       
-    } 
+      } 
     
-    return undefined; // default, not found
-  }
+      return undefined; // default, not found
+    }
+  });
 
   // listen for block events sent from the background process
   // and fire in this content script
@@ -1271,35 +1278,4 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
   // Make API available on the window DOM object
   global.opera = opera;
 
-})( window, (function(){
-  
-var manifest = null;
-try{
-
-  manifest = chrome.app.getDetails();
-  
-  if(manifest==null){
-  
-  
-      var xhr = new XMLHttpRequest();
-  
-      xhr.onloadend = function(){
-          if (xhr.readyState==xhr.DONE && xhr.status==200){
-            manifest = JSON.parse(xhr.responseText);
-            
-            manifest.id = /^chrome\-extension\:\/\/(.*)\/$/.exec(chrome.extension.getURL(""))[1];
-            
-          };
-      };
-  
-      xhr.open('GET',chrome.extension.getURL('') + 'manifest.json',false);
-  
-      xhr.send(null);
-  
-  };
-  
-  } catch(e){ manifest = null;};
-
-return manifest;
-
-})());
+})( window );
