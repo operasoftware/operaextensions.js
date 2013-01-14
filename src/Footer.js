@@ -230,35 +230,4 @@
   // Make API available on the window DOM object
   global.opera = opera;
 
-})( window, (function(){
-  
-var manifest = null;
-try{
-
-  manifest = chrome.app.getDetails();
-  
-  if(manifest==null){
-  
-  
-      var xhr = new XMLHttpRequest();
-  
-      xhr.onloadend = function(){
-          if (xhr.readyState==xhr.DONE && xhr.status==200){
-            manifest = JSON.parse(xhr.responseText);
-            
-            manifest.id = /^chrome\-extension\:\/\/(.*)\/$/.exec(chrome.extension.getURL(""))[1];
-            
-          };
-      };
-  
-      xhr.open('GET',chrome.extension.getURL('') + 'manifest.json',false);
-  
-      xhr.send(null);
-  
-  };
-  
-  } catch(e){ manifest = null;};
-
-return manifest;
-
-})());
+})( window );

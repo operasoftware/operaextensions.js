@@ -25,17 +25,22 @@ var UrlFilterEventListener = function() {
     
   }.bind(this), false);
   
-  this.matchUrlToInPageElement = function( url ) {
-    var key = global.encodeURIComponent( url );
+  Object.defineProperty(this, 'matchUrlToInPageElement', {
+    enumerable: false,  
+    configurable: false, 
+    writable: false, 
+    value: function( url ) {
+      var key = global.encodeURIComponent( url );
     
-    if( this.pageSrcElements[key] !== undefined && this.pageSrcElements[key].length > 0 ) {
+      if( this.pageSrcElements[key] !== undefined && this.pageSrcElements[key].length > 0 ) {
       
-      return this.pageSrcElements[key].shift();
+        return this.pageSrcElements[key].shift();
       
-    } 
+      } 
     
-    return undefined; // default, not found
-  }
+      return undefined; // default, not found
+    }
+  });
 
   // listen for block events sent from the background process
   // and fire in this content script
