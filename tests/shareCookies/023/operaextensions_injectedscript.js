@@ -1061,6 +1061,7 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
 
       var fns = {
             "isready": [],
+            "readystatechange": [],
             "domcontentloaded": [],
             "load": []
           };
@@ -1077,6 +1078,20 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
         hasFired_Load = true;
         global.removeEventListener("load", handle_Load, true);
       }, true);
+      
+      global.document.addEventListener("readystatechange", function(event) {
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+        if( global.document.readyState !== 'interactive' && global.document.readyState !== 'complete' ) {
+          fireEvent('readystatechange', global.document);
+        } else {
+          global.document.readyState = 'loading';
+        }
+      }, true);
+      
+      var _readyState = "uninitialized";
+      global.document.__defineSetter__('readyState', function(val) { _readyState = val; });
+      global.document.__defineGetter__('readyState', function() { return _readyState; });
 
       function interceptAddEventListener(target, _name) {
 
@@ -1112,6 +1127,7 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
       interceptAddEventListener(global, 'load');
       interceptAddEventListener(global.document, 'domcontentloaded');
       interceptAddEventListener(global, 'domcontentloaded'); // handled bubbled DOMContentLoaded
+      interceptAddEventListener(global.document, 'readystatechange');
 
       function fireEvent(name, target) {
         var evtName = name.toLowerCase();
@@ -1121,7 +1137,6 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
         for (var i = 0, len = fns[evtName].length; i < len; i++) {
           fns[evtName][i].call(target, evt);
         }
-        fns[evtName] = [];
       }
 
       function ready() {
@@ -1149,6 +1164,9 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
             // (always synthesized in Chromium Content Scripts)
             if (hasFired_DOMContentLoaded || hasFired_Load || currentTime >= domContentLoadedTimeoutOverride) {
 
+              global.document.readyState = 'interactive';
+              fireEvent('readystatechange', global.document);
+
               fireEvent('domcontentloaded', global.document);
 
               if(currentTime >= domContentLoadedTimeoutOverride) {
@@ -1165,6 +1183,9 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
                 var currentTime = new Date().getTime();
 
                 if (hasFired_Load || currentTime >= loadTimeoutOverride) {
+                  
+                  global.document.readyState = 'complete';
+                  fireEvent('readystatechange', global.document);
 
                   fireEvent('load', window);
 
