@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+<head>
+<title>ToolbarContext</title>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+<link type="text/css" rel="stylesheet" href="../resources/javascript/syntaxhighlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../resources/css/stylesheet.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+</head>
+
+<body>
+<h1>ToolbarContext</h1>
+
+<!-- ============ Attributes START =========== -->
+
+<h2>Attributes</h2>
+   
+   <h3 id="length">
+       length
+   </h3>
+
+   <dl>
+     <dt><code>Number&nbsp;length</code></dt>
+       <dd>This attribute contains the number of UI items held by the <code>ToolbarContext</code>. <strong>Note:</strong> the <code>ToolbarContext</code> is currently restricted to a maximum of one UI item.</dd>
+   </dl>
+
+   
+
+
+<!-- ============ Attributes END =========== -->
+
+<!-- ============ METHOD DETAIL START ========== -->
+
+<h2>Methods</h2>
+
+<!-- One single method detail entry -->
+
+
+   <h3 id="addItem">
+     addItem
+   </H3>
+
+   <p>
+     <code>void addItem (&lt;<a href="ToolbarItem.html">ToolbarItem</a>&gt; item)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>item</code> -  The <code>ToolbarItem</code> to be added.  
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method adds a <code>ToolbarItem</code> to the toolbar in the browser. To create a <code>ToolbarItem</code> see the <code>createUIITem</code> method. 
+ <pre class="brush: js">
+var button = opera.contexts.toolbar.createItem({ // creates a button
+	title:'Weather Extension',
+	icon:'yr.png'
+});
+opera.contexts.toolbar.addItem( button ); // adds it to the browser UI
+</pre></div>
+   
+
+
+   
+
+
+
+   <h3 id="createItem">
+     createItem
+   </H3>
+
+   <p>
+     <code><a href="ToolbarItem.html">ToolbarItem</a> createItem (&lt;<a href="ToolbarItemProperties.html">ToolbarItemProperties</a>&gt; props)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>props</code> -  The <code>ToolbarItemProperties</code> to use when creating the <code>ToolbarItem</code>.  
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method creates a <code>ToolbarItem</code> from a given property object. <strong>Note:</strong> the item can only be used within the <code>ToolbarContext</code> that it is created in. 
+ <pre class="brush: js">
+var button = opera.contexts.toolbar.createItem({ // create a button
+	title:'Weather Extension',
+	icon:'yr.png'
+});
+</pre></div>
+   
+
+
+   
+   <dl>
+     <dt>Returns:</dt>
+     <dd>The <code>ToolbarItem</code>, which at this point is not yet associated with the <code>ToolbarContext</code>.  </dd>
+   </dl>
+   
+
+
+
+   <h3 id="item">
+     item
+   </H3>
+
+   <p>
+     <code><a href="ToolbarItem.html">ToolbarItem</a> item (&lt;Number&gt; index)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>index</code> -  The ordinal number of the <code>ToolbarItem</code> to be retrieved.  
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method retrieves a <code>ToolbarItem</code> by index.</div>
+   
+
+
+   
+   <dl>
+     <dt>Returns:</dt>
+     <dd>{ToolbarItem} The <code>ToolbarItem</code> at the requested location.   </dd>
+   </dl>
+   
+
+
+
+   <h3 id="removeItem">
+     removeItem
+   </H3>
+
+   <p>
+     <code>void removeItem (&lt;<a href="ToolbarItem.html">ToolbarItem</a>&gt; item)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>item</code> -  The <code>ToolbarItem</code> to be removed.  
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method removes a given <code>ToolbarItem</code> from the toolbar in the browser.
+ <pre class="brush: js">
+var button = opera.contexts.toolbar.createItem({ 
+	title:'Weather Extension',
+	icon:'yr.png'
+});
+opera.contexts.toolbar.addItem( button ); 
+opera.contexts.toolbar.removeItem( button ); // remove the button
+</pre></div>
+   
+
+
+   
+
+
+
+
+<!-- ============ METHOD DETAIL END ========== -->
+<!-- Google Analytics -->
+<script src="../resources/other/ga.js"></script>
+

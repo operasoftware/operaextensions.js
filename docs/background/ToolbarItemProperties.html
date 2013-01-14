@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+<title>ToolbarItemProperties</title>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+<link type="text/css" rel="stylesheet" href="../resources/javascript/syntaxhighlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../resources/css/stylesheet.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+</head>
+
+<body>
+<h1>ToolbarItemProperties</h1>
+
+<!-- ============ Attributes START =========== -->
+
+<h2>Attributes</h2>
+   
+   <h3 id="badge">
+       badge
+   </h3>
+
+   <dl>
+     <dt><code><a href="Badge.html">Badge</a>&nbsp;badge</code></dt>
+       <dd>This property represents the <a href="Badge.html#">Badge</a> for the <code><a href="ToolbarItem.html#">ToolbarItem</a></code>.
+<pre class="brush: js">
+props.badge = {
+  backgroundColor: '#ff0000',
+  color: '#ffffff',
+  display: 'block',
+  textContent: '42'
+};
+</pre></dd>
+   </dl>
+
+   
+   <h3 id="disabled">
+       disabled
+   </h3>
+
+   <dl>
+     <dt><code>Boolean&nbsp;disabled</code></dt>
+       <dd>This property indicates that the <code><a href="ToolbarItem.html#">ToolbarItem</a></code> needs to be disabled when created. If you don't include it, the default value is <code>false</code> (meaning the created item will be enabled).</dd>
+   </dl>
+
+   
+   <h3 id="icon">
+       icon
+   </h3>
+
+   <dl>
+     <dt><code>DOMString&nbsp;icon</code></dt>
+       <dd>A relative link to a data URI, an image located inside the package, or it can point to an external URL.</dd>
+   </dl>
+
+   
+   <h3 id="popup">
+       popup
+   </h3>
+
+   <dl>
+     <dt><code><a href="Popup.html">Popup</a>&nbsp;popup</code></dt>
+       <dd>This property represents the <code><a href="Popup.html#">Popup</a></code> for the <code><a href="ToolbarItem.html#">ToolbarItem</a></code>.
+<pre class="brush: js">
+props.popup = {
+  href: 'popup.html',
+  width: 200,
+  height: 100
+};
+</pre></dd>
+   </dl>
+
+   
+   <h3 id="title">
+       title
+   </h3>
+
+   <dl>
+     <dt><code>DOMString&nbsp;title</code></dt>
+       <dd>This property represents the <code>title</code> of the item, which is exposed to the user (e.g., as a tooltip when hovering over the item with a mouse).</dd>
+   </dl>
+
+   
+
+
+<!-- ============ Attributes END =========== -->
+
+<!-- ============ METHOD DETAIL START ========== -->
+
+<h2>Methods</h2>
+
+<!-- One single method detail entry -->
+
+
+   <h3 id="onclick">
+     onclick
+   </H3>
+
+   <p>
+     <code>void onclick ()</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>eventListener</code> -  The function that is executed when the <code><a href="ToolbarItem.html#">ToolbarItem</a></code> is clicked.   
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This event fires when the <code><a href="ToolbarItem.html#">ToolbarItem</a></code> is clicked.
+<pre class="brush: js">
+var props = {
+  disabled: false,
+  title: "My Extension",
+  icon: "icon.png",
+  onclick: function(event) {
+    window.opera.postError('Button clicked.');
+  }	
+};
+</pre></div>
+   
+
+
+   
+
+
+
+   <h3 id="onremove">
+     onremove
+   </H3>
+
+   <p>
+     <code>void onremove ()</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>eventListener</code> -  The function that is executed when the <code><a href="ToolbarItem.html#">ToolbarItem</a></code> is removed.    
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This event fires when the <code><a href="ToolbarItem.html#">ToolbarItem</a></code> is removed.
+<pre class="brush: js">
+var props = {
+  disabled: false,
+  title: "My Extension",
+  icon: "icon.png",
+  onremove: function(event) {
+    window.opera.postError('Button removed.');
+  }	
+};
+</pre></div>
+   
+
+
+   
+
+
+
+
+<!-- ============ METHOD DETAIL END ========== -->
+<!-- Google Analytics -->
+<script src="../resources/other/ga.js"></script>
+

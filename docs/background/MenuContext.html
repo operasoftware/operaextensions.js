@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+<head>
+<title>MenuContext</title>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../resources/javascript/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+<link type="text/css" rel="stylesheet" href="../resources/javascript/syntaxhighlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../resources/css/stylesheet.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+</head>
+
+<body>
+<h1>MenuContext</h1>
+
+<!-- ============ Attributes START =========== -->
+
+<h2>Attributes</h2>
+   
+   <h3 id="length">
+       length
+   </h3>
+
+   <dl>
+     <dt><code>Number&nbsp;length</code></dt>
+       <dd>This attribute contains the number of UI items held by the <code>MenuContext</code>.</dd>
+   </dl>
+
+   
+
+
+<!-- ============ Attributes END =========== -->
+
+<!-- ============ METHOD DETAIL START ========== -->
+
+<h2>Methods</h2>
+
+<!-- One single method detail entry -->
+
+
+   <h3 id="addItem">
+     addItem
+   </H3>
+
+   <p>
+     <code>void addItem (&lt;<a href="MenuItem.html">MenuItem</a>&gt; item, &lt;<a href="MenuItem.html">MenuItem</a>&gt; before)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>item</code> -  The <code>MenuItem</code> to be added.  
+     </dd>
+   
+     <dd>
+     <code>before</code> -  The <code>MenuItem</code> to add the first argument before in the context menu (optional).  
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method adds a <code>MenuItem</code> to the in-page right click context menus in the browser. To create a <code>MenuItem</code> see the <code>createItem</code> method. 
+ <pre class="brush: js">
+var item = opera.contexts.menu.createItem({
+  title: 'Translate!',
+  contexts: ['selection', 'editable']
+});
+opera.contexts.menu.addItem( item ); // adds it to the in-page right-click context menu
+</pre></div>
+   
+
+
+   
+
+
+
+   <h3 id="createItem">
+     createItem
+   </H3>
+
+   <p>
+     <code><a href="MenuItem.html">MenuItem</a> createItem (&lt;<a href="MenuItemProperties.html">MenuItemProperties</a>&gt; props)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>props</code> -  The <code>MenuItemProperties</code> to use when creating the <code>MenuItem</code>.  
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method creates a <code>MenuItem</code> from a given property object.
+ <pre class="brush: js">
+var button = opera.contexts.menu.createItem({
+  title: 'Translate!',
+  contexts: ['selection', 'editable']
+});
+</pre></div>
+   
+
+
+   
+   <dl>
+     <dt>Returns:</dt>
+     <dd>The <code>MenuItem</code>, which at this point is not yet associated with the <code>MenuContext</code>.  </dd>
+   </dl>
+   
+
+
+
+   <h3 id="item">
+     item
+   </H3>
+
+   <p>
+     <code><a href="MenuItem.html">MenuItem</a> item (&lt;Number&gt; index)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>index</code> -  The ordinal number of the <code>MenuItem</code> to be retrieved.  
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method retrieves a <code>MenuItem</code> by index.</div>
+   
+
+
+   
+   <dl>
+     <dt>Returns:</dt>
+     <dd>{MenuItem} The <code>MenuItem</code> at the requested location.   </dd>
+   </dl>
+   
+
+
+
+   <h3 id="removeItem">
+     removeItem
+   </H3>
+
+   <p>
+     <code>void removeItem (&lt;<a href="MenuItem.html">MenuItem</a>&gt; item)</code>
+   </p>
+
+   <!-- METHOD PARAMETERS START -->
+   
+   <dl>
+   <dt>Parameters:</dt>
+   
+     <dd>
+     <code>item</code> -  The <code>MenuItem</code> to be removed.  
+     </dd>
+   
+   </dl>
+   
+   <!-- METHOD PARAMETERS END -->
+
+   
+      <div>This method removes a given <code>MenuItem</code> from the in-page right-click context menu
+ <pre class="brush: js">
+var item = opera.contexts.menu.createItem({
+  title: 'Translate!',
+  contexts: ['selection', 'editable']
+});
+opera.contexts.menu.addItem( item ); 
+opera.contexts.menu.removeItem( item ); // remove the menu item
+</pre></div>
+   
+
+
+   
+
+
+
+
+<!-- ============ METHOD DETAIL END ========== -->
+<!-- Google Analytics -->
+<script src="../resources/other/ga.js"></script>
+
