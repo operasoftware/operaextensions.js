@@ -1099,6 +1099,8 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
 
         // Replace addEventListener for given target
         target.addEventListener = function(name, fn, usecapture) {
+          name = name + ""; // force event name to type string
+          
           if (name.toLowerCase() === _name.toLowerCase()) {
             if (fn === undefined || fn === null ||
                   Object.prototype.toString.call(fn) !== "[object Function]") {
@@ -1129,10 +1131,10 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
       interceptAddEventListener(global, 'domcontentloaded'); // handled bubbled DOMContentLoaded
       interceptAddEventListener(global.document, 'readystatechange');
 
-      function fireEvent(name, target) {
+      function fireEvent(name, target, props) {
         var evtName = name.toLowerCase();
 
-        var evt = new OEvent(evtName, {});
+        var evt = new OEvent(evtName, props || {});
 
         for (var i = 0, len = fns[evtName].length; i < len; i++) {
           fns[evtName][i].call(target, evt);
@@ -1167,7 +1169,7 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
               global.document.readyState = 'interactive';
               fireEvent('readystatechange', global.document);
 
-              fireEvent('domcontentloaded', global.document);
+              fireEvent('domcontentloaded', global.document, { bubbles: true }); // indicate that event bubbles
 
               if(currentTime >= domContentLoadedTimeoutOverride) {
                 console.warn('document.domcontentloaded event fired on check timeout');
