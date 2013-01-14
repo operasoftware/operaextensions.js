@@ -1,4 +1,4 @@
-!(function( global, manifest ) {
+!(function( global ) {
 
   var Opera = function() {};
 
@@ -17,6 +17,8 @@
   };
 
   var opera = global.opera || new Opera();
+  
+  var manifest = chrome.app.getDetails(); // null in injected scripts / popups
 
   var isReady = false;
 
