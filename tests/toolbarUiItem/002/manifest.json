@@ -9,6 +9,7 @@
   "permissions": [
     "tabs", "http://*/*","https://*/*"
   ],
+  "browser_action": {},
   "web_accessible_resources": [
     "/manifest.json"
   ]

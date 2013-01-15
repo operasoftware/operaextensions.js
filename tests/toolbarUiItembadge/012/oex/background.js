@@ -7,8 +7,12 @@ opera.isReady(function(){
             textContent: 23
           }
         }
-        theButton = opera.contexts.toolbar.createItem( UIItemProperties );
-        opera.contexts.toolbar.addItem( theButton );
-        MANUAL( "There should badge with a number now." );
+        try {
+            theButton = opera.contexts.toolbar.createItem( UIItemProperties );
+            opera.contexts.toolbar.addItem( theButton );
+            MANUAL( "There should badge with a number now." );
+        } catch(err){
+            FAIL("Error thrown for textContent: 23 " + err);
+        }
     }, false);
 });

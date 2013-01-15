@@ -1,14 +1,16 @@
 function getProperties(object, depth, prefix) {
     prefix = prefix || "";
     var t = "";
+    console.log(object);
     for (key in object) {
 	t += prefix + "" + "[" + key + "] " + typeof object[key] + " "
-		+ object[key] + "<br />";
+		+ ( typeof object[key] != "function" ? object[key] : "" ) + "<br />";
+
 	if (typeof object[key] == "object" && depth > 0) {
 	    t += getProperties(object[key], depth - 1, "[" + key + "]" + prefix);
 	}
 	if (depth == 0) {
-	    t += "------------Max depth reached \n";
+	    t += "------------Max depth reached <br />";
 	}
     }
     return "<br /><code>" + t + "</code>";

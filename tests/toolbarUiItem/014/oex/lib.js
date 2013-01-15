@@ -8,7 +8,7 @@ function getProperties(object, depth, prefix) {
 	    t += getProperties(object[key], depth - 1, "[" + key + "]" + prefix);
 	}
 	if (depth == 0) {
-	    t += "------------Max depth reached \n";
+	    t += "------------Max depth reached </br />";
 	}
     }
     return "<br /><code>" + t + "</code>";

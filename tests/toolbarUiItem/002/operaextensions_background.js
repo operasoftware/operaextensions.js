@@ -344,13 +344,14 @@ function complexColorToHex(color, backgroundColorVal) {
 
   // Hex color patterns
   var hexColorTypes = {
-    "hexLong": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
-    "hexShort": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
+    "hexLong": /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+    "hexShort": /^#([0-9a-fA-F]{3})$/
   };
 
   for(var colorType in hexColorTypes) {
-    if(color.match(hexColorTypes[ colorType ]))
-      return color;
+    if(color.match(hexColorTypes[ colorType ])) {
+	return color;
+    }
   }
 
   // Other color patterns
@@ -387,14 +388,15 @@ function complexColorToHex(color, backgroundColorVal) {
     },
     hsl: function( bits ) {
       var hsl = {
-        h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
-        s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
-        l : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100,
+        h : parseInt( bits[ 1 ], 10 ) % 360 / 360,
+        s : parseInt( bits[ 2 ], 10 ) % 101 / 100,
+        l : parseInt( bits[ 3 ], 10 ) % 101 / 100,
         a : bits[4] || 1
       };
 
-      if ( hsl.s === 0 )
-        return [ hsl.l, hsl.l, hsl.l ];
+      if ( hsl.s === 0 ) {
+	return [ hsl.l, hsl.l, hsl.l ];
+    }
 
       var q = hsl.l < 0.5 ? hsl.l * ( 1 + hsl.s ) : hsl.l + hsl.s - hsl.l * hsl.s;
       var p = 2 * hsl.l - q;
@@ -409,9 +411,9 @@ function complexColorToHex(color, backgroundColorVal) {
     hsv: function( bits ) {
       var rgb = {},
           hsv = {
-            h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
-            s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
-            v : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100
+            h : parseInt( bits[ 1 ], 10 ) % 360 / 360,
+            s : parseInt( bits[ 2 ], 10 ) % 101 / 100,
+            v : parseInt( bits[ 3 ], 10 ) % 101 / 100
           },
           i = Math.floor( hsv.h * 6 ),
           f = hsv.h * 6 - i,
@@ -452,7 +454,9 @@ function complexColorToHex(color, backgroundColorVal) {
 
   function applySaturation( rgb ) {
     var alpha = parseFloat(rgb[3] || 1);
-    if((alpha + "") === "NaN" || alpha < 0 || alpha >= 1) return rgb;
+    if(alpha + "" === "NaN" || alpha < 0 || alpha >= 1) {
+	return rgb;
+    }
     if(alpha == 0) {
       return [ 255, 255, 255 ];
     }
@@ -3347,8 +3351,7 @@ var ToolbarBadge = function( properties ) {
   this.properties.textContent = properties.textContent;
   this.properties.backgroundColor = complexColorToHex(properties.backgroundColor);
   this.properties.color = complexColorToHex(properties.color);
-  this.properties.display = properties.display;
-
+  this.properties.display = String(properties.display).toLowerCase() === 'none' ? 'none' : 'block';
 };
 
 ToolbarBadge.prototype = Object.create( OPromise.prototype );
@@ -3414,20 +3417,21 @@ ToolbarBadge.prototype.__defineGetter__("display", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("display", function( val ) {
-  if(("" + val).toLowerCase() === "block") {
-    this.properties.display = "block";
-    Queue.enqueue(this, function(done) {
+    if(("" + val).toLowerCase() === "none")  {
+	this.properties.display = "none";
+	Queue.enqueue(this, function(done) {
 
-      chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
+	    chrome.browserAction.setBadgeText({ "text": "" });
 
-      done();
+	    done();
+	}.bind(this));
+    }
 
-    }.bind(this));
-  } else {
-    this.properties.display = "none";
-    Queue.enqueue(this, function(done) {
+    else {
+	this.properties.display = "block";
+	Queue.enqueue(this, function(done) {
 
-      chrome.browserAction.setBadgeText({ "text": "" });
+	chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
 
       done();
 

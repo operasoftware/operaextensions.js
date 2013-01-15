@@ -17,6 +17,6 @@ opera.isReady(function(){
           MANUAL( "This should be the last statement." );
         }, false);
         opera.contexts.toolbar.removeItem( theButton );
-        MANUAL( "If there is an enabled button with a title and favicon, click the button to run the test." );
+        MANUAL( "If there is no button test is passed and no fail tab." );
     }, false);
 });
