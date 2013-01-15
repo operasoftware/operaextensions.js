@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test Results</title>
+            <style>
+				html {
+					font-family: DejaVu Sans, Bitstream Vera Sans, Arial, Sans;
+				}
+				
+				#log .warning,#log .warning a {
+					color: black;
+					background: yellow;
+				}
+				
+				#log .error,#log .error a {
+					color: white;
+					background: red;
+				}
+				
+				#log pre {
+					border: 1px solid black;
+					padding: 1em;
+				}
+				
+				section.summary {
+					margin-bottom: 1em;
+				}
+				
+				table.results {
+					border-collapse: collapse;
+					table-layout: fixed;
+					width: 100%;
+				}
+				
+				table.results th:first-child,table.results td:first-child {
+					width: 4em;
+				}
+				
+				table.results th:last-child,table.results td:last-child {
+					width: 50%;
+				}
+				
+				table.results.assertions th:last-child,table.results.assertions td:last-child
+					{
+					width: 35%;
+				}
+				
+				table.results th {
+					padding: 0;
+					padding-bottom: 0.5em;
+					border-bottom: medium solid black;
+				}
+				
+				table.results td {
+					padding: 1em;
+					padding-bottom: 0.5em;
+					border-bottom: thin solid black;
+				}
+				
+				tr.pass>td:first-child {
+					color: green;
+				}
+				
+				tr.fail>td:first-child {
+					color: red;
+				}
+				
+				tr.timeout>td:first-child {
+					color: red;
+				}
+				
+				tr.notrun>td:first-child {
+					color: blue;
+				}
+				
+				.pass>td:first-child,.fail>td:first-child,.timeout>td:first-child,.notrun>td:first-child
+					{
+					font-variant: small-caps;
+				}
+				
+				table.results span {
+					display: block;
+				}
+				
+				table.results span.expected {
+					font-family: DejaVu Sans Mono, Bitstream Vera Sans Mono, Monospace;
+					white-space: pre;
+				}
+				
+				table.results span.actual {
+					font-family: DejaVu Sans Mono, Bitstream Vera Sans Mono, Monospace;
+					white-space: pre;
+				}
+				
+				h2 {
+					font-size: 1.3em;
+				}
+				
+				a {
+					border: 2px solid #0000CC;
+					color: #ffffff;
+					background-color: #0000CC;
+					display: block;
+					padding: 0 .5em;
+					line-height: 1.5em;
+				}
+				
+				a:hover {
+					background-color: #ffffff;
+					color: #0000CC;
+				}
+				
+				#info_progress {
+					width: 100%;
+					position: relative;
+					background: rgba(0, 0, 0, 0.5);
+					height: 25px;
+				}
+				
+				#info_progress .percent {
+					position: absolute;
+					left: 0;
+					top: 0;
+					color: white;
+					font-weight: bold;
+					height: 25px;
+					line-height: 25px;
+					display: block;
+					background: green;
+					text-align: center;
+				}
+				
+				#info_progress .percent.fail {
+					background: red;
+				}
+				
+				#info_progress .percent.notrun {
+					background: gray;
+				}
+			</style>
+			<script type="text/javascript">
+			    document.addEventListener('DOMContentLoaded', function() {
+				var tests = document.querySelectorAll('.summary'), testcases = document
+					.querySelectorAll('.results tbody tr'), fails = document
+					.querySelectorAll('tr.fail'), notrun = document
+					.querySelectorAll('tr.notrun'), passes = document
+					.querySelectorAll('tr.pass');
+				var str = [ "<p>Tests: ", tests.length, " [testcases: ",
+					testcases.length, "]", "</p><p>Pass: ", passes.length,
+					" / Fail: ", fails.length, " / Not run: ", notrun.length,
+					"</p>" ].join('');
+				document.getElementById('info_results').innerHTML = str;
+				var passesPr = +(passes.length * 100 / testcases.length).toFixed(0);
+				var failsPr = +(fails.length * 100 / testcases.length).toFixed(0);
+				var notrunPr = +(notrun.length * 100 / testcases.length).toFixed(0);
+				document.getElementById('info_progress').innerHTML = [
+					'<span class="percent" style="width: ' + (passesPr) + '%;">'
+						+ (passesPr) + '%</span>',
+					'<span class="percent fail" style="left: ' + passesPr
+						+ '%;width: ' + (failsPr) + '%;">' + (failsPr)
+						+ '%</span>',
+					'<span class="percent notrun" style="left: '
+						+ (failsPr + passesPr) + '%;width: ' + (notrunPr)
+						+ '%;">' + (notrunPr) + '%</span>',
+					'<span class="bg"> </span>' ].join('');
+			    });
+			</script>
+    </head>
+    <body>
+	    <div id="info">
+	        <h4>Test results 15.01.2013</h4>
+	        <section id="info_results"></section>
+	        <section id="info_progress"></section>
+	    </div>
+	    
+	    <section class="summary">
+          <h2><a
+                href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/add/001">
+                core-gadgets / extensions / urlFilter / add / 001</a></h2>
+          <table class="results">
+            <thead>
+              <tr>
+                <th>Result</th>
+                <th>Test Name</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="pass">
+                <td>Pass</td>
+                <td>Adding an empty rule to block list returns 0.</td>
+                <td> </td>
+              </tr>
+              <tr class="pass">
+                <td>Pass</td>
+                <td>Adding a whitespace-only rule to block list returns 0.</td>
+                <td> </td>
+              </tr>
+              <tr class="pass">
+                <td>Pass</td>
+                <td>Adding non-empty rules to block list returns non-zero ID.</td>
+                <td> </td>
+              </tr>
+              <tr class="pass">
+                <td>Pass</td>
+                <td>Adding duplicate rule to block list returns unique, non-zero ID.</td>
+                <td> </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section class="summary">
+          <h2><a
+              href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/add/002">
+              core-gadgets / extensions / urlFilter / add / 002</a></h2>
+          <table class="results">
+            <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Adding an empty rule to allow list returns 0.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Adding a whitespace-only rule to allow list returns 0.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Adding non-empty rules to allow list returns non-zero ID.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Adding duplicate rule to allow list returns unique, non-zero ID.</td><td> </td></tr></tbody>
+          </table>
+        </section>
+        <section class="summary">
+              <h2><a
+                    href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/add/003">
+                    core-gadgets / extensions / urlFilter / add / 003</a></h2>
+              <table class="results">
+                <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Adding filter to block content.</td><td> </td></tr></tbody>
+              </table>
+          </section>
+          <section class="summary">
+              <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/add/004">
+                      core-gadgets / extensions / urlFilter / add / 004</a></h2>
+                <table class="results">
+                  <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Adding filter to block content.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Adding exception to allow content.</td><td> </td></tr></tbody>
+                </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/domains/001">
+              core-gadgets / extensions / urlFilter / domains / 001</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should only block on domains that are included.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/domains/002">
+              core-gadgets / extensions / urlFilter / domains / 002</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should not block on domains that are included.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The rule should only allow on domains that are included.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/domains/003">
+              core-gadgets / extensions / urlFilter / domains / 003</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should only block on subdomains of domains that are included.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/domains/004">
+              core-gadgets / extensions / urlFilter / domains / 004</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should not block on subdomains of domains that are included.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The rule should only allow on subdomains of domains that are included.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/domains/005">
+              core-gadgets / extensions / urlFilter / domains / 005</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should only block on domains that are included.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/domains/006">
+              core-gadgets / extensions / urlFilter / domains / 006</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should not block on domains that are included.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The rule should only allow on domains that are included.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/domains/007">
+              core-gadgets / extensions / urlFilter / domains / 007</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should not block on any domains.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/not_domains/001">
+              core-gadgets / extensions / urlFilter / not_domains / 001</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should not block on domains that are excluded.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/not_domains/002">
+              core-gadgets / extensions / urlFilter / not_domains / 002</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should only block on domains that are excluded.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The rule should not allow on domains that are excluded.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/not_domains/003">
+              core-gadgets / extensions / urlFilter / not_domains / 003</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="timeout"><td>Timeout</td><td>The rule should not block on subdomains of domains that are excluded.</td><td>Test timed out</td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/not_domains/004">
+              core-gadgets / extensions / urlFilter / not_domains / 004</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should only block on subdomains of domains that are excluded.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The rule should not allow on subdomains of domains that are excluded.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/not_domains/005">
+              core-gadgets / extensions / urlFilter / not_domains / 005</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should not block on domains that are excluded.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/not_domains/006">
+              core-gadgets / extensions / urlFilter / not_domains / 006</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should only block on domains that are excluded.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The rule should not allow on domains that are excluded.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/not_domains/007">
+              core-gadgets / extensions / urlFilter / not_domains / 007</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should only block on domains that are included and not excluded.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/not_domains/008">
+              core-gadgets / extensions / urlFilter / not_domains / 008</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="timeout"><td>Timeout</td><td>The rule should not block on domains that are included and not excluded.</td><td>Test timed out</td></tr><tr class="timeout"><td>Timeout</td><td>The rule should only allow on domains that are included and not excluded.</td><td>Test timed out</td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/001">
+              core-gadgets / extensions / urlFilter / resourcetypes / 001</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Value of RESOURCE_OTHER</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Value of RESOURCE_SCRIPT</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Value of RESOURCE_IMAGE</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Value of RESOURCE_STYLESHEET</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Value of RESOURCE_OBJECT</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Value of RESOURCE_SUBDOCUMENT</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Value of RESOURCE_DOCUMENT</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Value of RESOURCE_REFRESH</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Value of RESOURCE_XMLHTTPREQUEST</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Value of RESOURCE_OBJECT_SUBREQUEST</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Value of RESOURCE_MEDIA</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Value of RESOURCE_FONT</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/002">
+              core-gadgets / extensions / urlFilter / resourcetypes / 002</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: script.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/002a">
+              core-gadgets / extensions / urlFilter / resourcetypes / 002a</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="fail"><td>Fail</td><td>Blocking by resource type: script.</td><td>Cannot call method 'toUpperCase' of null(stack: TypeError: Cannot call method 'toUpperCase' of null
+                  at Object.&lt;anonymous&gt; (chrome-extension://bngnncncclhjhgdfhlfkoofpeooeccjn/oex/test.js:13:39)
+                  at Object.Test.step (chrome-extension://bngnncncclhjhgdfhlfkoofpeooeccjn/oex/testharness.js:988:18)
+                  at opera.extension.onmessage (chrome-extension://bngnncncclhjhgdfhlfkoofpeooeccjn/oex/test.js:11:22)
+                  at exports.EventTarget.trigger (chrome-extension://bngnncncclhjhgdfhlfkoofpeooeccjn/operaextensions_background.js:191:19)
+                  at OEventTarget.dispatchEvent (chrome-extension://bngnncncclhjhgdfhlfkoofpeooeccjn/operaextensions_background.js:528:8)
+                  at addDelayedEvent (chrome-extension://bngnncncclhjhgdfhlfkoofpeooeccjn/operaextensions_background.js:32:26)
+                  at null.&lt;anonymous&gt; (chrome-extension://bngnncncclhjhgdfhlfkoofpeooeccjn/operaextensions_background.js:746:9)
+                  at chrome.Event.dispatchToListener (event_bindings:387:21)
+                  at chrome.Event.dispatch_ (event_bindings:373:27)
+                  at chrome.Event.dispatch (event_bindings:393:17))</td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/003">
+              core-gadgets / extensions / urlFilter / resourcetypes / 003</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: image (img).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/004">
+              core-gadgets / extensions / urlFilter / resourcetypes / 004</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: stylesheet (link).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/005">
+              core-gadgets / extensions / urlFilter / resourcetypes / 005</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: stylesheet (@import).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/006">
+              core-gadgets / extensions / urlFilter / resourcetypes / 006</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: object.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/007">
+              core-gadgets / extensions / urlFilter / resourcetypes / 007</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: object (embed).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/008">
+              core-gadgets / extensions / urlFilter / resourcetypes / 008</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: subdocument (iframe).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/009">
+              core-gadgets / extensions / urlFilter / resourcetypes / 009</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: subdocument (frame).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/010">
+              core-gadgets / extensions / urlFilter / resourcetypes / 010</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: document.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/011">
+              core-gadgets / extensions / urlFilter / resourcetypes / 011</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: refresh (meta).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/012">
+              core-gadgets / extensions / urlFilter / resourcetypes / 012</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: xmlhttprequest</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/013">
+              core-gadgets / extensions / urlFilter / resourcetypes / 013</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: media (video).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/014">
+              core-gadgets / extensions / urlFilter / resourcetypes / 014</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: media (audio).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/015">
+              core-gadgets / extensions / urlFilter / resourcetypes / 015</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: font.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/016">
+              core-gadgets / extensions / urlFilter / resourcetypes / 016</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: script.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/017">
+              core-gadgets / extensions / urlFilter / resourcetypes / 017</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: image (img).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/018">
+              core-gadgets / extensions / urlFilter / resourcetypes / 018</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: stylesheet (link).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/0019">
+              core-gadgets / extensions / urlFilter / resourcetypes / 019</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: stylesheet (@import).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/020">
+              core-gadgets / extensions / urlFilter / resourcetypes / 020</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: object.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/021">
+              core-gadgets / extensions / urlFilter / resourcetypes / 021</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: object (embed).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/022">
+              core-gadgets / extensions / urlFilter / resourcetypes / 022</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: subdocument (iframe).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/023">
+              core-gadgets / extensions / urlFilter / resourcetypes / 023</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: subdocument (frame).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/024">
+              core-gadgets / extensions / urlFilter / resourcetypes / 024</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: document.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/025">
+              core-gadgets / extensions / urlFilter / resourcetypes / 025</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: refresh (meta).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/026">
+              core-gadgets / extensions / urlFilter / resourcetypes / 026</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: xmlhttprequest</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/027">
+              core-gadgets / extensions / urlFilter / resourcetypes / 027</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: media (video).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/028">
+              core-gadgets / extensions / urlFilter / resourcetypes / 028</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: media (audio).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/029">
+              core-gadgets / extensions / urlFilter / resourcetypes / 029</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="notrun"><td>Not Run</td><td>Blocking by resource type: font.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/030">
+              core-gadgets / extensions / urlFilter / resourcetypes / 030</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="fail"><td>Fail</td><td>Blocking by resource type: image (CSS background).</td><td>Cannot call method 'toUpperCase' of null(stack: TypeError: Cannot call method 'toUpperCase' of null
+                  at Object.&lt;anonymous&gt; (chrome-extension://ahnbdgipfmehfeookgogaabhkfpbpflk/oex/test.js:13:39)
+                  at Object.Test.step (chrome-extension://ahnbdgipfmehfeookgogaabhkfpbpflk/oex/testharness.js:988:18)
+                  at opera.extension.onmessage (chrome-extension://ahnbdgipfmehfeookgogaabhkfpbpflk/oex/test.js:11:22)
+                  at exports.EventTarget.trigger (chrome-extension://ahnbdgipfmehfeookgogaabhkfpbpflk/operaextensions_background.js:191:19)
+                  at OEventTarget.dispatchEvent (chrome-extension://ahnbdgipfmehfeookgogaabhkfpbpflk/operaextensions_background.js:528:8)
+                  at addDelayedEvent (chrome-extension://ahnbdgipfmehfeookgogaabhkfpbpflk/operaextensions_background.js:32:26)
+                  at null.&lt;anonymous&gt; (chrome-extension://ahnbdgipfmehfeookgogaabhkfpbpflk/operaextensions_background.js:746:9)
+                  at chrome.Event.dispatchToListener (event_bindings:387:21)
+                  at chrome.Event.dispatch_ (event_bindings:373:27)
+                  at chrome.Event.dispatch (event_bindings:393:17))</td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/031">
+              core-gadgets / extensions / urlFilter / resourcetypes / 031</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Blocking by resource type: image (background attribute).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/001">
+              core-gadgets / extensions / urlFilter / syntax / 001</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match zero characters.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match one character.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match two characters.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/002">
+              core-gadgets / extensions / urlFilter / syntax / 002</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match zero characters.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match one character.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match two characters.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/001">
+              core-gadgets / extensions / urlFilter / syntax / 003</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match http scheme.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match https scheme.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/004">
+              core-gadgets / extensions / urlFilter / syntax / 004</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match http scheme.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match https scheme.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/005">
+              core-gadgets / extensions / urlFilter / syntax / 005</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match the hostname (t).</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match the hostname (t.oslo.osa).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/006">
+              core-gadgets / extensions / urlFilter / syntax / 006</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match the hostname (t).</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match the hostname (t.oslo.osa).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/007">
+              core-gadgets / extensions / urlFilter / syntax / 007</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match any path (gif).</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match any path (png).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/008">
+              core-gadgets / extensions / urlFilter / syntax / 008</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match any path (gif).</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match any path (png).</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/009">
+              core-gadgets / extensions / urlFilter / syntax / 009</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match the port.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/010">
+              core-gadgets / extensions / urlFilter / syntax / 010</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match the port.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/011a">
+              core-gadgets / extensions / urlFilter / syntax / 011a</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match !</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match "</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match #</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match $</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match &amp;</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match '</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match (</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match )</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match *</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match +</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ,</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match /</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match :</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ;</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match &lt;</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match =</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match &gt;</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ?</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match @</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match [</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match \</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ]</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ^</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match `</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match {</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match |</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match }</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ~</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match end of line.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should not match _ (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match - (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match . (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match % (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match 0 (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match 1 (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match 2 (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match 3 (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match 4 (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match 5 (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match 6 (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match 7 (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match 8 (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match 9 (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match A (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match B (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match C (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match D (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match E (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match F (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match G (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match H (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match I (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match J (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match K (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match L (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match M (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match N (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match O (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match P (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match Q (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match R (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match S (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match T (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match U (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match V (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match W (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match X (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match Y (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match Z (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match a (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match b (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match c (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match d (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match e (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match f (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match g (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match h (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match i (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match j (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match k (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match l (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match m (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match n (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match o (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match p (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match q (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match r (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match s (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match t (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match u (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match v (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match w (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match x (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match y (requires SELFTEST support)</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should not match z (requires SELFTEST support)</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/012">
+              core-gadgets / extensions / urlFilter / syntax / 012</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match !</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match "</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match #</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match $</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match &amp;</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match '</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match (</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match )</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match *</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match +</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ,</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match /</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match :</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ;</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match &lt;</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match =</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match &gt;</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ?</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match @</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match [</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match \</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ]</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ^</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match `</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match {</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match |</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match }</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match ~</td><td> </td></tr><tr class="notrun"><td>Not Run</td><td>The wildcard should match end of line.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/013">
+              core-gadgets / extensions / urlFilter / syntax / 013</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match http scheme.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match http scheme.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/resourcetypes/014">
+              core-gadgets / extensions / urlFilter / syntax / 014</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The wildcard should match http scheme.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The wildcard should match http scheme.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/third_party/001">
+              core-gadgets / extensions / urlFilter / third_party / 001</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should only block resources from third-party domains.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/third_party/002">
+              core-gadgets / extensions / urlFilter / third_party / 002</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should only block resources from the same-origin.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/third_party/003">
+              core-gadgets / extensions / urlFilter / third_party / 003</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should block resources from the same-origin.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The rule should block resources third-party domains.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/third_party/004">
+              core-gadgets / extensions / urlFilter / third_party / 004</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should block resources from the same-origin.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The rule should block resources third-party domains.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+          <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/urlFilter/third_party/005">
+              core-gadgets / extensions / urlFilter / third_party / 005</a></h2>
+            <table class="results">
+              <thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>The rule should block resources from the same-origin.</td><td> </td></tr><tr class="pass"><td>Pass</td><td>The rule should block resources third-party domains.</td><td> </td></tr></tbody>
+            </table>
+          </section>
+    </body>
+</html>
