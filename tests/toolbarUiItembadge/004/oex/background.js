@@ -9,7 +9,7 @@ opera.isReady(function(){
           icon: "./oex/icon.png",
           onclick: function(){
             if( timer ){
-              window.clearTimeout( timer );
+              window.clearInterval( timer );
               timer = null;
             } else {
               timer = window.setInterval( function(){

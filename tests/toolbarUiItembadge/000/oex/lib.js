@@ -31,6 +31,7 @@ function POST(result, msg) {
     }
     var value = "Extensions: 000 - exists \t" + result + "\n" + msg;
     opera.postError("==BackgroundProcess==\n" + value);
+
     if (opera.extension && opera.extension.tabs){
 	if(!tab){
 	    tab = opera.extension.tabs.create({
