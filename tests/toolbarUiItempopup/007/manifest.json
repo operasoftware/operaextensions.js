@@ -1,8 +1,8 @@
 {
-  "name": "009 - Item remove",
+  "name": "007 - Item href change",
   "version": "1.0",
   "manifest_version": 2,
-  "description": "009 - Item remove",
+  "description": "007 - Item href change",
   "background": {
       "page": "background.html"
   },

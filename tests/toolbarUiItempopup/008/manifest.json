@@ -1,8 +1,8 @@
 {
-  "name": "009 - Item remove",
+  "name": "008 - Item href change while open",
   "version": "1.0",
   "manifest_version": 2,
-  "description": "009 - Item remove",
+  "description": "008 - Item href change while open",
   "background": {
       "page": "background.html"
   },
