@@ -9,9 +9,13 @@ opera.isReady(function(){
             PASS( getProperties(event, 2) );
           }
         }
-        theButton = opera.contexts.toolbar.createItem( UIItemProperties );
-        opera.contexts.toolbar.addItem( theButton );
-        opera.contexts.toolbar.removeItem( theButton );
-        MANUAL( "If a button is added and then removed immediately, you should see a PASS in the error console." );
+        try {
+            theButton = opera.contexts.toolbar.createItem( UIItemProperties );
+            opera.contexts.toolbar.addItem( theButton );
+            opera.contexts.toolbar.removeItem( theButton );
+            MANUAL( "If a button is added and then removed immediately, you should see a PASS." );
+        } catch(err) {
+            FAIL(err);
+        }
     }, false);
 });
