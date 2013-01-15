@@ -35,7 +35,7 @@ opera.isReady(function() {
     	if (count === 6) {
     		setTimeout(function() { // Wait in case unexpected events fire
     			tests["allow"].step(function(){
-    				assert_equals(allowCount, 4, "Four URLs should be allowed.");
+    				assert_equals(allowCount, 3, "Three URLs should be allowed.");
     			});
     
     			tests["block"].step(function(){
@@ -54,8 +54,7 @@ opera.isReady(function() {
     	"http://testsuites/core/features/widget_tf/core-gadgets/extensions/url-filter/resources/domains.html",
     	"http://testsuites.oslo.osa/core/features/widget_tf/core-gadgets/extensions/url-filter/resources/domains.html",
     	"http://matchpartial.aliases.t.oslo.osa/core/features/widget_tf/core-gadgets/extensions/url-filter/resources/domains.html",
-    	"http://aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffggg.aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffggg.aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffggg.aaaaaaaaaabbbbbbbbbbccccccccccddddddddddee.aliases.t.oslo.osa/core/features/widget_tf/core-gadgets/extensions/url-filter/resources/domains.html",
-    	createDataURL("<!DOCTYPE html><title>Domains Test</title><p><img src='http://t/resources/images/100x100-navy.png'>")
+    	"http://aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffggg.aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffggg.aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffggg.aaaaaaaaaabbbbbbbbbbccccccccccddddddddddee.aliases.t.oslo.osa/core/features/widget_tf/core-gadgets/extensions/url-filter/resources/domains.html"
     ];
     
     for (var i = 0; i < url.length; i++) {
