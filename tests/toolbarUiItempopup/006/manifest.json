@@ -1,8 +1,8 @@
 {
-  "name": "009 - Item remove",
+  "name": "006 - createItem height",
   "version": "1.0",
   "manifest_version": 2,
-  "description": "009 - Item remove",
+  "description": "006 - createItem height",
   "background": {
       "page": "background.html"
   },
