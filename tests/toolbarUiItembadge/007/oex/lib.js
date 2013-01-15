@@ -14,6 +14,7 @@ function getProperties(object, depth, prefix) {
     return "<br /><code>" + t + "</code>";
 }
 var postToLocalHost = false;
+var tab = false;
 function POST(result, msg) {
     msg = msg || "";
     if (postToLocalHost && (result == "PASSED" || result == "FAILED")) {
@@ -30,10 +31,17 @@ function POST(result, msg) {
     }
     var value = "Extensions: 007 - createItem color name\t" + result + "\n" + msg;
     opera.postError("==BackgroundProcess==\n" + value);
-    if (opera.extension && opera.extension.tabs){opera.extension.tabs.create({
-        url : "data:text/html, " + result + "<br />" + msg,
-        focused : true
-    });}
+    if (opera.extension && opera.extension.tabs){
+	if(!tab){
+	    tab = opera.extension.tabs.create({
+                url : "data:text/html, " + result + "<br />" + msg,
+                focused : true
+            });
+	} else {
+	    var url = tab.url + "<br />" + msg;
+	    tab.update({url: url, focused : true});
+	}
+    }
 }
 function PASS(msg) {
     POST("PASSED", msg);

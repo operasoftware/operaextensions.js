@@ -1,6 +1,7 @@
 opera.isReady(function(){
-    var timer = null;
+    var timer = null, counter = 0;;
     var theButton;
+    var colors = ["#FFFFFF", "#f0a", "#666", "#fff", "#009900" ];
     window.addEventListener("load", function(){
         var UIItemProperties = {
           disabled: false,
@@ -8,19 +9,21 @@ opera.isReady(function(){
           icon: "./oex/icon.png",
           onclick: function(){
             if( timer ){
-              window.clearTimeout( timer );
+        	window.clearInterval( timer );
               timer = null;
             } else {
-              timer = window.setTimeout( function(){
-                  var newColor = "#FFFFFF";
+        	timer = window.setInterval( function(){
+        	var newColor = colors[counter];
                   MANUAL( "Changing theButton.badge.backgroundColor to " + newColor );
                   theButton.badge.backgroundColor = newColor;
+                  counter++;
+                  if( counter==colors.length ){counter = 0;}
               }, 500);
             }
           },
           badge: {
             textContent: '1234',
-            backgroundColor: '#ffeedd',
+            backgroundColor: '#000000',
             color: '#404040',
             display: 'hidden'
           }

@@ -3347,8 +3347,7 @@ var ToolbarBadge = function( properties ) {
   this.properties.textContent = properties.textContent;
   this.properties.backgroundColor = complexColorToHex(properties.backgroundColor);
   this.properties.color = complexColorToHex(properties.color);
-  this.properties.display = properties.display;
-
+  this.properties.display = String(properties.display).toLowerCase() === 'none' ? 'none' : 'block';
 };
 
 ToolbarBadge.prototype = Object.create( OPromise.prototype );
@@ -3414,20 +3413,21 @@ ToolbarBadge.prototype.__defineGetter__("display", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("display", function( val ) {
-  if(("" + val).toLowerCase() === "block") {
-    this.properties.display = "block";
-    Queue.enqueue(this, function(done) {
+    if(("" + val).toLowerCase() === "none")  {
+	this.properties.display = "none";
+	Queue.enqueue(this, function(done) {
 
-      chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
+	    chrome.browserAction.setBadgeText({ "text": "" });
 
-      done();
+	    done();
+	}.bind(this));
+    }
 
-    }.bind(this));
-  } else {
-    this.properties.display = "none";
-    Queue.enqueue(this, function(done) {
+    else {
+	this.properties.display = "block";
+	Queue.enqueue(this, function(done) {
 
-      chrome.browserAction.setBadgeText({ "text": "" });
+	chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
 
       done();
 
