@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test Results</title>
+
+<style>
+html {
+	font-family: DejaVu Sans, Bitstream Vera Sans, Arial, Sans;
+}
+
+#log .warning,#log .warning a {
+	color: black;
+	background: yellow;
+}
+
+#log .error,#log .error a {
+	color: white;
+	background: red;
+}
+
+#log pre {
+	border: 1px solid black;
+	padding: 1em;
+}
+
+section.summary {
+	margin-bottom: 1em;
+}
+
+table.results {
+	border-collapse: collapse;
+	table-layout: fixed;
+	width: 100%;
+}
+
+table.results th:first-child,table.results td:first-child {
+	width: 4em;
+}
+
+table.results th:last-child,table.results td:last-child {
+	width: 50%;
+}
+
+table.results.assertions th:last-child,table.results.assertions td:last-child
+	{
+	width: 35%;
+}
+
+table.results th {
+	padding: 0;
+	padding-bottom: 0.5em;
+	border-bottom: medium solid black;
+}
+
+table.results td {
+	padding: 1em;
+	padding-bottom: 0.5em;
+	border-bottom: thin solid black;
+}
+
+tr.pass>td:first-child {
+	color: green;
+}
+
+tr.fail>td:first-child {
+	color: red;
+}
+
+tr.timeout>td:first-child {
+	color: red;
+}
+
+tr.notrun>td:first-child {
+	color: blue;
+}
+
+.pass>td:first-child,.fail>td:first-child,.timeout>td:first-child,.notrun>td:first-child
+	{
+	font-variant: small-caps;
+}
+
+table.results span {
+	display: block;
+}
+
+table.results span.expected {
+	font-family: DejaVu Sans Mono, Bitstream Vera Sans Mono, Monospace;
+	white-space: pre;
+}
+
+table.results span.actual {
+	font-family: DejaVu Sans Mono, Bitstream Vera Sans Mono, Monospace;
+	white-space: pre;
+}
+
+h2 {
+	font-size: 1.3em;
+}
+
+a {
+	border: 2px solid #0000CC;
+	color: #ffffff;
+	background-color: #0000CC;
+	display: block;
+	padding: 0 .5em;
+	line-height: 1.5em;
+}
+
+a:hover {
+	background-color: #ffffff;
+	color: #0000CC;
+}
+
+#info_progress {
+	width: 100%;
+	position: relative;
+	background: rgba(0, 0, 0, 0.5);
+	height: 25px;
+}
+
+#info_progress .percent {
+	position: absolute;
+	left: 0;
+	top: 0;
+	color: white;
+	font-weight: bold;
+	height: 25px;
+	line-height: 25px;
+	display: block;
+	background: green;
+	text-align: center;
+}
+
+#info_progress .percent.fail {
+	background: red;
+}
+
+#info_progress .percent.notrun {
+	background: gray;
+}
+</style>
+<script type="text/javascript">
+	document
+			.addEventListener('DOMContentLoaded', function() {
+				var tests = document.querySelectorAll('.summary') , testcases = document
+						.querySelectorAll('.results tbody tr') , fails = document
+						.querySelectorAll('tr.fail') , notrun = document
+						.querySelectorAll('tr.notrun') , passes = document
+						.querySelectorAll('tr.pass');
+				var str = [ "<p>Tests: ", tests.length, " [testcases: ", testcases.length, "]", "</p><p>Pass: ", passes.length, " / Fail: ", fails.length, " / Not run: ", notrun.length, "</p>" ]
+						.join('');
+				document.getElementById('info_results').innerHTML = str;
+				var passesPr = +(passes.length * 100 / testcases.length)
+						.toFixed(0);
+				var failsPr = +(fails.length * 100 / testcases.length)
+						.toFixed(0);
+				var notrunPr = +(notrun.length * 100 / testcases.length)
+						.toFixed(0);
+				document.getElementById('info_progress').innerHTML = [ '<span class="percent" style="width: ' + (passesPr) + '%;">' + (passesPr) + '%</span>', '<span class="percent fail" style="left: ' + passesPr + '%;width: ' + (failsPr) + '%;">' + (failsPr) + '%</span>', '<span class="percent notrun" style="left: ' + (failsPr + passesPr) + '%;width: ' + (notrunPr) + '%;">' + (notrunPr) + '%</span>', '<span class="bg"> </span>' ]
+						.join('');
+			});
+</script>
+</head>
+<body>
+<div id="info">
+<h4>Test results 02.01.2013</h4>
+<section id="info_results"></section>
+<section id="info_progress"></section>
+</div>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/001">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 001</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Interface check: BrowserTabManager.create</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Interface check: BrowserTabManager.getAll</td>
+			<td></td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Creating tabs returns BrowserTab objects</td>
+			<td>assert_exists: BrowserTabGroup [0] should have an id
+			expected property "id" missing</td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Tab IDs should be unique</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/002">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 002</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Tab create event</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Order of events</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/003">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 003</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Tab move event</td>
+			<td></td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Order of events</td>
+			<td>assert_equals: The event order, type and target should
+			match. Event number: 0 expected "{browserWindow, create}" but got
+			"{tab, create}"</td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/004">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 004</a></h2>
+<table class="results"><thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Tab move event</td><td> </td></tr><tr class="fail"><td>Fail</td><td>Order of events</td><td>assert_equals: The event order, type and target should match. Event number: 0 expected "{tab, move}" but got "{tab, create}"</td></tr></tbody></table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/005">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 005</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Tab Window close event</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Order of events</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/006">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 006</a></h2>
+<table class="results"><thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="fail"><td>Fail</td><td>Tab create event</td><td>assert_equals: The event should refer to the created tab expected 2318096524104476 but got 1731402010191232</td></tr><tr class="pass"><td>Pass</td><td>Tab move event</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Tab close event</td><td> </td></tr><tr class="fail"><td>Fail</td><td>Order of events</td><td>assert_equals: The event order, type and target should match. Event number: 1 expected "{browserWindow, create}" but got "{tab, create}"</td></tr></tbody></table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/007">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 007</a></h2>
+<table class="results"><thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="fail"><td>Fail</td><td>TabEvent object for create event</td><td>assert_equals: The event's tab property should point to the created tab expected 4798967179376632 but got 1068180340807884</td></tr><tr class="notrun"><td>Not Run</td><td>TabEvent object for move event</td><td> </td></tr><tr class="fail"><td>Fail</td><td>TabEvent object for close event</td><td>assert_equals: The event's prevWindow property should be null expected null but got object "[object Object]"</td></tr></tbody></table>
+</section>
+<!--  
+        <section class="summary">
+            <h2><a href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/008">core-gadgets / extensions / windows-tabs / BrowserTabManager / 008</a></h2>
+            <table class="results"><thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Not private by default</td><td> </td></tr><tr class="fail"><td>Fail</td><td>Update tab attribute private</td><td>assert_true: expected true got false</td></tr><tr class="pass"><td>Pass</td><td>Update tab attribute private 2</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Closing private tab</td><td> </td></tr><tr class="fail"><td>Fail</td><td>Checking attributes on private tab (with default privacy setting)</td><td>assert_equals: URL should be restricted expected (undefined) undefined but got (string) "data:text/html,&lt;!doctype html&gt;&lt;title&gt;FAIL&lt;/title&gt;Private"</td></tr></tbody></table>
+        </section>
+        -->
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/009">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 009</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Locked default</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Locked by create properties</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Update tab attribute locked</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Closing locked tab</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/010">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 010</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Create a new tab, default focus state is blurred</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Attempt to update the tab focus state from blurred to
+			focused</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Attempt to focus the tab</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Create a focused tab, explicitly specifying the focused
+			property</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Attempt to change the tab focus state from focused to
+			blurred</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/011">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 011</a></h2>
+<table class="results"><thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Get selected tab</td><td> </td></tr><tr class="fail"><td>Fail</td><td>Get selected tab after new window</td><td>assert_equals: Selected tab's browserWindow expected 8603243106044829 but got 4590973900631070</td></tr><tr class="fail"><td>Fail</td><td>Get selected tab in blurred window</td><td>assert_equals: Selected tab shouldn't change expected object "[object Object]" but got object "[object Object]"</td></tr></tbody></table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/012">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 012</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Creating tabs in the default positions</td>
+			<td></td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Creating a tab inserted before an ungrouped tab</td>
+			<td>assert_equals: The tab (0) should be inserted into the
+			specified position expected 0 but got 3</td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Creating a tab inserted before specified tabs</td>
+			<td>assert_equals: The tab (0) should not change position
+			expected 0 but got 3</td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Creating a tab inserted before a window object</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Creating a tab inserted before a generic object</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Creating a tab inserted before a closed tab</td>
+			<td></td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Creating a tab inserted before an external tab</td>
+			<td>assert_equals: The tab should be inserted into the same
+			window as the reference tab expected object "[object Object]" but got
+			object "[object Object]"</td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/013">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 013</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Check the tab's title</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/014">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 014</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Simple title test</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/015">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 015</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Basic function test</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Update tab url hash</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Update closed tab</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/016">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 016</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Simple favicon data URL test</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Updating the favicon</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Simple favicon http URL test</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/017">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 017</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass"><td>Pass</td><td>Refresh test</td><td> </td></tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/018">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 018</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Tab blur event</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Tab focus event</td>
+			<td></td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Order of events</td>
+			<td>assert_equals: The event order, type and target should
+			match. Event number: 0 expected "{tab, create}" but got "{tab, blur}"</td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/019">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 019</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Tab blur event</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Tab focus event</td>
+			<td></td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Order of events</td>
+			<td>Cannot read property 'target' of undefined(stack: TypeError:
+			Cannot read property 'target' of undefined at
+			Object.&lt;anonymous&gt;
+			(chrome-extension://noidekojppfpbmlfphlfdenileioifgm/oex/test.js:45:47)
+			at Object.Test.step
+			(chrome-extension://noidekojppfpbmlfphlfdenileioifgm/oex/testharness.js:988:18)
+			at
+			chrome-extension://noidekojppfpbmlfphlfdenileioifgm/oex/test.js:38:23)</td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserTabManager/020">core-gadgets
+/ extensions / windows-tabs / BrowserTabManager / 020</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Interface check: BrowserTabManager.close</td>
+			<td></td>
+		</tr>
+		<tr class="pass"><td>Pass</td><td>BrowserTabManager.close(tab) should close the tab.</td><td> </td></tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/001">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 001</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Interface check: BrowserWindowManager.create</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Interface check: BrowserWindowManager.getAll</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Interface check: BrowserWindowManager.getLastFocused</td>
+			<td></td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Creating windows returns BrowserWindow objects</td>
+			<td>assert_exists: BrowserWindow [0] has an id expected property
+			"id" missing</td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Window IDs should be unique</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/002">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 002</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Window create event</td>
+			<td></td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Order of events</td>
+			<td>assert_equals: The event order should match. Event number: 0
+			expected "create" but got "blur"</td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/003">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 003</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Window create event</td>
+			<td></td>
+		</tr>
+		<tr class="notrun">
+			<td>Not Run</td>
+			<td>Window blur event</td>
+			<td></td>
+		</tr>
+		<tr class="notrun">
+			<td>Not Run</td>
+			<td>Window focus event</td>
+			<td></td>
+		</tr>
+		<tr class="notrun">
+			<td>Not Run</td>
+			<td>Order of events</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/004">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 004</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody><tr class="fail"><td>Fail</td><td>Window blur event</td><td>assert_equals: The event should refer to the foreground window expected 4075063148047775 but got 4657884815242141</td></tr><tr class="fail"><td>Fail</td><td>Window focus event</td><td>assert_equals: The event should refer to the background window expected 4657884815242141 but got 4075063148047775</td></tr><tr class="fail"><td>Fail</td><td>Order of events</td><td>assert_equals: The event order should match. Event number: 0 expected "blur" but got "create"</td></tr></tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/005">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 005</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Window close event</td>
+			<td></td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Order of events</td>
+			<td>assert_equals: The event order should match. Event number: 0
+			expected "close" but got "create"</td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/006">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 006</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Window close event</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Window focus event</td>
+			<td></td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Order of events</td>
+			<td>assert_equals: The event order should match. Event number: 0
+			expected "close" but got "blur"</td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/007">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 007</a></h2>
+<table class="results"><thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="fail"><td>Fail</td><td>Window create event</td><td>assert_equals: The event should refer to the created window expected 6151562528684735 but got 6441788014490157</td></tr><tr class="fail"><td>Fail</td><td>Window close event</td><td>assert_equals: The event should refer to the created window expected 6151562528684735 but got 5237389428075403</td></tr><tr class="fail"><td>Fail</td><td>Window focus event</td><td>assert_equals: The event should refer to the created window expected 6151562528684735 but got 6441788014490157</td></tr><tr class="fail"><td>Fail</td><td>Order of events</td><td>assert_equals: The event order should match. Event number: 0 expected "create" but got "blur"</td></tr></tbody></table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/008">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 008</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+	<tr>
+	   <td colspan="3">No results here! Should be 5x PASS</td>
+	</tr>
+	<!--  
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Create a window, default privacy mode is normal</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Create a private window, explicitly specifying the private
+			property</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Attempt to change the window privacy mode from private to
+			normal</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Create a non-private window, explicitly specifying the
+			private property</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Attempt to change the window privacy mode from normal to
+			private</td>
+			<td></td>
+		</tr>
+		-->
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/009">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 009</a></h2>
+
+<table class="results"><thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Create a window with one tab at a specified URL</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Create a window with three tabs at a specified URL, then move them to a new window</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Create a window with multiple tabs, each with different properties</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Create a window with multiple tabs, ignore explicit positioning</td><td> </td></tr></tbody></table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/010">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 010</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Create a window with three tabs, then move them to a new
+			window</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/011">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 011</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Create positioned windows, explicitly specifying the top and
+			left property</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Updating window position, explicitly specifying the top
+			property</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Updating window position, explicitly specifying the left
+			property</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/012">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 012</a></h2>
+
+<table class="results"><thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead><tbody><tr class="pass"><td>Pass</td><td>Create a focused window, explicitly specifying the focused property</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Create a non-focused window, explicitly specifying the focused property</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Use the focus() method</td><td> </td></tr><tr class="pass"><td>Pass</td><td>Create a second focused window, and afterwards focus the previous window</td><td> </td></tr></tbody></table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/013">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 013</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Opening and closing windows, checking closed property</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/014">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 014</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Creating window without settings</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Creating window with a tab</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Creating window with a newly created tab</td>
+			<td></td>
+		</tr>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Creating window stealing a tab</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<!-- 
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/BrowserWindowManager/015">core-gadgets
+/ extensions / windows-tabs / BrowserWindowManager / 015</a></h2>
+
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Creating default windows throws NOT_SUPPORTED_ERR</td>
+			<td>assert_throws: no tabs, no properties function "function ()
+			{ windows.create() }" did not throw</td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Creating windows with tabs throws NOT_SUPPORTED_ERR</td>
+			<td>assert_throws: empty tab, no properties function "function
+			() { windows.create([{}]) }" did not throw</td>
+		</tr>
+	</tbody>
+</table>
+</section>
+ -->
+<section>
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/adhock/groups.create-shouldnt-throw">core-gadgets
+/ extensions / windows-tabs / adhoc / groups.create-shouldnt-throw</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>Create group in default window</td>
+			<td>The current user agent does not support the Tab Groups
+			feature.(stack: NotSupportedError: The current user agent does not
+			support the Tab Groups feature. at BrowserTabGroupManager.create
+			(chrome-extension://lhcecapjofoejojfcompancdabmpmbjn/operaextensions_background.js:3080:9)
+			at Object. <anonymous>
+			(chrome-extension://lhcecapjofoejojfcompancdabmpmbjn/oex/test.js:4:16)
+			at Object.Test.step
+			(chrome-extension://lhcecapjofoejojfcompancdabmpmbjn/oex/testharness.js:988:18)
+			at test
+			(chrome-extension://lhcecapjofoejojfcompancdabmpmbjn/oex/testharness.js:373:18)
+			at
+			chrome-extension://lhcecapjofoejojfcompancdabmpmbjn/oex/test.js:3:1)
+			</td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/adhock/stringify">core-gadgets
+/ extensions / windows-tabs / adhoc / stringify</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>JSON.stringify(tab) should give us some info</td>
+			<td>Converting circular structure to JSON(stack: TypeError:
+			Converting circular structure to JSON at Object.stringify (native) at
+			Object.&lt;anonymous&gt;
+			(chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/test.js:6:23)
+			at Object.Test.step
+			(chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/testharness.js:988:18)
+			at test
+			(chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/testharness.js:373:18)
+			at
+			chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/test.js:5:5
+			at
+			chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/operaextensions_background.js:3481:31)</td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>JSON.parse(stringedtab) should give us something looking
+			like a tab</td>
+			<td>Unexpected end of input(stack: SyntaxError: Unexpected end
+			of input at Object.parse (native) at Object.&lt;anonymous&gt;
+			(chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/test.js:11:22)
+			at Object.Test.step
+			(chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/testharness.js:988:18)
+			at test
+			(chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/testharness.js:373:18)
+			at
+			chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/test.js:10:5
+			at
+			chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/operaextensions_background.js:3481:31)</td>
+		</tr>
+		<tr class="fail">
+			<td>Fail</td>
+			<td>JSON.stringify with focus event listener</td>
+			<td>Invalid value for argument 1. Property 'focus': Unexpected
+			property.(stack: Error: Invalid value for argument 1. Property
+			'focus': Unexpected property. at validate (schemaUtils:37:15) at
+			Object.normalizeArgumentsAndValidate (schemaUtils:123:3) at
+			Object.&lt;anonymous&gt; (schema_generated_bindings:306:32) at
+			Object.OPromise.enqueue
+			(chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/operaextensions_background.js:570:15)
+			at Object.BrowserTabManager.create
+			(chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/operaextensions_background.js:2046:8)
+			at createTab
+			(chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/lib.js:20:86)
+			at Object.&lt;anonymous&gt;
+			(chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/test.js:36:13)
+			at Object.Test.step
+			(chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/testharness.js:988:18)
+			at
+			chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/oex/test.js:26:7
+			at
+			chrome-extension://kcpkdbjmjbiomnleemgbjhciclenlakn/operaextensions_background.js:3481:31)</td>
+		</tr>
+	</tbody>
+</table>
+</section>
+<section class="summary">
+<h2><a
+	href="https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/tests/WindowsTabs/adhock/tabs_postMessage/">core-gadgets
+/ extensions / windows-tabs / adhoc / tabs_postMessage</a></h2>
+<table class="results">
+	<thead>
+		<tr>
+			<th>Result</th>
+			<th>Test Name</th>
+			<th>Message</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="pass">
+			<td>Pass</td>
+			<td>Check that tab.postMessage works after refreshing tab -
+			CORE-46732</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+</section>
+
+<!--
+        <section class="summary">
+        <h2><a href="http://t/core/features/widget_tf/core-gadgets/extensions/windows-tabs/BrowserExtension/001">core-gadgets / extensions / windows-tabs / BrowserExtension / 001</a></h2>
+        <table class="results">
+        <thead>
+        <tr>
+        <th>Result</th><th>Test Name</th><th>Message</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="pass">
+        <td>Pass</td><td>Interface check: BrowserExtension.windows</td><td></td>
+        </tr>
+        <tr class="fail">
+        <td>Fail</td><td>Interface check: BrowserExtension.tabGroups</td><td>assert_exists: Global tab group manager expected property "tabGroups" missing</td>
+        </tr>
+        <tr class="pass">
+        <td>Pass</td><td>Interface check: BrowserExtension.tabs</td><td></td>
+        </tr>
+        </tbody>
+        </table>
+        </section>
+        -->
+</body>
+</html>
