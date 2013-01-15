@@ -38,7 +38,7 @@ opera.isReady(function() {
     			});
     
     			tests["block"].step(function(){
-    				assert_equals(blockCount, 3, "Four URLs should be blocked.");
+    				assert_equals(blockCount, 3, "Three URLs should be blocked.");
     			});
     
     			tests["allow"].done();
