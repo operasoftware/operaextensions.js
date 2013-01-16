@@ -1,4 +1,4 @@
-!(function( global, manifest ) {
+!(function( global ) {
 
   var Opera = function() {};
 
@@ -17,6 +17,8 @@
   };
 
   var opera = global.opera || new Opera();
+  
+  var manifest = chrome.app.getDetails(); // null in injected scripts / popups
 
   var isReady = false;
 
@@ -929,17 +931,18 @@ MenuContextProxy.prototype = Object.create( MenuEventTarget.prototype );
 
 
 
-if(manifest && manifest.permissions && manifest.permissions.indexOf('contextMenus')!=-1){
+//if(manifest && manifest.permissions && manifest.permissions.indexOf('contextMenus')!=-1){
 
 OEC.menu = OEC.menu || new MenuContextProxy();
 
-}
+//}
 
 
 var UrlFilterEventListener = function() {
 
   OEventTarget.call(this);
   
+  this.pageSrcElementsPointers = {};
   this.pageSrcElements = {};
   
   // Catch resource load failures and reconcile with incoming event messages from background
@@ -952,7 +955,12 @@ var UrlFilterEventListener = function() {
     var els = global.document.querySelectorAll("[src],link[rel='stylesheet'][href],object[data],body[background]");
     
     for(var i = 0, l = els.length; i < l; i++) {
-      var key = global.encodeURIComponent( els[ i ].src || els[ i ].href || els[ i ].data || els[ i ].background );
+      var url = els[ i ].src || els[ i ].href || els[ i ].data || els[ i ].background;
+      
+      // keep track of the full URL
+      els[i].origUrl = url;
+      
+      var key = global.encodeURIComponent( url.split('#')[0] );
       
       if(this.pageSrcElements[ key ] === undefined ) {
         this.pageSrcElements[ key ] = [];
@@ -962,17 +970,36 @@ var UrlFilterEventListener = function() {
     
   }.bind(this), false);
   
-  this.matchUrlToInPageElement = function( url ) {
-    var key = global.encodeURIComponent( url );
-    
-    if( this.pageSrcElements[key] !== undefined && this.pageSrcElements[key].length > 0 ) {
+  /*Object.defineProperty(this, 'matchUrlToInPageElement', {
+    enumerable: false,  
+    configurable: false, 
+    writable: false, 
+    value: function( url ) {
+      // Strip # seperator from URL (since it is not provided as part of any blocked path URL)
+      url = url.split("#")[0];
       
-      return this.pageSrcElements[key].shift();
+      var key = global.encodeURIComponent( url );
+      var pos = this.pageSrcElementsPointers[key];
       
-    } 
+      if( pos === undefined ) {
+        pos = this.pageSrcElementsPointers[key] = 0;
+      }
     
-    return undefined; // default, not found
-  }
+      if( this.pageSrcElements[key] !== undefined && this.pageSrcElements[key].length > 0 ) {
+      
+        var el = this.pageSrcElements[key][pos];
+        
+        if(this.pageSrcElements[key].length > pos) {
+          pos = this.pageSrcElementsPointers[key] += 1;
+        }
+      
+        return el;
+      
+      } 
+    
+      return undefined; // default, not found
+    }
+  });*/
 
   // listen for block events sent from the background process
   // and fire in this content script
@@ -989,32 +1016,98 @@ var UrlFilterEventListener = function() {
 
       // Set up all storage properties
       case '___O_urlfilter_contentblocked':
+      
+        var key = global.encodeURIComponent( (msg.data.data.url).split('#')[0] );
+        
+        if( this.pageSrcElements[ key ] == undefined || this.pageSrcElements[ key ] == null ) {
+          
+          // Fire 1 basic contentblocked event on this object
+          this.dispatchEvent( new OEvent('contentblocked', msg.data.data) );
+          
+        } else {
+      
+          for(var i = 0, l = this.pageSrcElements[ key ].length; i < l; i++) {
+        
+            var evtData = msg.data.data;
 
-        // Reconcile element from blocked url
-        msg.data.data.element = this.matchUrlToInPageElement(msg.data.data.url);
+            // Reconcile element from blocked url
+            evtData.element = this.pageSrcElements[ key ][ i ];
+            
+            // Re-write correct URL for contentblocked event
+            evtData.url = evtData.element ? evtData.element.origUrl : evtData.url;
 
-        // Fire contentblocked event on this object
-        this.dispatchEvent( new OEvent('contentblocked', msg.data.data) );
+            // Fire contentblocked event on this object
+            this.dispatchEvent( new OEvent('contentblocked', evtData) );
+          
+          }
+          
+          this.pageSrcElements[ key ] = [];
+        
+        }
 
         break;
 
       case '___O_urlfilter_contentunblocked':
       
-        // Reconcile element from unblocked url
-        msg.data.data.element = this.matchUrlToInPageElement(msg.data.data.url);
+        var key = global.encodeURIComponent( (msg.data.data.url).split('#')[0] );
+      
+        if( this.pageSrcElements[ key ] == undefined || this.pageSrcElements[ key ] == null ) {
+        
+          // Fire 1 basic contentblocked event on this object
+          this.dispatchEvent( new OEvent('contentunblocked', msg.data.data) );
+        
+        } else {
+    
+          for(var i = 0, l = this.pageSrcElements[ key ].length; i < l; i++) {
+      
+            var evtData = msg.data.data;
 
-        // Fire contentunblocked event on this object
-        this.dispatchEvent( new OEvent('contentunblocked', msg.data.data) );
+            // Reconcile element from blocked url
+            evtData.element = this.pageSrcElements[ key ][ i ];
+          
+            // Re-write correct URL for contentblocked event
+            evtData.url = evtData.element ? evtData.element.origUrl : evtData.url;
+
+            // Fire contentblocked event on this object
+            this.dispatchEvent( new OEvent('contentunblocked', evtData) );
+        
+          }
+          
+          this.pageSrcElements[ key ] = [];
+      
+        }
 
         break;
         
       case '___O_urlfilter_contentallowed':
       
-        // Reconcile element from allowed url
-        msg.data.data.element = this.matchUrlToInPageElement(msg.data.data.url);
+        var key = global.encodeURIComponent( (msg.data.data.url).split('#')[0] );
+      
+        if( this.pageSrcElements[ key ] == undefined || this.pageSrcElements[ key ] == null ) {
+        
+          // Fire 1 basic contentblocked event on this object
+          this.dispatchEvent( new OEvent('contentallowed', msg.data.data) );
+        
+        } else {
+    
+          for(var i = 0, l = this.pageSrcElements[ key ].length; i < l; i++) {
+      
+            var evtData = msg.data.data;
 
-        // Fire contentallowed event on this object
-        this.dispatchEvent( new OEvent('contentallowed', msg.data.data) );
+            // Reconcile element from blocked url
+            evtData.element = this.pageSrcElements[ key ][ i ];
+          
+            // Re-write correct URL for contentblocked event
+            evtData.url = evtData.element ? evtData.element.origUrl : evtData.url;
+
+            // Fire contentblocked event on this object
+            this.dispatchEvent( new OEvent('contentallowed', evtData) );
+        
+          }
+          
+          this.pageSrcElements[ key ] = [];
+      
+        }
 
         break;
     }
@@ -1061,6 +1154,7 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
 
       var fns = {
             "isready": [],
+            "readystatechange": [],
             "domcontentloaded": [],
             "load": []
           };
@@ -1077,6 +1171,20 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
         hasFired_Load = true;
         global.removeEventListener("load", handle_Load, true);
       }, true);
+      
+      global.document.addEventListener("readystatechange", function(event) {
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+        if( global.document.readyState !== 'interactive' && global.document.readyState !== 'complete' ) {
+          fireEvent('readystatechange', global.document);
+        } else {
+          global.document.readyState = 'loading';
+        }
+      }, true);
+      
+      var _readyState = "uninitialized";
+      global.document.__defineSetter__('readyState', function(val) { _readyState = val; });
+      global.document.__defineGetter__('readyState', function() { return _readyState; });
 
       function interceptAddEventListener(target, _name) {
 
@@ -1084,6 +1192,8 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
 
         // Replace addEventListener for given target
         target.addEventListener = function(name, fn, usecapture) {
+          name = name + ""; // force event name to type string
+          
           if (name.toLowerCase() === _name.toLowerCase()) {
             if (fn === undefined || fn === null ||
                   Object.prototype.toString.call(fn) !== "[object Function]") {
@@ -1112,16 +1222,16 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
       interceptAddEventListener(global, 'load');
       interceptAddEventListener(global.document, 'domcontentloaded');
       interceptAddEventListener(global, 'domcontentloaded'); // handled bubbled DOMContentLoaded
+      interceptAddEventListener(global.document, 'readystatechange');
 
-      function fireEvent(name, target) {
+      function fireEvent(name, target, props) {
         var evtName = name.toLowerCase();
 
-        var evt = new OEvent(evtName, {});
+        var evt = new OEvent(evtName, props || {});
 
         for (var i = 0, len = fns[evtName].length; i < len; i++) {
           fns[evtName][i].call(target, evt);
         }
-        fns[evtName] = [];
       }
 
       function ready() {
@@ -1149,7 +1259,10 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
             // (always synthesized in Chromium Content Scripts)
             if (hasFired_DOMContentLoaded || hasFired_Load || currentTime >= domContentLoadedTimeoutOverride) {
 
-              fireEvent('domcontentloaded', global.document);
+              global.document.readyState = 'interactive';
+              fireEvent('readystatechange', global.document);
+
+              fireEvent('domcontentloaded', global.document, { bubbles: true }); // indicate that event bubbles
 
               if(currentTime >= domContentLoadedTimeoutOverride) {
                 console.warn('document.domcontentloaded event fired on check timeout');
@@ -1165,6 +1278,9 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
                 var currentTime = new Date().getTime();
 
                 if (hasFired_Load || currentTime >= loadTimeoutOverride) {
+                  
+                  global.document.readyState = 'complete';
+                  fireEvent('readystatechange', global.document);
 
                   fireEvent('load', window);
 
@@ -1248,35 +1364,4 @@ OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
   // Make API available on the window DOM object
   global.opera = opera;
 
-})( window, (function(){
-  
-var manifest = null;
-try{
-
-  manifest = chrome.app.getDetails();
-  
-  if(manifest==null){
-  
-  
-      var xhr = new XMLHttpRequest();
-  
-      xhr.onloadend = function(){
-          if (xhr.readyState==xhr.DONE && xhr.status==200){
-            manifest = JSON.parse(xhr.responseText);
-            
-            manifest.id = /^chrome\-extension\:\/\/(.*)\/$/.exec(chrome.extension.getURL(""))[1];
-            
-          };
-      };
-  
-      xhr.open('GET',chrome.extension.getURL('') + 'manifest.json',false);
-  
-      xhr.send(null);
-  
-  };
-  
-  } catch(e){ manifest = null;};
-
-return manifest;
-
-})());
+})( window );

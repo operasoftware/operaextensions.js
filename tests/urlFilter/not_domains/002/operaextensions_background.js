@@ -4812,8 +4812,9 @@ require.scopes["filterClasses"] = (function()
       return Filter.knownFilters[text];
     }
     var ret;
-    var match = text.indexOf("#") >= 0 ? Filter.elemhideRegExp.exec(text) : null;
-    console.log(match);
+    // element hiding is not supported in Opera's URL Filter API
+    // TODO: remove all elemhide related code
+    var match = null;
     if (match)
     {
       ret = ElemHideBase.fromText(text, match[1], match[2], match[3], match[4], match[5]);
@@ -14279,7 +14280,7 @@ var RuleList = function( parentObj ) {
 
     // Parse rule to a Filter object
       var filter = this._parentObj.Filter.fromText( ruleObj['rule'] );
-console.log(filter);
+
       // Add rule's filter object to AdBlock FilterStorage
       this._parentObj.FilterStorage.addFilter(filter);
 
