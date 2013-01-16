@@ -1,8 +1,8 @@
 {
-  "name": "007 - createItem color name",
+  "name": "007 - createItem disabled button",
   "version": "1.0",
   "manifest_version": 2,
-  "description": "007 - createItem color name",
+  "description": "007 - createItem disabled button",
   "background": {
       "page": "background.html"
   },

@@ -12,7 +12,8 @@ opera.isReady(function() {
               timer = null;
             } else {
               timer = window.setInterval( function(){
-                  var newColor = [counter, 0xff, 0xff - counter, 0x33];//"blue";//"#FFFFFF"
+                 // var newColor = [counter, 0xff, 0xff - counter, 0x33];//"blue";//"#FFFFFF"
+        	  var newColor = 'rgba(' + [ counter, 0xff, 0xff - counter, 0x33].join(',') + ')';//"blue";//"#FFFFFF"
                   MANUAL( "Changing theButton.badge.backgroundColor to " + newColor );
                   theButton.badge.backgroundColor = newColor;
                   console.log(theButton.badge.backgroundColor);
