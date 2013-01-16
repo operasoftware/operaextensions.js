@@ -50,7 +50,7 @@ ToolbarBadge.prototype.__defineGetter__("backgroundColor", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("backgroundColor", function( val ) {
-  this.properties.backgroundColor = complexColorToHex("" + val);
+  this.properties.backgroundColor = complexColorToHex(val);
 
   Queue.enqueue(this, function(done) {
 
@@ -66,7 +66,7 @@ ToolbarBadge.prototype.__defineGetter__("color", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("color", function( val ) {
-  this.properties.color = complexColorToHex("" + val);
+  this.properties.color = complexColorToHex(val);
   // not implemented in chromium
 });
 

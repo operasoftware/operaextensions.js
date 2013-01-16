@@ -18,13 +18,6 @@ ToolbarUIItem.prototype = Object.create( OPromise.prototype );
 
 ToolbarUIItem.prototype.apply = function() {
 
-  // Apply disabled property
-  if( this.disabled === true ) {
-    chrome.browserAction.disable();
-  } else {
-    chrome.browserAction.enable();
-  }
-
   // Apply title property
   chrome.browserAction.setTitle({ "title": this.title });
 
@@ -32,6 +25,13 @@ ToolbarUIItem.prototype.apply = function() {
   if(this.icon) {
     chrome.browserAction.setIcon({ "path": this.icon });
   } 
+  
+  // Apply disabled property
+  if( this.disabled === true ) {
+    chrome.browserAction.disable();
+  } else {
+    chrome.browserAction.enable();
+  }
 
 };
 
