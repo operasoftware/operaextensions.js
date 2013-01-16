@@ -6,7 +6,7 @@ var ToolbarBadge = function( properties ) {
   this.properties = {};
 
   // Set provided properties through object prototype setter functions
-  this.properties.textContent = properties.textContent;
+  this.properties.textContent = properties.textContent ? "" + properties.textContent : properties.textContent;
   this.properties.backgroundColor = complexColorToHex(properties.backgroundColor);
   this.properties.color = complexColorToHex(properties.color);
   this.properties.display = String(properties.display).toLowerCase() === 'none' ? 'none' : 'block';
