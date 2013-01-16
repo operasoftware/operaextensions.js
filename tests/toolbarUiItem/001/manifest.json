@@ -1,5 +1,5 @@
 {
-  "name": "001 - createItem bad",
+  "name": "tc-ToolbarUIItem-001-createItem bad",
   "version": "1.0",
   "manifest_version": 2,
   "description": "001 - createItem bad",
