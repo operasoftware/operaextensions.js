@@ -1,8 +1,8 @@
 {
-  "name": "002 - back broadCast both",
+  "name": "tc-messaging-002 - back broadCast both",
   "version": "1.0",
   "manifest_version": 2,
-  "description": "Please click on the button after the tabs finish loading. Once the popup loads, a broadcast will be sent out.",
+  "description": "",
   "background": {
       "page": "background.html"
   },

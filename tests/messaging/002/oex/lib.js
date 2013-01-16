@@ -4,13 +4,13 @@ function getProperties( object, depth, prefix )
           var t = "";
           for( key in object )
           {
-              t += prefix + "" + "[" + key  + "] " + typeof object[key] + " " + object[key] + "\n";
+              t += prefix + "" + "[" + key  + "] " + typeof object[key] + " " + object[key] + "<br />";
               if( typeof object[key] == "object" && depth>0 )
               {
                   t += getProperties( object[key], depth-1, "[" + key  + "]" + prefix );
               }
               if( depth==0 ){
-                  t += "------------Max depth reached \n";
+                  t += "------------Max depth reached <br />";
               }
           }
           return t;
@@ -34,7 +34,7 @@ function getProperties( object, depth, prefix )
 
         if (opera.extension && opera.extension.tabs && ( result == "PASSED" || result == "FAILED" ) ){
 		opera.extension.tabs.create({
-		    url : "data:text/html, " + result + "\n" + msg,
+		    url : "data:text/html, " + result + "<br />" + msg,
 		    focused : true
 		});
 	   }
