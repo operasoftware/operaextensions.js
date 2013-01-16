@@ -15,6 +15,7 @@ opera.isReady(function() {
                   var newColor = [counter, 0xff, 0xff - counter, 0x33];//"blue";//"#FFFFFF"
                   MANUAL( "Changing theButton.badge.backgroundColor to " + newColor );
                   theButton.badge.backgroundColor = newColor;
+                  console.log(theButton.badge.backgroundColor);
                   counter = counter + 10;
                   if(counter>255){counter = 0;}
               }, 500);
