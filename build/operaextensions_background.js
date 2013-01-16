@@ -299,6 +299,17 @@ function complexColorToHex(color, backgroundColorVal) {
   if(color === undefined || color === null) {
     return color;
   }
+  
+  // Convert an Array input to RGG(A)
+  if(Object.prototype.toString.call(color) === "[object Array]") {
+    if(color.length === 4) {
+      color = "rgba(" + color[0] + "," + color[1] + "," + color[2] + "," + color[3] + ")";
+    } else if(color.length === 3) {
+      color = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
+    } else {
+      color = "rgb(255,255,255)";
+    }
+  }
 
   // Force covert color to String
   color = color + "";
@@ -3341,7 +3352,7 @@ ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
 
 ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
 
-  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+  if( !toolbarUIItem || !toolbarUIItem instanceof ToolbarUIItem ) {
     return;
   }
 
@@ -3357,14 +3368,11 @@ ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
   toolbarUIItem.popup.resolve(true);
   toolbarUIItem.popup.apply();
 
-  // Enable the toolbar button
-  chrome.browserAction.enable();
-
 };
 
 ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
 
-  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+  if( !toolbarUIItem || !toolbarUIItem instanceof ToolbarUIItem ) {
     return;
   }
 
@@ -3436,7 +3444,7 @@ ToolbarBadge.prototype.__defineGetter__("backgroundColor", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("backgroundColor", function( val ) {
-  this.properties.backgroundColor = complexColorToHex("" + val);
+  this.properties.backgroundColor = complexColorToHex(val);
 
   Queue.enqueue(this, function(done) {
 
@@ -3452,7 +3460,7 @@ ToolbarBadge.prototype.__defineGetter__("color", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("color", function( val ) {
-  this.properties.color = complexColorToHex("" + val);
+  this.properties.color = complexColorToHex(val);
   // not implemented in chromium
 });
 
@@ -3563,13 +3571,6 @@ ToolbarUIItem.prototype = Object.create( OPromise.prototype );
 
 ToolbarUIItem.prototype.apply = function() {
 
-  // Apply disabled property
-  if( this.disabled === true ) {
-    chrome.browserAction.disable();
-  } else {
-    chrome.browserAction.enable();
-  }
-
   // Apply title property
   chrome.browserAction.setTitle({ "title": this.title });
 
@@ -3577,6 +3578,13 @@ ToolbarUIItem.prototype.apply = function() {
   if(this.icon) {
     chrome.browserAction.setIcon({ "path": this.icon });
   } 
+  
+  // Apply disabled property
+  if( this.disabled === true ) {
+    chrome.browserAction.disable();
+  } else {
+    chrome.browserAction.enable();
+  }
 
 };
 

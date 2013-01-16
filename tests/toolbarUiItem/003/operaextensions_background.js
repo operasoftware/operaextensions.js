@@ -3352,7 +3352,7 @@ ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
 
 ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
 
-  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+  if( !toolbarUIItem || !toolbarUIItem instanceof ToolbarUIItem ) {
     return;
   }
 
@@ -3372,7 +3372,7 @@ ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
 
 ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
 
-  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+  if( !toolbarUIItem || !toolbarUIItem instanceof ToolbarUIItem ) {
     return;
   }
 
@@ -4813,6 +4813,7 @@ require.scopes["filterClasses"] = (function()
     }
     var ret;
     var match = text.indexOf("#") >= 0 ? Filter.elemhideRegExp.exec(text) : null;
+    console.log(match);
     if (match)
     {
       ret = ElemHideBase.fromText(text, match[1], match[2], match[3], match[4], match[5]);
@@ -14278,7 +14279,7 @@ var RuleList = function( parentObj ) {
 
     // Parse rule to a Filter object
       var filter = this._parentObj.Filter.fromText( ruleObj['rule'] );
-
+console.log(filter);
       // Add rule's filter object to AdBlock FilterStorage
       this._parentObj.FilterStorage.addFilter(filter);
 
@@ -14930,5 +14931,5 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('webRequest'
 
   // Make API available on the window DOM object
   global.opera = opera;
-  
+
 })( window );
