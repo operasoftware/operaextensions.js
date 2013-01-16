@@ -14922,5 +14922,5 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('webRequest'
 
   // Make API available on the window DOM object
   global.opera = opera;
-
+  
 })( window );
