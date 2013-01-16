@@ -12,5 +12,5 @@ opera.isReady(function() {
 	}
 	theButton = opera.contexts.toolbar.createItem(UIItemProperties);
 	opera.contexts.toolbar.addItem(theButton);
-	MANUAL("This is the created UIItem, it should have a popup http href defined:\n" + getProperties(theButton)); }, false);
+	MANUAL("This is the created UIItem, it should have width 200 :\n" + getProperties(theButton)); }, false);
 });

@@ -75,7 +75,7 @@ ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
 
 ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
 
-  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+  if( !toolbarUIItem || !toolbarUIItem instanceof ToolbarUIItem ) {
     return;
   }
 
@@ -95,7 +95,7 @@ ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
 
 ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
 
-  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+  if( !toolbarUIItem || !toolbarUIItem instanceof ToolbarUIItem ) {
     return;
   }
 
