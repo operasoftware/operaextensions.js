@@ -344,14 +344,13 @@ function complexColorToHex(color, backgroundColorVal) {
 
   // Hex color patterns
   var hexColorTypes = {
-    "hexLong": /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
-    "hexShort": /^#([0-9a-fA-F]{3})$/
+    "hexLong": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+    "hexShort": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
   };
 
   for(var colorType in hexColorTypes) {
-    if(color.match(hexColorTypes[ colorType ])) {
-	return color;
-    }
+    if(color.match(hexColorTypes[ colorType ]))
+      return color;
   }
 
   // Other color patterns
@@ -388,15 +387,14 @@ function complexColorToHex(color, backgroundColorVal) {
     },
     hsl: function( bits ) {
       var hsl = {
-        h : parseInt( bits[ 1 ], 10 ) % 360 / 360,
-        s : parseInt( bits[ 2 ], 10 ) % 101 / 100,
-        l : parseInt( bits[ 3 ], 10 ) % 101 / 100,
+        h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
+        s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
+        l : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100,
         a : bits[4] || 1
       };
 
-      if ( hsl.s === 0 ) {
-	return [ hsl.l, hsl.l, hsl.l ];
-    }
+      if ( hsl.s === 0 )
+        return [ hsl.l, hsl.l, hsl.l ];
 
       var q = hsl.l < 0.5 ? hsl.l * ( 1 + hsl.s ) : hsl.l + hsl.s - hsl.l * hsl.s;
       var p = 2 * hsl.l - q;
@@ -411,9 +409,9 @@ function complexColorToHex(color, backgroundColorVal) {
     hsv: function( bits ) {
       var rgb = {},
           hsv = {
-            h : parseInt( bits[ 1 ], 10 ) % 360 / 360,
-            s : parseInt( bits[ 2 ], 10 ) % 101 / 100,
-            v : parseInt( bits[ 3 ], 10 ) % 101 / 100
+            h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
+            s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
+            v : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100
           },
           i = Math.floor( hsv.h * 6 ),
           f = hsv.h * 6 - i,
@@ -454,9 +452,7 @@ function complexColorToHex(color, backgroundColorVal) {
 
   function applySaturation( rgb ) {
     var alpha = parseFloat(rgb[3] || 1);
-    if(alpha + "" === "NaN" || alpha < 0 || alpha >= 1) {
-	return rgb;
-    }
+    if((alpha + "") === "NaN" || alpha < 0 || alpha >= 1) return rgb;
     if(alpha == 0) {
       return [ 255, 255, 255 ];
     }
@@ -3265,13 +3261,9 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('tabs') != -
 
 }
 
-var ToolbarContext = function( isBackground ) {
+var ToolbarContext = function() {
 
   OEventTarget.call( this );
-  
-  this.isBackground = !!isBackground;
-  
-  this.length = 0;
 
   // Unfortunately, click events only fire if a popup is not supplied
   // to a registered browser action in Chromium :(
@@ -3290,46 +3282,6 @@ var ToolbarContext = function( isBackground ) {
   }
 
   chrome.browserAction.onClicked.addListener(clickEventHandler.bind(this));
-  
-  if( this.isBackground ) {
-    
-    OEX.addEventListener('controlmessage', function(msg) {
-
-      if( !msg.data || !msg.data.action ) {
-        return;
-      }
-
-      if(msg.data.action == '___O_setup_toolbar_context_REQUEST') {
-
-        if( !this[0] ) {
-          
-          msg.source.postMessage({
-            action: '___O_setup_toolbar_context_RESPONSE',
-            data: {
-              toolbarUIItem_obj: undefined
-            }
-          });
-          
-        } else {
-          
-          var toolbarItemProps = this[0].properties;
-          toolbarItemProps.badge = toolbarItemProps.badge.properties;
-          toolbarItemProps.popup = toolbarItemProps.popup.properties;
-
-          msg.source.postMessage({
-            action: '___O_setup_toolbar_context_RESPONSE',
-            data: {
-              toolbarUIItem_obj: toolbarItemProps
-            }
-          });
-          
-        }
-
-      }
-
-    }.bind(this), false);
-  
-  }
 
 };
 
@@ -3392,10 +3344,11 @@ var ToolbarBadge = function( properties ) {
   this.properties = {};
 
   // Set provided properties through object prototype setter functions
-  this.properties.textContent = properties.textContent ? "" + properties.textContent : properties.textContent;
+  this.properties.textContent = properties.textContent;
   this.properties.backgroundColor = complexColorToHex(properties.backgroundColor);
   this.properties.color = complexColorToHex(properties.color);
-  this.properties.display = String(properties.display).toLowerCase() === 'none' ? 'none' : 'block';
+  this.properties.display = properties.display;
+
 };
 
 ToolbarBadge.prototype = Object.create( OPromise.prototype );
@@ -3405,7 +3358,7 @@ ToolbarBadge.prototype.apply = function() {
   chrome.browserAction.setBadgeBackgroundColor({ "color": (this.backgroundColor || "#f00") });
 
   if( this.display === "block" ) {
-    chrome.browserAction.setBadgeText({ "text": this.textContent || "" });
+    chrome.browserAction.setBadgeText({ "text": this.textContent });
   } else {
     chrome.browserAction.setBadgeText({ "text": "" });
   }
@@ -3461,21 +3414,20 @@ ToolbarBadge.prototype.__defineGetter__("display", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("display", function( val ) {
-    if(("" + val).toLowerCase() === "none")  {
-	this.properties.display = "none";
-	Queue.enqueue(this, function(done) {
+  if(("" + val).toLowerCase() === "block") {
+    this.properties.display = "block";
+    Queue.enqueue(this, function(done) {
 
-	    chrome.browserAction.setBadgeText({ "text": "" });
+      chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
 
-	    done();
-	}.bind(this));
-    }
+      done();
 
-    else {
-	this.properties.display = "block";
-	Queue.enqueue(this, function(done) {
+    }.bind(this));
+  } else {
+    this.properties.display = "none";
+    Queue.enqueue(this, function(done) {
 
-	chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
+      chrome.browserAction.setBadgeText({ "text": "" });
 
       done();
 
@@ -3574,9 +3526,7 @@ ToolbarUIItem.prototype.apply = function() {
   chrome.browserAction.setTitle({ "title": this.title });
 
   // Apply icon property
-  if(this.icon) {
-    chrome.browserAction.setIcon({ "path": this.icon });
-  } 
+  chrome.browserAction.setIcon({ "path": this.icon });
 
 };
 
@@ -3652,7 +3602,7 @@ ToolbarUIItem.prototype.__defineGetter__("badge", function() {
 
 if(manifest && manifest.browser_action !== undefined && manifest.browser_action !== null ) {
 
-  OEC.toolbar = OEC.toolbar || new ToolbarContext(true);
+  OEC.toolbar = OEC.toolbar || new ToolbarContext();
 
 }
 var MenuEvent = function(type,args,target){

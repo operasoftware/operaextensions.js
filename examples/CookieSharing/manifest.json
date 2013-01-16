@@ -1,0 +1,13 @@
+{
+  "name": "Opera Extension API Test - Cookie Sharing",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Opera Cookie Sharing Test Extension",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "<all_urls>"
+  ],
+  "browser_action": {}
+}
