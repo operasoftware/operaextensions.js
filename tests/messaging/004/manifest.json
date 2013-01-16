@@ -1,0 +1,13 @@
+{
+  "name": "tc-messaging-004 - back connect popup",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Please click on the button to load the popup. Once the popup loads, it will be postMessaged.",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {},
+  "permissions": [
+    "tabs", "http://*/*","https://*/*", "contextMenus"
+  ]
+}
