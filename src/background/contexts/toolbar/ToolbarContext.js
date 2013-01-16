@@ -75,7 +75,7 @@ ToolbarContext.prototype.createItem = function( toolbarUIItemProperties ) {
 
 ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
 
-  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+  if( !toolbarUIItem || !toolbarUIItem instanceof ToolbarUIItem ) {
     return;
   }
 
@@ -92,13 +92,13 @@ ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
   toolbarUIItem.popup.apply();
 
   // Enable the toolbar button
-  chrome.browserAction.enable();
+  //chrome.browserAction.enable(); //isn't it done through toolbarUIItem???? what if button is disabled?
 
 };
 
 ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {
 
-  if( !toolbarUIItem || !(toolbarUIItem instanceof ToolbarUIItem) ) {
+  if( !toolbarUIItem || !toolbarUIItem instanceof ToolbarUIItem ) {
     return;
   }
 
