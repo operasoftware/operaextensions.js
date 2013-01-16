@@ -26,6 +26,17 @@ function complexColorToHex(color, backgroundColorVal) {
   if(color === undefined || color === null) {
     return color;
   }
+  
+  // Convert an Array input to RGG(A)
+  if(Object.prototype.toString.call(color) === "[object Array]") {
+    if(color.length === 4) {
+      color = "rgba(" + color[0] + "," + color[1] + "," + color[2] + "," + color[3] + ")";
+    } else if(color.length === 3) {
+      color = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
+    } else {
+      color = "rgb(255,255,255)";
+    }
+  }
 
   // Force covert color to String
   color = color + "";

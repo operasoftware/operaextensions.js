@@ -91,9 +91,6 @@ ToolbarContext.prototype.addItem = function( toolbarUIItem ) {
   toolbarUIItem.popup.resolve(true);
   toolbarUIItem.popup.apply();
 
-  // Enable the toolbar button
-  chrome.browserAction.enable();
-
 };
 
 ToolbarContext.prototype.removeItem = function( toolbarUIItem ) {

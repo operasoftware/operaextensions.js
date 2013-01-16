@@ -3,7 +3,7 @@ var ToolbarContextProxy = function() {
 
   ToolbarContext.call( this, false );
   
-  // Setup the current toolbarUIItem from the background process, if any
+  // Set up the current toolbarUIItem from the background process, if any
   OEX.addEventListener('controlmessage', function(msg) {
 
     if( !msg.data || !msg.data.action ) {
