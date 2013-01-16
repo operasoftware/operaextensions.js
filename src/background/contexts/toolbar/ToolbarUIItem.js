@@ -29,7 +29,9 @@ ToolbarUIItem.prototype.apply = function() {
   chrome.browserAction.setTitle({ "title": this.title });
 
   // Apply icon property
-  chrome.browserAction.setIcon({ "path": this.icon });
+  if(this.icon) {
+    chrome.browserAction.setIcon({ "path": this.icon });
+  } 
 
 };
 
