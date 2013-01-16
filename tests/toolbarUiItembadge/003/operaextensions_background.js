@@ -3265,9 +3265,13 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('tabs') != -
 
 }
 
-var ToolbarContext = function() {
+var ToolbarContext = function( isBackground ) {
 
   OEventTarget.call( this );
+  
+  this.isBackground = !!isBackground;
+  
+  this.length = 0;
 
   // Unfortunately, click events only fire if a popup is not supplied
   // to a registered browser action in Chromium :(
@@ -3286,6 +3290,46 @@ var ToolbarContext = function() {
   }
 
   chrome.browserAction.onClicked.addListener(clickEventHandler.bind(this));
+  
+  if( this.isBackground ) {
+    
+    OEX.addEventListener('controlmessage', function(msg) {
+
+      if( !msg.data || !msg.data.action ) {
+        return;
+      }
+
+      if(msg.data.action == '___O_setup_toolbar_context_REQUEST') {
+
+        if( !this[0] ) {
+          
+          msg.source.postMessage({
+            action: '___O_setup_toolbar_context_RESPONSE',
+            data: {
+              toolbarUIItem_obj: undefined
+            }
+          });
+          
+        } else {
+          
+          var toolbarItemProps = this[0].properties;
+          toolbarItemProps.badge = toolbarItemProps.badge.properties;
+          toolbarItemProps.popup = toolbarItemProps.popup.properties;
+
+          msg.source.postMessage({
+            action: '___O_setup_toolbar_context_RESPONSE',
+            data: {
+              toolbarUIItem_obj: toolbarItemProps
+            }
+          });
+          
+        }
+
+      }
+
+    }.bind(this), false);
+  
+  }
 
 };
 
@@ -3348,7 +3392,7 @@ var ToolbarBadge = function( properties ) {
   this.properties = {};
 
   // Set provided properties through object prototype setter functions
-  this.properties.textContent = properties.textContent;
+  this.properties.textContent = properties.textContent ? "" + properties.textContent : properties.textContent;
   this.properties.backgroundColor = complexColorToHex(properties.backgroundColor);
   this.properties.color = complexColorToHex(properties.color);
   this.properties.display = String(properties.display).toLowerCase() === 'none' ? 'none' : 'block';
@@ -3361,7 +3405,7 @@ ToolbarBadge.prototype.apply = function() {
   chrome.browserAction.setBadgeBackgroundColor({ "color": (this.backgroundColor || "#f00") });
 
   if( this.display === "block" ) {
-    chrome.browserAction.setBadgeText({ "text": this.textContent });
+    chrome.browserAction.setBadgeText({ "text": this.textContent || "" });
   } else {
     chrome.browserAction.setBadgeText({ "text": "" });
   }
@@ -3530,7 +3574,9 @@ ToolbarUIItem.prototype.apply = function() {
   chrome.browserAction.setTitle({ "title": this.title });
 
   // Apply icon property
-  chrome.browserAction.setIcon({ "path": this.icon });
+  if(this.icon) {
+    chrome.browserAction.setIcon({ "path": this.icon });
+  } 
 
 };
 
@@ -3606,7 +3652,7 @@ ToolbarUIItem.prototype.__defineGetter__("badge", function() {
 
 if(manifest && manifest.browser_action !== undefined && manifest.browser_action !== null ) {
 
-  OEC.toolbar = OEC.toolbar || new ToolbarContext();
+  OEC.toolbar = OEC.toolbar || new ToolbarContext(true);
 
 }
 var MenuEvent = function(type,args,target){

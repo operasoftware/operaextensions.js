@@ -1,4 +1,4 @@
-!(function( global, manifest ) {
+!(function( global ) {
 
   var Opera = function() {};
 
@@ -17,6 +17,8 @@
   };
 
   var opera = global.opera || new Opera();
+  
+  var manifest = chrome.app.getDetails(); // null in injected scripts / popups
 
   var isReady = false;
 
@@ -342,13 +344,14 @@ function complexColorToHex(color, backgroundColorVal) {
 
   // Hex color patterns
   var hexColorTypes = {
-    "hexLong": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
-    "hexShort": /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
+    "hexLong": /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+    "hexShort": /^#([0-9a-fA-F]{3})$/
   };
 
   for(var colorType in hexColorTypes) {
-    if(color.match(hexColorTypes[ colorType ]))
-      return color;
+    if(color.match(hexColorTypes[ colorType ])) {
+	return color;
+    }
   }
 
   // Other color patterns
@@ -385,14 +388,15 @@ function complexColorToHex(color, backgroundColorVal) {
     },
     hsl: function( bits ) {
       var hsl = {
-        h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
-        s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
-        l : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100,
+        h : parseInt( bits[ 1 ], 10 ) % 360 / 360,
+        s : parseInt( bits[ 2 ], 10 ) % 101 / 100,
+        l : parseInt( bits[ 3 ], 10 ) % 101 / 100,
         a : bits[4] || 1
       };
 
-      if ( hsl.s === 0 )
-        return [ hsl.l, hsl.l, hsl.l ];
+      if ( hsl.s === 0 ) {
+	return [ hsl.l, hsl.l, hsl.l ];
+    }
 
       var q = hsl.l < 0.5 ? hsl.l * ( 1 + hsl.s ) : hsl.l + hsl.s - hsl.l * hsl.s;
       var p = 2 * hsl.l - q;
@@ -407,9 +411,9 @@ function complexColorToHex(color, backgroundColorVal) {
     hsv: function( bits ) {
       var rgb = {},
           hsv = {
-            h : ( parseInt( bits[ 1 ], 10 ) % 360 ) / 360,
-            s : ( parseInt( bits[ 2 ], 10 ) % 101 ) / 100,
-            v : ( parseInt( bits[ 3 ], 10 ) % 101 ) / 100
+            h : parseInt( bits[ 1 ], 10 ) % 360 / 360,
+            s : parseInt( bits[ 2 ], 10 ) % 101 / 100,
+            v : parseInt( bits[ 3 ], 10 ) % 101 / 100
           },
           i = Math.floor( hsv.h * 6 ),
           f = hsv.h * 6 - i,
@@ -450,7 +454,9 @@ function complexColorToHex(color, backgroundColorVal) {
 
   function applySaturation( rgb ) {
     var alpha = parseFloat(rgb[3] || 1);
-    if((alpha + "") === "NaN" || alpha < 0 || alpha >= 1) return rgb;
+    if(alpha + "" === "NaN" || alpha < 0 || alpha >= 1) {
+	return rgb;
+    }
     if(alpha == 0) {
       return [ 255, 255, 255 ];
     }
@@ -3259,9 +3265,13 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('tabs') != -
 
 }
 
-var ToolbarContext = function() {
+var ToolbarContext = function( isBackground ) {
 
   OEventTarget.call( this );
+  
+  this.isBackground = !!isBackground;
+  
+  this.length = 0;
 
   // Unfortunately, click events only fire if a popup is not supplied
   // to a registered browser action in Chromium :(
@@ -3280,6 +3290,46 @@ var ToolbarContext = function() {
   }
 
   chrome.browserAction.onClicked.addListener(clickEventHandler.bind(this));
+  
+  if( this.isBackground ) {
+    
+    OEX.addEventListener('controlmessage', function(msg) {
+
+      if( !msg.data || !msg.data.action ) {
+        return;
+      }
+
+      if(msg.data.action == '___O_setup_toolbar_context_REQUEST') {
+
+        if( !this[0] ) {
+          
+          msg.source.postMessage({
+            action: '___O_setup_toolbar_context_RESPONSE',
+            data: {
+              toolbarUIItem_obj: undefined
+            }
+          });
+          
+        } else {
+          
+          var toolbarItemProps = this[0].properties;
+          toolbarItemProps.badge = toolbarItemProps.badge.properties;
+          toolbarItemProps.popup = toolbarItemProps.popup.properties;
+
+          msg.source.postMessage({
+            action: '___O_setup_toolbar_context_RESPONSE',
+            data: {
+              toolbarUIItem_obj: toolbarItemProps
+            }
+          });
+          
+        }
+
+      }
+
+    }.bind(this), false);
+  
+  }
 
 };
 
@@ -3342,11 +3392,10 @@ var ToolbarBadge = function( properties ) {
   this.properties = {};
 
   // Set provided properties through object prototype setter functions
-  this.properties.textContent = properties.textContent;
+  this.properties.textContent = properties.textContent ? "" + properties.textContent : properties.textContent;
   this.properties.backgroundColor = complexColorToHex(properties.backgroundColor);
   this.properties.color = complexColorToHex(properties.color);
-  this.properties.display = properties.display;
-
+  this.properties.display = String(properties.display).toLowerCase() === 'none' ? 'none' : 'block';
 };
 
 ToolbarBadge.prototype = Object.create( OPromise.prototype );
@@ -3356,7 +3405,7 @@ ToolbarBadge.prototype.apply = function() {
   chrome.browserAction.setBadgeBackgroundColor({ "color": (this.backgroundColor || "#f00") });
 
   if( this.display === "block" ) {
-    chrome.browserAction.setBadgeText({ "text": this.textContent });
+    chrome.browserAction.setBadgeText({ "text": this.textContent || "" });
   } else {
     chrome.browserAction.setBadgeText({ "text": "" });
   }
@@ -3412,20 +3461,21 @@ ToolbarBadge.prototype.__defineGetter__("display", function() {
 });
 
 ToolbarBadge.prototype.__defineSetter__("display", function( val ) {
-  if(("" + val).toLowerCase() === "block") {
-    this.properties.display = "block";
-    Queue.enqueue(this, function(done) {
+    if(("" + val).toLowerCase() === "none")  {
+	this.properties.display = "none";
+	Queue.enqueue(this, function(done) {
 
-      chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
+	    chrome.browserAction.setBadgeText({ "text": "" });
 
-      done();
+	    done();
+	}.bind(this));
+    }
 
-    }.bind(this));
-  } else {
-    this.properties.display = "none";
-    Queue.enqueue(this, function(done) {
+    else {
+	this.properties.display = "block";
+	Queue.enqueue(this, function(done) {
 
-      chrome.browserAction.setBadgeText({ "text": "" });
+	chrome.browserAction.setBadgeText({ "text": this.properties.textContent });
 
       done();
 
@@ -3524,7 +3574,9 @@ ToolbarUIItem.prototype.apply = function() {
   chrome.browserAction.setTitle({ "title": this.title });
 
   // Apply icon property
-  chrome.browserAction.setIcon({ "path": this.icon });
+  if(this.icon) {
+    chrome.browserAction.setIcon({ "path": this.icon });
+  } 
 
 };
 
@@ -3600,7 +3652,7 @@ ToolbarUIItem.prototype.__defineGetter__("badge", function() {
 
 if(manifest && manifest.browser_action !== undefined && manifest.browser_action !== null ) {
 
-  OEC.toolbar = OEC.toolbar || new ToolbarContext();
+  OEC.toolbar = OEC.toolbar || new ToolbarContext(true);
 
 }
 var MenuEvent = function(type,args,target){
@@ -4036,10 +4088,10 @@ MenuContext.prototype.createItem = function( menuItemProperties ) {
 
 if(manifest && manifest.permissions && manifest.permissions.indexOf('contextMenus')!=-1){
 
-global.MenuItem = MenuItem;
-global.MenuContext = MenuContext;
+  global.MenuItem = MenuItem;
+  global.MenuContext = MenuContext;
 
-OEC.menu = OEC.menu || new MenuContext(Opera);
+  OEC.menu = OEC.menu || new MenuContext(Opera);
 
 }
 
@@ -14124,7 +14176,7 @@ var RuleList = function( parentObj ) {
       'includeDomains': options.includeDomains || [],
       'excludeDomains': options.excludeDomains || [],
       'resources': options.resources || 0xFFFFFFFF,
-      'thirdParty': options.thirdParty || null
+      'thirdParty': options.thirdParty !== undefined ? options.thirdParty : null
     };
 
     //  Process options and append to rule argument
@@ -14195,8 +14247,10 @@ var RuleList = function( parentObj ) {
 
     }
 
-    if(opts.thirdParty) {
+    if(opts.thirdParty === true) {
       filterOptions.push("third-party");
+    } else if (opts.thirdParty === false) {
+      filterOptions.push("~third-party");
     }
 
     if(filterOptions.length > 0) {
@@ -14434,7 +14488,7 @@ var UrlFilterManager = function() {
     } else if (type == "main_frame") {
       type = "DOCUMENT";
     } else {
-      type = type.toUpperCase();
+      type = (type + "").toUpperCase();
     }
 
     var frame = (type != "SUBDOCUMENT" ? details.frameId : details.parentFrameId);
@@ -14659,6 +14713,7 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('webRequest'
 
       var fns = {
             "isready": [],
+            "readystatechange": [],
             "domcontentloaded": [],
             "load": []
           };
@@ -14675,6 +14730,20 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('webRequest'
         hasFired_Load = true;
         global.removeEventListener("load", handle_Load, true);
       }, true);
+      
+      global.document.addEventListener("readystatechange", function(event) {
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+        if( global.document.readyState !== 'interactive' && global.document.readyState !== 'complete' ) {
+          fireEvent('readystatechange', global.document);
+        } else {
+          global.document.readyState = 'loading';
+        }
+      }, true);
+      
+      var _readyState = "uninitialized";
+      global.document.__defineSetter__('readyState', function(val) { _readyState = val; });
+      global.document.__defineGetter__('readyState', function() { return _readyState; });
 
       function interceptAddEventListener(target, _name) {
 
@@ -14682,6 +14751,8 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('webRequest'
 
         // Replace addEventListener for given target
         target.addEventListener = function(name, fn, usecapture) {
+          name = name + ""; // force event name to type string
+          
           if (name.toLowerCase() === _name.toLowerCase()) {
             if (fn === undefined || fn === null ||
                   Object.prototype.toString.call(fn) !== "[object Function]") {
@@ -14710,16 +14781,16 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('webRequest'
       interceptAddEventListener(global, 'load');
       interceptAddEventListener(global.document, 'domcontentloaded');
       interceptAddEventListener(global, 'domcontentloaded'); // handled bubbled DOMContentLoaded
+      interceptAddEventListener(global.document, 'readystatechange');
 
-      function fireEvent(name, target) {
+      function fireEvent(name, target, props) {
         var evtName = name.toLowerCase();
 
-        var evt = new OEvent(evtName, {});
+        var evt = new OEvent(evtName, props || {});
 
         for (var i = 0, len = fns[evtName].length; i < len; i++) {
           fns[evtName][i].call(target, evt);
         }
-        fns[evtName] = [];
       }
 
       function ready() {
@@ -14747,7 +14818,10 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('webRequest'
             // (always synthesized in Chromium Content Scripts)
             if (hasFired_DOMContentLoaded || hasFired_Load || currentTime >= domContentLoadedTimeoutOverride) {
 
-              fireEvent('domcontentloaded', global.document);
+              global.document.readyState = 'interactive';
+              fireEvent('readystatechange', global.document);
+
+              fireEvent('domcontentloaded', global.document, { bubbles: true }); // indicate that event bubbles
 
               if(currentTime >= domContentLoadedTimeoutOverride) {
                 console.warn('document.domcontentloaded event fired on check timeout');
@@ -14763,6 +14837,9 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('webRequest'
                 var currentTime = new Date().getTime();
 
                 if (hasFired_Load || currentTime >= loadTimeoutOverride) {
+                  
+                  global.document.readyState = 'complete';
+                  fireEvent('readystatechange', global.document);
 
                   fireEvent('load', window);
 
@@ -14846,35 +14923,4 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('webRequest'
   // Make API available on the window DOM object
   global.opera = opera;
 
-})( window, (function(){
-  
-var manifest = null;
-try{
-
-  manifest = chrome.app.getDetails();
-  
-  if(manifest==null){
-  
-  
-      var xhr = new XMLHttpRequest();
-  
-      xhr.onloadend = function(){
-          if (xhr.readyState==xhr.DONE && xhr.status==200){
-            manifest = JSON.parse(xhr.responseText);
-            
-            manifest.id = /^chrome\-extension\:\/\/(.*)\/$/.exec(chrome.extension.getURL(""))[1];
-            
-          };
-      };
-  
-      xhr.open('GET',chrome.extension.getURL('') + 'manifest.json',false);
-  
-      xhr.send(null);
-  
-  };
-  
-  } catch(e){ manifest = null;};
-
-return manifest;
-
-})());
+})( window );
