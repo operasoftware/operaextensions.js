@@ -250,10 +250,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="fail">
-                        <td>Fail</td>
+                    <tr class="pass">
+                        <td>Pass</td>
                         <td>createItem disabled</td>
-                        <td>Btn is enabled</td>
+                        <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -571,10 +571,10 @@
 	                </tr>
 	            </thead>
 	            <tbody>
-	                <tr class="fail">
-	                    <td>Fail</td>
+	                <tr class="pass">
+	                    <td>Pass</td>
 	                    <td>badge: createItem blank</td>
-	                    <td>error thrown when declaring empty badge [badge: {}] Error: Invalid value for argument 1. Property 'text': Property is required.</td>
+	                    <td></td>
 	                </tr>
 	            </tbody>
 	        </table>
@@ -662,7 +662,7 @@
                     <tr class="fail">
                         <td>Fail</td>
                         <td>badge: change badge.backgroundColor to [r, g, b, o]</td>
-                        <td></td>
+                        <td>shouldn't it be string "rgba(r,g,b,o)" instead of array?</td>
                     </tr>
                 </tbody>
             </table>
@@ -684,7 +684,7 @@
                     <tr class="fail">
                         <td>Fail</td>
                         <td>badge:  createItem color hex</td>
-                        <td>Unsupported in Chrome</td>
+                        <td>Changing color-badge is unsupported in Chrome</td>
                     </tr>
                 </tbody>
             </table>
@@ -814,10 +814,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="fail">
-                        <td>Fail</td>
+                    <tr class="pass">
+                        <td>Pass</td>
                         <td>badge: createItem textContent number</td>
-                        <td>Error thrown for textContent: 23 Error: Invalid value for argument 1. Property 'text': Expected 'string' but got 'integer'.</td>
+                        <td></td>
                     </tr>
                 </tbody>
             </table>
