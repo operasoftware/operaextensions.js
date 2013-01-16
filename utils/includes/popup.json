@@ -4,10 +4,13 @@
 
   "../src/common/third_party/rsvp.js",
 
+  "../src/common/utils.js",
   "../src/common/Error.js",
 
   "../src/common/Event.js",
   "../src/common/EventTarget.js",
+  "../src/common/Promise.js",
+  "../src/common/Queue.js",
 
   "../src/common/MessagePort.js",
   "../src/popup/Root.js",
@@ -17,6 +20,13 @@
   "../src/common/proxies/StorageProxy.js",
   "../src/common/proxies/WidgetObjProxy.js",
   "../src/WidgetProxy.js",
+  
+  "../src/background/contexts/toolbar/ToolbarContext.js",
+  "../src/background/contexts/toolbar/ToolbarBadge.js",
+  "../src/background/contexts/toolbar/ToolbarPopup.js",
+  "../src/background/contexts/toolbar/ToolbarUIItem.js",
+  "../src/popup/contexts/toolbar/ToolbarContextProxy.js",
+  "../src/popup/contexts/Toolbar.js",
 
   "../src/Footer.js"
 ]

@@ -19,7 +19,7 @@ ToolbarBadge.prototype.apply = function() {
   chrome.browserAction.setBadgeBackgroundColor({ "color": (this.backgroundColor || "#f00") });
 
   if( this.display === "block" ) {
-    chrome.browserAction.setBadgeText({ "text": this.textContent });
+    chrome.browserAction.setBadgeText({ "text": this.textContent || "" });
   } else {
     chrome.browserAction.setBadgeText({ "text": "" });
   }
