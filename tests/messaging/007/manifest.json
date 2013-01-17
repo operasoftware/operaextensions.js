@@ -1,0 +1,21 @@
+{
+  "name": "tc-messaging-007 - userjs back port",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "007 - userjs back port",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ],
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js", "/oex/includes/base.js"]
+      }
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ]
+}

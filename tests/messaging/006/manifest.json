@@ -1,0 +1,21 @@
+{
+  "name": "tc-messaging-006 - userjs back",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "006 - userjs back",
+  "background": {
+      "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ],
+  "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["/operaextensions_injectedscript.js", "/oex/includes/base.js"]
+      }
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ]
+}

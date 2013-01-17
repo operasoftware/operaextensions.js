@@ -10,6 +10,7 @@ opera.isReady(function(){
       {
         opera.extension.tabs.create({url:"http://www.opera.com/"});
         opera.extension.tabs.create({url:"http://www.opera.com/"});
+        opera.extension.tabs.create({url:"data:text/html,Please click on the button after the tabs finish loading. Once the popup loads, a broadcast will be sent out.", focused: true} );
 
         var UIItemProperties = {
           disabled: false,

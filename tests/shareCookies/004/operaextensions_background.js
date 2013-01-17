@@ -4812,7 +4812,13 @@ require.scopes["filterClasses"] = (function()
       return Filter.knownFilters[text];
     }
     var ret;
+<<<<<<< HEAD
     var match = text.indexOf("#") >= 0 ? Filter.elemhideRegExp.exec(text) : null;
+=======
+    // element hiding is not supported in Opera's URL Filter API
+    // TODO: remove all elemhide related code
+    var match = null;
+>>>>>>> c8e32baddc8a24c18711d3303d78cdd87b46ed1f
     if (match)
     {
       ret = ElemHideBase.fromText(text, match[1], match[2], match[3], match[4], match[5]);

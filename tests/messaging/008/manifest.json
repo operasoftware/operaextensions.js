@@ -1,0 +1,16 @@
+{
+  "name": "tc-messaging-008 - popup back",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "008 - popup back",
+  "background": {
+      "page": "background.html"
+  },
+  "browser_action": {},
+  "permissions": [
+    "tabs", "http://*/*","https://*/*"
+  ],
+  "web_accessible_resources": [
+    "/manifest.json"
+  ]
+}
