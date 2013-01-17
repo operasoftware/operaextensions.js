@@ -1,7 +1,7 @@
 opera.isReady(function() {
     var tests = {} // Asynchronous tests
-    var failurl = "http://t/resources/images/fail.png#"
-    var passurl = "http://t/resources/images/pass.png#"
+    var failurl = "http://t/resources/images/fail.png?"
+    var passurl = "http://t/resources/images/pass.png?"
 
     // All test characters
     var expectunblocked = ["!", "\"", "#", "$", "&", "'", "(", ")", "*", "+", ",", "/", ":", ";",
@@ -30,7 +30,7 @@ opera.isReady(function() {
 
     // Setup filter
     block.add("*pass.png*");
-    allow.add("http://t/resources/images/pass.png#^");
+    allow.add("http://t/resources/images/pass.png?^");
 
 
     opera.extension.onmessage = function(evt) {
