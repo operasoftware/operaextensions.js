@@ -1,0 +1,12 @@
+to make it working to testcase background.html add following script {as a las one}
+SenderID is id of manager-extension. Should be as defined below(I added key to manifest and hope it force browser to generate such extension id). As far I didn't find better way for this.
+
+var senderID = "nandnlijbdgklpggddgnojncccikgcfa";
+add_completion_callback(function(tests, status) {
+    var log = document.querySelector("#log #results");
+    var msg = encodeURIComponent(log.innerHTML);
+    chrome.extension.sendMessage(senderID, msg);
+});
+
+All extensions to test should have name starting with "tc-", should be installed and disabled (I should make this on the beginning of test - doing soon).
+Then you need run extension. At the end raport should be visible in tab.

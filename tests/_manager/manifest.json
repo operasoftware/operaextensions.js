@@ -1,0 +1,12 @@
+{
+  "name" : "management",
+  "version" : "0.8",
+  "description" : "management",
+  "permissions": [ "tabs", "background",  "management", "http://*/*", "https://*/*" ],
+  "icons": { "16": "icon.png", "48": "icon.png", "128": "icon.png" },
+  "background": {
+    "page": "background.html"
+  },
+  "key": "ghkgboihgokececlaianddjchkophako",
+  "manifest_version": 2
+}
