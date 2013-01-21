@@ -3322,7 +3322,7 @@ var ToolbarContext = function( isBackground ) {
           
         } else {
           
-          var toolbarItemProps = this[0].properties;
+          var toolbarItemProps = Object.create( this[0].properties );
           toolbarItemProps.badge = toolbarItemProps.badge.properties;
           toolbarItemProps.popup = toolbarItemProps.popup.properties;
 
