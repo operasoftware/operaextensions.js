@@ -33,7 +33,7 @@ function checkDisabledAll(callback){
 function disableAll(callback){
     for (var i = 0; i < tests.length; i++) {
 	if (tests[i].enabled == true) {
-	    chrome.management.setEnabled(tests[curr].id, false, function(){
+	    chrome.management.setEnabled(tests[i].id, false, function(){
 		checkDisabledAll(callback);
 	    });
 	}
@@ -54,18 +54,19 @@ function prepareEnvironment(callback){
 	    if(waitForClosingNo <= 0){ if(callback){callback();} }
 
 	    for (var i=0; i < tabs.length; i++) {
-		if(tabs[i].url != "chrome://extensions/") {
-		    chrome.tabs.remove(tabs[i].id, function(){
-        		waitForClosingNo--;
-        		    if(waitForClosingNo == 0 && callback){
-        			callback();
-        		}
-		    });
-		}
-
+		chrome.tabs.remove(tabs[i].id, function(){
+		    waitForClosingNo--;
+    		    if(waitForClosingNo == 0){
+    			chrome.windows.create({}, function(){
+    			    if(callback){callback();}
+    			});
+    		    }
+		});
 	    }
 	} else {
-	    if(callback){callback();}
+	    chrome.windows.create({}, function(){
+		if(callback){callback();}
+	    });
 	}
     });
 }
