@@ -1,5 +1,5 @@
 {
-  "name": "tc-OperaResourceLoader-014",
+  "name": "tc-OperaResourceLoader-014b",
   "version": "1.0",
   "manifest_version": 2,
   "description": "Appending a resource by widget URL (widget://) to a web page should not be possible.",

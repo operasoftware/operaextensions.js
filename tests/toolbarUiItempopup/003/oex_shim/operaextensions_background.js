@@ -3504,7 +3504,7 @@ var ToolbarPopup = function( properties ) {
 	// internal property
 	this.isExternalHref = false;
 	
-	if(this.properties.href !== "" && this.properties.href.match(/^https?:\/\//)) {
+	if(this.properties.href !== "" && this.properties.href.match(/^(https?:\/\/|data:)/)) {
 		this.isExternalHref = true;
 	}
 	
@@ -3538,7 +3538,7 @@ ToolbarPopup.prototype.__defineSetter__("href", function( val ) {
 	val = val + ""; // force to type string
 	
 	// Check if we have an external href path
-	if(val.match(/^https?:\/\//)) {
+	if(val.match(/^(https?:\/\/|data:)/)) {
 		this.isExternalHref = true;
 	} else {
 		this.isExternalHref = false;
