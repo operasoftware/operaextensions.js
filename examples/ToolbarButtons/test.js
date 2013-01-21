@@ -59,7 +59,9 @@ opera.isReady(function() {
        if(count <= 200) {
          incrementBadgeItem();
        } else {
-         button.popup.href = "popup2.html";
+         button.popup.href = "http://worldtime.com";
+         button.popup.width = 600;
+         button.popup.height = 100;
          opera.contexts.toolbar.removeItem(button);
        
          window.setTimeout(function() {
