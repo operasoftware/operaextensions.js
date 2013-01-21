@@ -6,7 +6,7 @@ opera.isReady(function() {
 				var UIItemProperties = {
 				    disabled : false,
 				    title : "003 - createItem http href",
-				    icon : "icon.png",
+				    icon : "/oex/icon.png",
 				    popup : {
 					href : "http://www.opera.com/",
 					width : 100,

@@ -81,7 +81,6 @@ OWidgetObj.prototype.__defineGetter__('shortName', function() {
 });
 
 OWidgetObj.prototype.__defineGetter__('id', function() {
-  // TODO return an id (currently no id attribute is set up)
   return this.properties.id || "";
 });
 
