@@ -15,9 +15,9 @@ window.addEventListener("load", function() {
         	    str +=  i + " " + JSON.stringify(exts[i]) + "<br />";
         	}
 	    }
-	    debug(str);
+	    //debug(str);
 	    //runTest();
-	    disableAll(function(){runTest();});
+	    disableAll(function(){prepareEnvironment(runTest);});
 	});
     }
     catch(err){}
@@ -43,6 +43,33 @@ function disableAll(callback){
     }
 }
 
+function prepareEnvironment(callback){
+    chrome.windows.getAll({populate: true}, function(wins){
+	if(wins.length){
+	    for(var i=0; i<wins.length; i++){
+		var tabs = [];
+		tabs = tabs.concat(wins[i].tabs);
+	    }
+	    var waitForClosingNo = tabs.length-1;
+	    if(waitForClosingNo <= 0){ if(callback){callback();} }
+
+	    for (var i=0; i < tabs.length; i++) {
+		if(tabs[i].url != "chrome://extensions/") {
+		    chrome.tabs.remove(tabs[i].id, function(){
+        		waitForClosingNo--;
+        		    if(waitForClosingNo == 0 && callback){
+        			callback();
+        		}
+		    });
+		}
+
+	    }
+	} else {
+	    if(callback){callback();}
+	}
+    });
+}
+
 chrome.extension.onMessageExternal.addListener(
     function(request, sender, sendResponse) {
 	if(sender.id == tests[curr].id) {
@@ -52,7 +79,7 @@ chrome.extension.onMessageExternal.addListener(
 	    log.innerHTML += encodeURIComponent("<h2>" + tests[curr].name + "</h2><table class='results'>" + results + "</table>");//decodeURIComponent();
 	    chrome.management.setEnabled(tests[curr].id, false, function(){
         	curr++;
-        	runTest();
+        	prepareEnvironment(runTest);
 	    });
 	}
 });
@@ -72,7 +99,7 @@ function runTest(){
 
 		curr++;
 
-		runTest();
+		prepareEnvironment(runTest);
 	    });
 	},TC_TIMEOUT);
     });
