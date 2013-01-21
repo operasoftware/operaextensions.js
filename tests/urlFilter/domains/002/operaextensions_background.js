@@ -3610,6 +3610,7 @@ var ToolbarUIItem = function( properties ) {
   this.properties.popup = new ToolbarPopup( properties.popup || {} );
   this.properties.badge = new ToolbarBadge( properties.badge || {} );
   if(properties.onclick){this.onclick = properties.onclick;}
+  if(properties.onremove){this.onremove = properties.onremove;}
 
 };
 
