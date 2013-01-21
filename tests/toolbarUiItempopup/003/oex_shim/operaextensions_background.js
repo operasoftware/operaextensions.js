@@ -3504,6 +3504,10 @@ var ToolbarPopup = function( properties ) {
 	// internal property
 	this.isExternalHref = false;
 	
+	if(this.properties.href !== "" && this.properties.href.match(/^https?:\/\//)) {
+		this.isExternalHref = true;
+	}
+	
 	this.applyHrefVal = function() {
 		// If href points to a http or https resource we need to load it via an iframe
 		if(this.isExternalHref === true) {
