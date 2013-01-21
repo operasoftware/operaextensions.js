@@ -5,7 +5,7 @@ opera.isReady(function(){
           disabled: false,
           title: "011 - createItem w onremove",
           icon: "oex/icon.png",
-          onremove: function(){
+          onremove: function(event){
             PASS( getProperties(event, 2) );
           }
         }
