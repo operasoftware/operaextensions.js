@@ -6,12 +6,13 @@
     var test = async_test("Check back broadCast userjs", {timeout: 5000});
 
     function onMessage(event) {
-	responses.push(event.source);
+	responses.push(event.data);
+	console.log(event.data);
 	//console.log(event.data);
 	if(responses.length === connectedTo.length) {
 	    test.step(function(){
 		for (i = 0; i < responses.length; i++) {
-		    assert_in_array(responses[i], connectedTo, "Response should be received from a known connected event.source #" + i );
+		    assert_equals(responses[i], "Responding to source", "Response should be received from source #" + i );
 		}
 	    });
 	    test.done();
@@ -19,6 +20,7 @@
 	}
     }
     function onConnect(event) {
+
 	connectedTo.push(event.source);
 	//console.log(event.source);
 	//event.source.postMessage("Reply to this immediately. All of you");
@@ -35,9 +37,9 @@
 
     try {
         //setup - create 3 tabs
-        tab.push( createTab({ url : "http://www.opera.com/?t=" + new Date() }));
-        tab.push( createTab({ url : "http://www.opera.com/?t=" + new Date() }));
-        tab.push( createTab({ url : "http://www.opera.com/?t=" + new Date() }));
+        tab.push( createTab({ url : "http://www.opera.com/" }));
+        tab.push( createTab({ url : "http://www.opera.com/" }));
+        tab.push( createTab({ url : "http://www.opera.com/" }));
 
         setTimeout(function(){
             console.log(tab.length);
@@ -49,7 +51,7 @@
         	    });
         	    test.done();
         	    for(i=0; i<tabs.length;i++) {tab[i].close();}
-            	}, 2000);
+            	}, 10000);
             });
         }, 2000);
 
