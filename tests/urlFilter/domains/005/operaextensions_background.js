@@ -3494,19 +3494,18 @@ var ToolbarPopup = function( properties ) {
 
 	OPromise.call( this );
 
-	this.properties = {};
-
-	// Set provided properties through object prototype setter functions
-	this.properties.href = properties.href || "";
-	this.properties.width = properties.width || 300;
-	this.properties.height = properties.height || 200;
+	this.properties = {
+	  href: "",
+	  width: 300,
+	  height: 200
+	};
 	
 	// internal property
 	this.isExternalHref = false;
 	
-	if(this.properties.href !== "" && this.properties.href.match(/^(https?:\/\/|data:)/)) {
-		this.isExternalHref = true;
-	}
+	this.href = properties.href;
+	this.width = properties.width;
+	this.height = properties.height;
 	
 	this.applyHrefVal = function() {
 		// If href points to a http or https resource we need to load it via an iframe
@@ -3565,7 +3564,7 @@ ToolbarPopup.prototype.__defineSetter__("width", function( val ) {
 	if(val == '') {
 		this.properties.width = 300; // default width
 	} else {
-		this.properties.width = val; 
+		this.properties.width = val < 800 ? val : 800; // enfore max width
 	}
 	
 	Queue.enqueue(this, function(done) {
@@ -3587,7 +3586,7 @@ ToolbarPopup.prototype.__defineSetter__("height", function( val ) {
 	if(val == '') {
 		this.properties.height = 200; // default height
 	} else {
-		this.properties.height = val; 
+	  this.properties.height = val < 600 ? val : 600; // enfore max height
 	}
 	
 	Queue.enqueue(this, function(done) {
