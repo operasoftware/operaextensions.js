@@ -11,6 +11,7 @@
   },
   "content_scripts": [
       {
+        "run_at": "document_start",
         "matches": ["http://*/*", "https://*/*"],
         "js": ["/operaextensions_injectedscript.js","/oex/includes/resourceloadtest.js"]
       }
