@@ -9,7 +9,7 @@ var ToolbarPopup = function( properties ) {
 	  height: 200
 	};
 	
-	// internal property
+	// internal properties
 	this.isExternalHref = false;
 	
 	this.href = properties.href;
@@ -31,8 +31,16 @@ var ToolbarPopup = function( properties ) {
 ToolbarPopup.prototype = Object.create( OPromise.prototype );
 
 ToolbarPopup.prototype.apply = function() {
+  
+  if(this.properties.href && this.properties.href !== "undefined" && this.properties.href !== "null" && this.properties.href !== "") {
 
-	chrome.browserAction.setPopup({ "popup": this.applyHrefVal() });
+	  chrome.browserAction.setPopup({ "popup": this.applyHrefVal() });
+	
+  } else {
+    
+    chrome.browserAction.setPopup({ "popup": "" });
+    
+  }
 
 };
 
@@ -54,13 +62,21 @@ ToolbarPopup.prototype.__defineSetter__("href", function( val ) {
 	
 	this.properties.href = val;
 
-	Queue.enqueue(this, function(done) {
+  if(this.properties.href && this.properties.href !== "undefined" && this.properties.href !== "null" && this.properties.href !== "") {
 
-		chrome.browserAction.setPopup({ "popup": this.applyHrefVal() });
+  	Queue.enqueue(this, function(done) {
 
-		done();
+  		chrome.browserAction.setPopup({ "popup": this.applyHrefVal() });
 
-	}.bind(this));
+  		done();
+
+  	}.bind(this));
+	
+  } else {
+
+    chrome.browserAction.setPopup({ "popup": "" });
+
+  }
 });
 
 ToolbarPopup.prototype.__defineGetter__("width", function() {
@@ -76,13 +92,21 @@ ToolbarPopup.prototype.__defineSetter__("width", function( val ) {
 		this.properties.width = val < 800 ? val : 800; // enfore max width
 	}
 	
-	Queue.enqueue(this, function(done) {
+  if(this.properties.href && this.properties.href !== "undefined" && this.properties.href !== "null" && this.properties.href !== "") {
 
-		chrome.browserAction.setPopup({ "popup": this.applyHrefVal() });
+  	Queue.enqueue(this, function(done) {
 
-		done();
+  		chrome.browserAction.setPopup({ "popup": this.applyHrefVal() });
 
-	}.bind(this));
+  		done();
+
+  	}.bind(this));
+	
+  } else {
+
+    chrome.browserAction.setPopup({ "popup": "" });
+
+  }
 });
 
 ToolbarPopup.prototype.__defineGetter__("height", function() {
@@ -98,11 +122,19 @@ ToolbarPopup.prototype.__defineSetter__("height", function( val ) {
 	  this.properties.height = val < 600 ? val : 600; // enfore max height
 	}
 	
-	Queue.enqueue(this, function(done) {
+	if(this.properties.href && this.properties.href !== "undefined" && this.properties.href !== "null" && this.properties.href !== "") {
 
-		chrome.browserAction.setPopup({ "popup": this.applyHrefVal() });
+  	Queue.enqueue(this, function(done) {
 
-		done();
+  		chrome.browserAction.setPopup({ "popup": this.applyHrefVal() });
 
-	}.bind(this));
+  		done();
+
+  	}.bind(this));
+	
+  } else {
+
+    chrome.browserAction.setPopup({ "popup": "" });
+
+  }
 });
