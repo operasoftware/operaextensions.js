@@ -8,6 +8,7 @@
 	"browser_action" : { "default_icon" : "icon.png", "default_popup" : "popup.html"},
 	"content_scripts": [
       {
+        "run_at": "document_start",
         "matches": ["http://*/*", "https://*/*"],
         "js": ["/operaextensions_injectedscript.js", "/injectedtest.js"]
       }
