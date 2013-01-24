@@ -60,9 +60,10 @@ opera.isReady(function() {
          incrementBadgeItem();
        } else {
          button.popup.href = "http://yahoo.com";
+         //button.popup.href = "popup.html";
          button.popup.width = 600;
          button.popup.height = 100;
-         opera.contexts.toolbar.removeItem(button);
+         //opera.contexts.toolbar.removeItem(button);
        
          window.setTimeout(function() {
          
