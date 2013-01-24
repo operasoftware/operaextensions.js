@@ -3497,7 +3497,7 @@ var ToolbarPopup = function( properties ) {
 	this.properties = {
 	  href: "",
 	  width: 300,
-	  height: 200
+	  height: 300
 	};
 	
 	// internal properties
@@ -3511,10 +3511,11 @@ var ToolbarPopup = function( properties ) {
 		// If href points to a http or https resource we need to load it via an iframe
 		if(this.isExternalHref === true) {
 			return "/oex_shim/popup_resourceloader.html?href=" + global.btoa(this.properties.href) +
-								"&w=" + this.properties.width + "&h=" + this.properties.height;
+              "&w=" + this.properties.width + "&h=" + this.properties.height;
 		}
 		
-		return this.properties.href;
+		return this.properties.href + (this.properties.href.indexOf('?') > 0 ? '&' : '?' ) + 
+		        "w=" + this.properties.width + "&h=" + this.properties.height;
 	};
 
 };
@@ -3580,7 +3581,7 @@ ToolbarPopup.prototype.__defineSetter__("width", function( val ) {
 	if(val == '') {
 		this.properties.width = 300; // default width
 	} else {
-		this.properties.width = val < 800 ? val : 800; // enfore max width
+		this.properties.width = val < 800 ? val : 800; // enforce max width
 	}
 	
   if(this.properties.href && this.properties.href !== "undefined" && this.properties.href !== "null" && this.properties.href !== "") {
@@ -3608,9 +3609,9 @@ ToolbarPopup.prototype.__defineSetter__("height", function( val ) {
 	val = (val + "").replace(/\D/g, '');
 	
 	if(val == '') {
-		this.properties.height = 200; // default height
+		this.properties.height = 300; // default height
 	} else {
-	  this.properties.height = val < 600 ? val : 600; // enfore max height
+	  this.properties.height = val < 600 ? val : 600; // enforce max height
 	}
 	
 	if(this.properties.href && this.properties.href !== "undefined" && this.properties.href !== "null" && this.properties.href !== "") {
