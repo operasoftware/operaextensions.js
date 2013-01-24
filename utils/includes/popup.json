@@ -1,7 +1,7 @@
 [
   "../src/Header.js",
   "../src/popup/Require.js",
-
+  
   "../src/common/third_party/rsvp.js",
 
   "../src/common/utils.js",
@@ -28,5 +28,7 @@
   "../src/popup/contexts/toolbar/ToolbarContextProxy.js",
   "../src/popup/contexts/Toolbar.js",
 
-  "../src/Footer.js"
+  "../src/Footer.js",
+  
+  "../src/popup/Dimensions.js"
 ]

@@ -2,7 +2,8 @@ python build.py --include background --output ../build/operaextensions_backgroun
 python build.py --include injectedscript --output ../build/operaextensions_injectedscript.js
 python build.py --include popup --output ../build/operaextensions_popup.js
 
-cp ../build/operaextensions_background.js ../examples/ToolbarButtons/operaextensions_background.js
+cp ../build/operaextensions_background.js ../examples/ToolbarButtons/oex_shim/operaextensions_background.js
+cp ../build/operaextensions_popup.js ../examples/ToolbarButtons/oex_shim/operaextensions_popup.js
 
 cp ../build/operaextensions_background.js ../examples/WinTabs/operaextensions_background.js
 

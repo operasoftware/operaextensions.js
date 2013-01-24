@@ -13,7 +13,8 @@ python build.py --include popup --output ../build/operaextensions_popup.js
 #
 
 # ToolbarButtons Test Extension
-cp ../build/operaextensions_background.js ../examples/ToolbarButtons/operaextensions_background.js
+cp ../build/operaextensions_background.js ../examples/ToolbarButtons/oex_shim/operaextensions_background.js
+cp ../build/operaextensions_popup.js ../examples/ToolbarButtons/oex_shim/operaextensions_popup.js
 
 # WinTabs Test Extension
 cp ../build/operaextensions_background.js ../examples/WinTabs/operaextensions_background.js
