@@ -10,16 +10,18 @@ opera.isReady(function() {
     return results == null ? "" : window.decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
-  var w = getParam('w'), h = getParam('h');
-  if(w !== "") {
-    document.body.style.minWidth = w.replace(/\D/g,'') + "px";
-  } else {
-    document.body.style.minWidth = "300px"; // default width
-  }
-  if(h !== "") {
-    document.body.style.minHeight = h.replace(/\D/g,'') + "px";
-  } else {
-    document.body.style.minHeight = "300px"; // default height
-  }
+  window.addEventListener('DOMContentLoaded', function() {
+    var w = getParam('w'), h = getParam('h');
+    if(w !== "") {
+      document.body.style.minWidth = w.replace(/\D/g,'') + "px";
+    } else {
+      document.body.style.minWidth = "300px"; // default width
+    }
+    if(h !== "") {
+      document.body.style.minHeight = h.replace(/\D/g,'') + "px";
+    } else {
+      document.body.style.minHeight = "300px"; // default height
+    }
+  }, false);
 
 });
