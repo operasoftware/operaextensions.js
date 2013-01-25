@@ -60,7 +60,7 @@ var OBackgroundMessagePort = function() {
 
     }.bind(this) );
 
-    this.dispatchEvent( new OEvent('connect', { "source": _remotePort }) );
+    this.dispatchEvent( new OEvent('connect', { "source": _remotePort, "origin": "" }) );
 
   }.bind(this));
 
