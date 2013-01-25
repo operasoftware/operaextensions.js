@@ -1,7 +1,7 @@
 [
   "../src/Header.js",
   "../src/popup/Require.js",
-  
+
   "../src/common/third_party/rsvp.js",
 
   "../src/common/utils.js",
@@ -20,15 +20,16 @@
   "../src/common/proxies/StorageProxy.js",
   "../src/common/proxies/WidgetObjProxy.js",
   "../src/WidgetProxy.js",
-  
-  "../src/background/contexts/toolbar/ToolbarContext.js",
-  "../src/background/contexts/toolbar/ToolbarBadge.js",
-  "../src/background/contexts/toolbar/ToolbarPopup.js",
-  "../src/background/contexts/toolbar/ToolbarUIItem.js",
-  "../src/popup/contexts/toolbar/ToolbarContextProxy.js",
+
+  "../src/popup/Windows.js",
+  "../src/popup/Tabs.js",
+  "../src/popup/TabGroups.js",
+
   "../src/popup/contexts/Toolbar.js",
 
+  "../src/popup/contexts/Menu.js",
+
   "../src/Footer.js",
-  
+
   "../src/popup/Dimensions.js"
 ]
