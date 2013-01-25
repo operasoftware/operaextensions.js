@@ -20,7 +20,7 @@
 
   "../src/common/Storage.js",
   "../src/common/WidgetObj.js",
-  "../src/Widget.js",
+  "../src/background/Widget.js",
 
   "../src/background/windows/BrowserWindowManager.js",
   "../src/background/windows/BrowserWindow.js",

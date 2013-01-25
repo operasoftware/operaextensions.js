@@ -17,9 +17,7 @@
 
   "../src/common/File.js",
 
-  "../src/common/proxies/StorageProxy.js",
-  "../src/common/proxies/WidgetObjProxy.js",
-  "../src/WidgetProxy.js",
+  "../src/popup/Widget.js",
 
   "../src/popup/Windows.js",
   "../src/popup/Tabs.js",
