@@ -55,5 +55,7 @@
   "../src/background/urlfilter/UrlFilterManager.js",
   "../src/background/UrlFilter.js",
 
-  "../src/Footer.js"
+  "../src/Footer.js",
+
+  "../src/common/InlineEventHandlerRewrite.js"
 ]
