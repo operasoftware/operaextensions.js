@@ -19,6 +19,8 @@
   var opera = global.opera || new Opera();
   
   var manifest = chrome.app.getDetails(); // null in injected scripts / popups
+  
+  navigator.browserLanguage=navigator.language; //Opera defines both, some extensions use the former
 
   var isReady = false;
 
