@@ -29,5 +29,6 @@
 
   "../src/Footer.js",
 
-  "../src/popup/Dimensions.js"
+  "../src/popup/Dimensions.js",
+  "../src/common/InlineEventHandlerRewrite.js"
 ]
