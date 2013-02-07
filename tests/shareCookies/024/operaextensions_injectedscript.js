@@ -794,8 +794,16 @@ Opera.prototype.defineMagicFunction = function(name, implementation) {
 };
 
 Opera.prototype.addEventListener = function(name, fn, useCapture) {
-  // TODO Implement http://www.opera.com/docs/userjs/specs/#evlistener
-  // ... this.on(name, function)
+  this.on(name, fn);
+  var evtData=name.split(/\./), op=this;
+  if(/beforeevent(listener|)/i.test(evtData[0]) && evtData[1]){ // BeforeEvent.event, BeforeEventListener.event. Note: no support for 'BeforeEvent' only
+    document.addEventListener(evtData[1], function(e){
+      fn.call( op, {type:name, event:e, preventDefault:function(){e.stopPropagation();}} ); // Note:  no support for .listener. 
+      // Note: we could use op.trigger( name, {event:e} ); but the RSVP framework doesn't support event.preventDefault()
+    }, true);
+    return;
+  }
+  console.log( 'Warning: no support for '+name+' events' );
 };
 
 Opera.prototype.removeEventListener = function(name, fn, useCapture) {
