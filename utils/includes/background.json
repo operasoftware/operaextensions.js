@@ -5,21 +5,21 @@
   "../src/common/third_party/rsvp.js",
 
   "../src/common/utils.js",
-  "../src/common/Error.js",
+  "../src/common/shared_objects/Error.js",
 
-  "../src/common/Event.js",
-  "../src/common/EventTarget.js",
-  "../src/common/Promise.js",
-  "../src/common/Queue.js",
+  "../src/common/shared_objects/Event.js",
+  "../src/common/shared_objects/EventTarget.js",
+  "../src/common/shared_objects/Promise.js",
+  "../src/common/shared_objects/Queue.js",
 
-  "../src/common/MessagePort.js",
+  "../src/common/shared_objects/MessagePort.js",
   "../src/background/messaging/BackgroundMessagePort.js",
   "../src/background/Root.js",
 
-  "../src/common/File.js",
+  "../src/common/shared_objects/File.js",
 
-  "../src/common/Storage.js",
-  "../src/common/WidgetObj.js",
+  "../src/common/shared_objects/Storage.js",
+  "../src/common/shared_objects/WidgetObj.js",
   "../src/background/Widget.js",
 
   "../src/background/windows/BrowserWindowManager.js",
@@ -55,7 +55,8 @@
   "../src/background/urlfilter/UrlFilterManager.js",
   "../src/background/UrlFilter.js",
 
-  "../src/Footer.js",
+  "../src/common/Ready.js",
+  "../src/common/InlineEventHandlerRewrite.js",
 
-  "../src/common/InlineEventHandlerRewrite.js"
+  "../src/Footer.js"
 ]
