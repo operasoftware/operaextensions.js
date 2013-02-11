@@ -14,8 +14,8 @@
 
   "../src/common/shared_objects/File.js",
 
-  "../src/common/proxies/StorageProxy.js",
-  "../src/common/proxies/WidgetObjProxy.js",
+  "../src/common/shared_objects/proxies/StorageProxy.js",
+  "../src/common/shared_objects/proxies/WidgetObjProxy.js",
   "../src/injectedscript/WidgetProxy.js",
 
   "../src/injectedscript/UserJS.js",
