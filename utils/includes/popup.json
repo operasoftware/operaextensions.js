@@ -5,17 +5,17 @@
   "../src/common/third_party/rsvp.js",
 
   "../src/common/utils.js",
-  "../src/common/Error.js",
+  "../src/common/shared_objects/Error.js",
 
-  "../src/common/Event.js",
-  "../src/common/EventTarget.js",
-  "../src/common/Promise.js",
-  "../src/common/Queue.js",
+  "../src/common/shared_objects/Event.js",
+  "../src/common/shared_objects/EventTarget.js",
+  "../src/common/shared_objects/Promise.js",
+  "../src/common/shared_objects/Queue.js",
 
-  "../src/common/MessagePort.js",
+  "../src/common/shared_objects/MessagePort.js",
   "../src/popup/Root.js",
 
-  "../src/common/File.js",
+  "../src/common/shared_objects/File.js",
 
   "../src/popup/Widget.js",
 
@@ -27,8 +27,9 @@
 
   "../src/popup/contexts/Menu.js",
 
-  "../src/Footer.js",
-
+  "../src/common/Ready.js",
   "../src/popup/Dimensions.js",
-  "../src/common/InlineEventHandlerRewrite.js"
+  "../src/common/InlineEventHandlerRewrite.js",
+
+  "../src/Footer.js"
 ]

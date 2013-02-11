@@ -4,15 +4,15 @@
 
   "../src/common/third_party/rsvp.js",
 
-  "../src/common/Error.js",
+  "../src/common/shared_objects/Error.js",
 
-  "../src/common/Event.js",
-  "../src/common/EventTarget.js",
+  "../src/common/shared_objects/Event.js",
+  "../src/common/shared_objects/EventTarget.js",
 
-  "../src/common/MessagePort.js",
+  "../src/common/shared_objects/MessagePort.js",
   "../src/injectedscript/Root.js",
 
-  "../src/common/File.js",
+  "../src/common/shared_objects/File.js",
 
   "../src/common/proxies/StorageProxy.js",
   "../src/common/proxies/WidgetObjProxy.js",
@@ -28,6 +28,8 @@
 
   "../src/injectedscript/urlfilter/UrlFilterEventListener.js",
   "../src/injectedscript/UrlFilter.js",
+
+  "../src/common/Ready.js",
 
   "../src/Footer.js"
 ]
