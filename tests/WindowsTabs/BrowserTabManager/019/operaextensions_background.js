@@ -2335,8 +2335,13 @@ var RootBrowserTabManager = function() {
 
       } else {
 
+        var bypassRewriteUrl = false;
+        if(_tab.url == '') {
+          bypassRewriteUrl = true;
+        }
+
         // Create the new BrowserTab object using the provided properties
-        newTab = new BrowserTab(_tab, parentWindow);
+        newTab = new BrowserTab(_tab, parentWindow, bypassRewriteUrl);
 
         // write properties not available in BrowserTab constructor
         newTab.properties.id = _tab.id;
