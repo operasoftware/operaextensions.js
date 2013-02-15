@@ -720,16 +720,16 @@ var OBackgroundMessagePort = function() {
 
   OMessagePort.call( this, true );
 
-  this._allPorts = [];
+  this._allPorts = {};
 
   chrome.extension.onConnect.addListener(function( _remotePort ) {
 
-    var portIndex = this._allPorts.length;
+    var portIndex = _remotePort['name'] || Math.floor(Math.random() * 1e16);
 
     // When this port disconnects, remove _port from this._allPorts
     _remotePort.onDisconnect.addListener(function() {
 
-      this._allPorts.splice( portIndex - 1, 1 );
+      delete this._allPorts[ portIndex ];
 
       this.dispatchEvent( new OEvent('disconnect', { "source": _remotePort }) );
 
@@ -787,8 +787,8 @@ OBackgroundMessagePort.prototype = Object.create( OMessagePort.prototype );
 
 OBackgroundMessagePort.prototype.broadcastMessage = function( data ) {
 
-  for(var i = 0, l = this._allPorts.length; i < l; i++) {
-    this._allPorts[ i ].postMessage( data );
+  for(var activePort in this._allPorts) {
+    this._allPorts[ activePort ].postMessage( data );
   }
 
 };
