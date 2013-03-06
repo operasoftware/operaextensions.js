@@ -1,7 +1,7 @@
 !(function( global ) {
   
   // NEX<->CRX support set up
-  var nexAPIStubs = ['app', 'extension', 'windows', 'tabs', 'browserAction', 'contextMenus', 'i18n', 'webRequest', ''];
+  var nexAPIStubs = ['app', 'extension', 'windows', 'tabs', 'browserAction', 'contextMenus', 'i18n', 'webRequest'];
   if(!global.chrome) {
     global.chrome = {};
   }
