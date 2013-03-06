@@ -1,4 +1,13 @@
 !(function( global ) {
+  
+  // NEX<->CRX support set up
+  var nexAPIStubs = ['app', 'extension', 'windows', 'tabs', 'browserAction', 'contextMenus', 'i18n', 'webRequest', ''];
+  if(!global.chrome) {
+    global.chrome = {};
+  }
+  for(var i = 0, l = nexAPIStubs.length; i < l; i++) {
+    global.chrome[ nexAPIStubs[ i ] ] = global.navigator[ nexAPIStubs[ i ] ] || {};
+  }
 
   var Opera = function() {};
 
