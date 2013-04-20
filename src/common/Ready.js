@@ -103,7 +103,6 @@ if (global.opera) {
 
     function fireEvent(name, target, props) {
       var evtName = name.toLowerCase();
-console.log('Firing: ' + name + '[' + global.document.readyState + ']');
 
       var evt = new OEvent(evtName, props || {});
 
