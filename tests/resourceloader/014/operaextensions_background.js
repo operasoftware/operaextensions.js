@@ -14775,17 +14775,27 @@ if (global.opera) {
 
     var hasFired_DOMContentLoaded = false,
         hasFired_Load = false;
+    
+    // If we already missed DOMContentLoaded or Load events firing, record that now...
+    if(global.document.readyState === "interactive") {
+      hasFired_DOMContentLoaded = true;
+    }
+    if(global.document.readyState === "complete") {
+      hasFired_DOMContentLoaded = true;
+      hasFired_Load = true;
+    }
 
+    // ...otherwise catch DOMContentLoaded and Load events when they happen and set the same flag.
     global.document.addEventListener("DOMContentLoaded", function handle_DomContentLoaded() {
       hasFired_DOMContentLoaded = true;
       global.document.removeEventListener("DOMContentLoaded", handle_DomContentLoaded, true);
     }, true);
-
     global.addEventListener("load", function handle_Load() {
       hasFired_Load = true;
       global.removeEventListener("load", handle_Load, true);
     }, true);
     
+    // Catch and fire readystatechange events when they happen
     global.document.addEventListener("readystatechange", function(event) {
       event.stopImmediatePropagation();
       event.stopPropagation();
@@ -14796,6 +14806,7 @@ if (global.opera) {
       }
     }, true);
     
+    // Take over handling of document.readyState via our own load bootstrap code below
     var _readyState = "uninitialized";
     global.document.__defineSetter__('readyState', function(val) { _readyState = val; });
     global.document.__defineGetter__('readyState', function() { return _readyState; });
@@ -14835,7 +14846,7 @@ if (global.opera) {
 
     interceptAddEventListener(global, 'load');
     interceptAddEventListener(global.document, 'domcontentloaded');
-    interceptAddEventListener(global, 'domcontentloaded'); // handled bubbled DOMContentLoaded
+    interceptAddEventListener(global, 'domcontentloaded'); // handled bubbled DOMContentLoaded events
     interceptAddEventListener(global.document, 'readystatechange');
 
     function fireEvent(name, target, props) {
