@@ -24,5 +24,6 @@
   "permissions": [
     "tabs", "http://*/*", "https://*/*"
   ],
-  "browser_action": {}
+  "browser_action": {},
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'unsafe-eval';"
 }

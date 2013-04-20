@@ -14807,7 +14807,7 @@ if (global.opera) {
     }, true);
     
     // Take over handling of document.readyState via our own load bootstrap code below
-    var _readyState = "uninitialized";
+    var _readyState = (hasFired_DOMContentLoaded || hasFired_Load) ? global.document.readyState : "uninitialized";
     global.document.__defineSetter__('readyState', function(val) { _readyState = val; });
     global.document.__defineGetter__('readyState', function() { return _readyState; });
 
@@ -14851,6 +14851,7 @@ if (global.opera) {
 
     function fireEvent(name, target, props) {
       var evtName = name.toLowerCase();
+console.log('Firing: ' + name + '[' + global.document.readyState + ']');
 
       var evt = new OEvent(evtName, props || {});
 
@@ -14907,7 +14908,7 @@ if (global.opera) {
                 global.document.readyState = 'complete';
                 fireEvent('readystatechange', global.document);
 
-                fireEvent('load', window);
+                fireEvent('load', global);
 
                 if(currentTime >= loadTimeoutOverride) {
                   console.warn('window.load event fired on check timeout');
