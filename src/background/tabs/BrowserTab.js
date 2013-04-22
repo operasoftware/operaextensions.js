@@ -25,7 +25,7 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
     // faviconUrl:
     'favIconUrl': '', // not settable on create
     'title': '', // not settable on create
-    'url': browserTabProperties.url ? (browserTabProperties.url + "") : 'chrome://newtab',
+    'url': browserTabProperties.url ? (browserTabProperties.url + "") : newTab_BaseURL + "/",
     // position:
     'index': browserTabProperties.position ? parseInt(browserTabProperties.position, 10) : 0
     // 'browserWindow' not part of settable properties
@@ -38,7 +38,7 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
   // Pass the identity of this tab through the Chromium Tabs API via the URL field
   if(!bypassRewriteUrl) {
     this.rewriteUrl = this.properties.url;
-    this.properties.url = "chrome://newtab/#" + this._operaId;
+    this.properties.url = newTab_BaseURL + "/#" + this._operaId;
   }
 
   // Set tab focused if active

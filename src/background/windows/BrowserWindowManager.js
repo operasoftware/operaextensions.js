@@ -306,7 +306,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
             // Implicitly add the first BrowserTab to the new window
             createProperties.tabId = existingBrowserTab.properties.id;
 
-            shadowBrowserWindow.rewriteUrl = "chrome://newtab/#" + existingBrowserTab.properties.id;
+            shadowBrowserWindow.rewriteUrl = newTab_BaseURL + "/#" + existingBrowserTab.properties.id;
 
           } else {
 
@@ -340,7 +340,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           // set BrowserWindow object's rewriteUrl to first tab's opera id
           if( index == 0 ) {
 
-            createProperties.url = shadowBrowserWindow.rewriteUrl = "chrome://newtab/#" + newBrowserTab._operaId;
+            createProperties.url = shadowBrowserWindow.rewriteUrl = newTab_BaseURL + "/#" + newBrowserTab._operaId;
 
           } else {
 
@@ -354,7 +354,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
 
     }
 
-  } else { // we only have one default chrome://newtab tab to set up
+  } else { // we only have one default chrome://newtab or opera://startpage tab to set up
 
     // setup single new tab and tell onCreated to ignore this item
     var defaultBrowserTab = new BrowserTab({ active: true }, shadowBrowserWindow);
@@ -366,7 +366,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
     OEX.tabs.addTab( defaultBrowserTab );
 
     // set rewriteUrl to windowId
-    shadowBrowserWindow.rewriteUrl = "chrome://newtab/#" + shadowBrowserWindow._operaId;
+    shadowBrowserWindow.rewriteUrl = newTab_BaseURL + "/#" + shadowBrowserWindow._operaId;
 
     createProperties.url = shadowBrowserWindow.rewriteUrl;
 
@@ -441,7 +441,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
 
             var tabCreateProps = {
               'windowId': shadowBrowserWindow.properties.id,
-              'url': newBrowserTab.properties.url || "chrome://newtab/",
+              'url': newBrowserTab.properties.url || newTab_BaseURL + "/",
               'active': newBrowserTab.properties.active,
               'pinned': newBrowserTab.properties.pinned,
               'index': newBrowserTab.properties.index

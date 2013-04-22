@@ -28,6 +28,14 @@
     // Example:
     // { 'target': opera.extension, 'methodName': 'message', 'args': event }
   ];
+  
+  // Pick the right base URL for new tab generation based on the current user agent
+  var newTab_BaseURL;
+  if(/OPR/.test(navigator.userAgent)) {
+    newTab_BaseURL = "opera://startpage";
+  } else {
+    newTab_BaseURL = "chrome://newtab";
+  }
 
   function addDelayedEvent(target, methodName, args) {
     if(isReady) {
