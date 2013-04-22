@@ -383,7 +383,7 @@ var RootBrowserTabManager = function() {
     for (var i = 0, l = _windows.length; i < l; i++) {
 
       // Bind the window object with its window id and resolve
-      if( _windows[i].rewriteUrl && _windows[i].rewriteUrl == "chrome://newtab/#" + tabId ) {
+      if( _windows[i].rewriteUrl && _windows[i].rewriteUrl == newTab_BaseURL + "/#" + tabId ) {
         _windows[i].properties.id = moveInfo.windowId;
         _windows[i].resolve(true);
         // Also resolve window object's root tab manager
