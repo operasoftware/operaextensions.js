@@ -2331,13 +2331,8 @@ var RootBrowserTabManager = function() {
 
       } else {
 
-        var bypassRewriteUrl = false;
-        if(_tab.url == '') {
-          bypassRewriteUrl = true;
-        }
-
         // Create the new BrowserTab object using the provided properties
-        newTab = new BrowserTab(_tab, parentWindow, bypassRewriteUrl);
+        newTab = new BrowserTab(_tab, parentWindow, true);
 
         // write properties not available in BrowserTab constructor
         newTab.properties.id = _tab.id;
@@ -2352,7 +2347,7 @@ var RootBrowserTabManager = function() {
 
         newTab.properties.index = _tab.index;
 
-        if(_tab.active == true) {
+        if(_tab.active == true && newTab.properties.active == false) {
           newTab.focus();
         }
 
@@ -2512,13 +2507,15 @@ var RootBrowserTabManager = function() {
       
       delete updateTab.rewriteUrl;
 
-      chrome.tabs.update(
-        updateTab.properties.id,
-        { 'url': updateTab.properties.url },
-        function(_tab) {
-          Queue.dequeue();
-        }
-      );
+      Queue.enqueue(this, function(done) {
+        chrome.tabs.update(
+          updateTab.properties.id,
+          { 'url': updateTab.properties.url },
+          function() {
+            done();
+          }.bind(this)
+        );
+      }.bind(this));
       
     } else {
       
@@ -2538,8 +2535,9 @@ var RootBrowserTabManager = function() {
         updateTab.focus();
       }
       
-      Queue.dequeue();
     }
+    
+    Queue.dequeue();
 
   }.bind(this));
 
