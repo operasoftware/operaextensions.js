@@ -4206,7 +4206,7 @@ SpeeddialContext.prototype.__defineSetter__('title', function(val) {
 
 }); // write
 
-if(global.opr && global.opr.speeddial && manifest && manifest.permissions && manifest.permissions.indexOf('speeddial')!=-1){
+if(global.opr && global.opr.speeddial && manifest && manifest.speeddial){
 
   OEC.speeddial = OEC.speeddial || new SpeeddialContext();
 
