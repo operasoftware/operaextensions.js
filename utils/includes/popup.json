@@ -26,6 +26,8 @@
   "../src/popup/contexts/Toolbar.js",
 
   "../src/popup/contexts/Menu.js",
+  
+  "../src/popup/contexts/Speeddial.js",
 
   "../src/common/Ready.js",
   "../src/popup/Dimensions.js",
