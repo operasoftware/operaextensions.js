@@ -53,7 +53,8 @@
 var deferredComponentsLoadStatus = {
   'WINTABS_LOADED': false,
   'WIDGET_API_LOADED': false,
-  'WIDGET_PREFERENCES_LOADED': false
+  'WIDGET_PREFERENCES_LOADED': false,
+  'SPEEDDIAL_LOADED': false
   // ...etc
 };
 
@@ -3274,11 +3275,21 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('tabs') != -
 
   OEX.windows = OEX.windows || new BrowserWindowManager();
 
+} else {
+  
+  // Set WinTabs feature to LOADED
+  deferredComponentsLoadStatus['WINTABS_LOADED'] = true;
+  
 }
 
 if(manifest && manifest.permissions && manifest.permissions.indexOf('tabs') != -1) {
 
   OEX.tabs = OEX.tabs || new RootBrowserTabManager();
+
+}  else {
+
+  // Set WinTabs feature to LOADED
+  deferredComponentsLoadStatus['WINTABS_LOADED'] = true;
 
 }
 
@@ -4151,6 +4162,58 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('contextMenu
   global.MenuContext = MenuContext;
 
   OEC.menu = OEC.menu || new MenuContext(Opera);
+
+}
+
+
+var SpeeddialContext = function() {
+  
+  this.properties = {};
+  
+  global.opr.speeddial.get(function(speeddialProperties) {
+    this.properties.url = speeddialProperties.url;
+    this.properties.title = speeddialProperties.title;
+    
+    // Set WinTabs feature to LOADED
+    deferredComponentsLoadStatus['SPEEDDIAL_LOADED'] = true;
+  });
+
+};
+
+SpeeddialContext.prototype.constructor = SpeeddialContext;
+
+SpeeddialContext.prototype.__defineGetter__('url', function() {
+  return this.properties.url || "";
+}); // read
+
+SpeeddialContext.prototype.__defineSetter__('url', function(val) {
+  
+  global.opr.speeddial.update({ 'url': val }, function(speeddialProperties) {
+    this.properties.url = speeddialProperties.url;
+  }.bind(this));
+
+}); // write
+
+SpeeddialContext.prototype.__defineGetter__('title', function() {
+  return this.properties.title || "";
+}); // read
+
+SpeeddialContext.prototype.__defineSetter__('title', function(val) {
+  
+  global.opr.speeddial.update({ 'title': val }, function(speeddialProperties) {
+    this.properties.title = speeddialProperties.title;
+  }.bind(this));
+
+}); // write
+
+if(global.opr && global.opr.speeddial && manifest && manifest.permissions && manifest.permissions.indexOf('speeddial')!=-1){
+
+  OEC.speeddial = OEC.speeddial || new SpeeddialContext();
+
+} else {
+
+  // Set WinTabs feature to LOADED
+  deferredComponentsLoadStatus['SPEEDDIAL_LOADED'] = true;
 
 }
 
