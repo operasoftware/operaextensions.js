@@ -4176,7 +4176,7 @@ var SpeeddialContext = function() {
     
     // Set WinTabs feature to LOADED
     deferredComponentsLoadStatus['SPEEDDIAL_LOADED'] = true;
-  });
+  }.bind(this));
 
 };
 
