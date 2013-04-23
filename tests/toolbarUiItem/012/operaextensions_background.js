@@ -2253,18 +2253,6 @@ var RootBrowserTabManager = function() {
         // Resolve the tab object
         this._allTabs[i].resolve(true);
 
-        this._allTabs[i].properties.url = this._allTabs[i].rewriteUrl;
-
-        delete this._allTabs[i].rewriteUrl;
-
-        chrome.tabs.update(
-          this._allTabs[i].properties.id,
-          { 'url': this._allTabs[i].properties.url },
-          function(_tab) {}
-        );
-
-        //this._allTabs[i].rewriteDone = true;
-
         // remove windowparent rewrite url
         if(this._allTabs[i]._windowParent.rewriteUrl !== undefined) {
           delete this._allTabs[i]._windowParent.rewriteUrl;
@@ -2522,24 +2510,43 @@ var RootBrowserTabManager = function() {
 
     var updateTab = this._allTabs[updateIndex];
 
-    // Update individual tab properties
+    if (tab.status == 'complete' && updateTab.rewriteUrl && updateTab.properties.url == tab.url) {
+      
+      updateTab.properties.url = updateTab.rewriteUrl;
+      updateTab.properties.title = '';
+      updateTab.properties.favIconUrl = '';
+      updateTab.properties.status = 'loading';
+      
+      delete updateTab.rewriteUrl;
 
-    updateTab.properties.url = tab.url;
-    updateTab.properties.title = tab.title;
-    updateTab.properties.favIconUrl = tab.favIconUrl;
+      chrome.tabs.update(
+        updateTab.properties.id,
+        { 'url': updateTab.properties.url },
+        function(_tab) {
+          Queue.dequeue();
+        }
+      );
+      
+    } else {
+      
+      // Update individual tab properties
+      updateTab.properties.url = tab.url;
+      updateTab.properties.title = tab.title;
+      updateTab.properties.favIconUrl = tab.favIconUrl;
 
-    updateTab.properties.status = tab.status;
+      updateTab.properties.status = tab.status;
 
-    updateTab.properties.pinned = tab.pinned;
-    updateTab.properties.incognito = tab.incognito;
+      updateTab.properties.pinned = tab.pinned;
+      updateTab.properties.incognito = tab.incognito;
 
-    updateTab.properties.index = tab.index;
+      updateTab.properties.index = tab.index;
 
-    if(tab.active == true && updateTab.properties.active == false) {
-      updateTab.focus();
+      if(tab.active == true && updateTab.properties.active == false) {
+        updateTab.focus();
+      }
+      
+      Queue.dequeue();
     }
-
-    Queue.dequeue();
 
   }.bind(this));
 
