@@ -21,9 +21,9 @@ SpeeddialContext.prototype.__defineGetter__('url', function() {
 
 SpeeddialContext.prototype.__defineSetter__('url', function(val) {
   
-  global.opr.speeddial.update({ 'url': val }, function(speeddialProperties) {
-    this.properties.url = speeddialProperties.url;
-  }.bind(this));
+  this.properties.url = val;
+  
+  global.opr.speeddial.update({ 'url': val }, function() {});
 
 }); // write
 
@@ -33,8 +33,8 @@ SpeeddialContext.prototype.__defineGetter__('title', function() {
 
 SpeeddialContext.prototype.__defineSetter__('title', function(val) {
   
-  global.opr.speeddial.update({ 'title': val }, function(speeddialProperties) {
-    this.properties.title = speeddialProperties.title;
-  }.bind(this));
+  this.properties.title = val;
+  
+  global.opr.speeddial.update({ 'title': val }, function() {});
 
 }); // write
