@@ -2399,13 +2399,6 @@ var RootBrowserTabManager = function() {
       delete newTab._windowParent.rewriteUrl;
     }
 
-    // now rewrite to the correct url
-    // (which will be automatically trigger navigation to the rewrite url)
-    if(newTab.rewriteUrl !== undefined) {
-      newTab.url = newTab.rewriteUrl;
-      delete newTab.rewriteUrl;
-    }
-
     // Resolve new tab, if it hasn't been resolved already
     newTab.resolve(true);
 
