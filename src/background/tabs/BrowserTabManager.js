@@ -125,33 +125,8 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
       "Could not create BrowserTab object. 'before' attribute provided is invalid.",
       DOMException.TYPE_MISMATCH_ERR
     );
-  }
-
-  // Set parent window to create the tab in
-
-  if(this._parent && this._parent.closed === true ) {
-    throw new OError(
-      "InvalidStateError",
-      "Parent window of the current BrowserTab object is in the closed state and therefore is invalid.",
-      DOMException.INVALID_STATE_ERR
-    );
-  }
-
-  var shadowBrowserTab = new BrowserTab( browserTabProperties, this._parent || OEX.windows.getLastFocused() );
-
-  // Sanitized tab properties
-  var createTabProperties = {
-    'url': shadowBrowserTab.properties.url,
-    'active': shadowBrowserTab.properties.active,
-    'pinned': shadowBrowserTab.properties.pinned
-  };
-
-  // By default, tab will be created at end of current collection
-  shadowBrowserTab.properties.index = createTabProperties.index = shadowBrowserTab._windowParent.tabs.length;
-
-  // Set insert position for the new tab from 'before' attribute, if any
-  if( before && (before instanceof BrowserTab) ) {
-
+  } else if(before) {
+    
     if( before.closed === true ) {
       throw new OError(
         "InvalidStateError",
@@ -167,16 +142,37 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
         DOMException.INVALID_STATE_ERR
       );
     }
-    createTabProperties.windowId = before._windowParent ?
-                                      before._windowParent.properties.id : createTabProperties.windowId;
-    createTabProperties.index = before.position;
-
+    
+    // If we're adding this BrowserTab before an existing object then set its insert position correctly
+    browserTabProperties.position = before.properties.index;
+    
   }
 
-  // Set up tab index on start
-  if(this === OEX.tabs) {
-    shadowBrowserTab._windowParent = OEX.windows.getLastFocused();
-    shadowBrowserTab.properties.index = createTabProperties.index = shadowBrowserTab._windowParent.tabs.length;
+  // Set parent window to create the tab in
+  var windowParent = before && before._windowParent ? before._windowParent : this._parent || OEX.windows.getLastFocused();
+  
+  if(windowParent && windowParent.closed === true ) {
+    throw new OError(
+      "InvalidStateError",
+      "Parent window of the current BrowserTab object is in the closed state and therefore is invalid.",
+      DOMException.INVALID_STATE_ERR
+    );
+  }
+
+  var shadowBrowserTab = new BrowserTab( browserTabProperties, windowParent );
+
+  // Sanitized tab properties
+  var createTabProperties = {
+    'url': shadowBrowserTab.properties.url,
+    'active': shadowBrowserTab.properties.active,
+    'pinned': shadowBrowserTab.properties.pinned,
+    'index': shadowBrowserTab.properties.index
+  };
+
+  // Set insert position for the new tab from 'before' attribute, if any
+  if( before ) {
+    createTabProperties.windowId = before._windowParent ?
+                                      before._windowParent.properties.id : createTabProperties.windowId;
   }
 
   // Add this object to the end of the current tabs collection
@@ -204,14 +200,6 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
         for(var i in _tab) {
           if(i == 'url') continue;
           shadowBrowserTab.properties[i] = _tab[i];
-        }
-
-        // Move this object to the correct position within the current tabs collection
-        // (but don't worry about doing this for the global tabs manager)
-        // TODO check if this is the correct behavior here
-        if(this !== OEX.tabs) {
-          this.removeTab( shadowBrowserTab );
-          this.addTab( shadowBrowserTab, shadowBrowserTab.properties.index);
         }
 
         // Resolve new tab, if it hasn't been resolved already
@@ -242,7 +230,7 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
       "prevPosition": 0
     }));
 
-  }, 50);
+  }, 0);
 
   return shadowBrowserTab;
 

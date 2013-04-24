@@ -8,8 +8,18 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
   OPromise.call(this);
 
   this._windowParent = windowParent;
-
+  
   browserTabProperties = browserTabProperties || {};
+  
+  // Set the correct tab index
+  var tabIndex = 0;
+  if(browserTabProperties.position !== undefined && 
+      browserTabProperties.position !== null && 
+        parseInt(browserTabProperties.position, 10) >= 0) {
+    tabIndex = parseInt(browserTabProperties.position, 10);
+  } else if(windowParent && windowParent.tabs) {
+    tabIndex = windowParent.tabs.length;
+  }
 
   this.properties = {
     'id': undefined, // not settable on create
@@ -27,7 +37,7 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
     'title': '', // not settable on create
     'url': browserTabProperties.url ? (browserTabProperties.url + "") : newTab_BaseURL + "/",
     // position:
-    'index': browserTabProperties.position ? parseInt(browserTabProperties.position, 10) : 0
+    'index': tabIndex
     // 'browserWindow' not part of settable properties
     // 'tabGroup' not part of settable properties
   }
