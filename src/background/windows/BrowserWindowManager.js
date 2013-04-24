@@ -125,30 +125,30 @@ var BrowserWindowManager = function() {
         if (this[i].properties.id !== windowId && this[i] == _prevFocusedWindow) {
 
           this[i].properties.focused = false;
+          
+          var _newFocusedWindow = this.getLastFocused();
 
           // Fire a new 'blur' event on the window object
           this[i].dispatchEvent(new OEvent('blur', {
-            browserWindow: _prevFocusedWindow
+            browserWindow: _newFocusedWindow
           }));
 
           // Fire a new 'blur' event on this manager object
           this.dispatchEvent(new OEvent('blur', {
-            browserWindow: _prevFocusedWindow
+            browserWindow: _newFocusedWindow
           }));
 
           // If something is blurring then we should also fire the
           // corresponding 'focus' events
 
-          var _newFocusedWindow = this.getLastFocused();
-
           // Fire a new 'focus' event on the window object
           _newFocusedWindow.dispatchEvent(new OEvent('focus', {
-            browserWindow: _newFocusedWindow
+            browserWindow: _prevFocusedWindow
           }));
 
           // Fire a new 'focus' event on this manager object
           this.dispatchEvent(new OEvent('focus', {
-            browserWindow: _newFocusedWindow
+            browserWindow: _prevFocusedWindow
           }));
 
           break;
