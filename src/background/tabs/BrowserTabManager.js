@@ -230,7 +230,7 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
       "prevPosition": 0
     }));
 
-  }, 0);
+  }, 50);
 
   return shadowBrowserTab;
 
