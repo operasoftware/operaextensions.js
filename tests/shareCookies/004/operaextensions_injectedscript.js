@@ -1204,7 +1204,7 @@ if (global.opera) {
         }
         fns['isready'] = []; // clear
 
-        var domContentLoadedTimeoutOverride = new Date().getTime() + 3000;
+        var domContentLoadedTimeoutOverride = new Date().getTime() + 120000;
 
         // Synthesize and fire the document domcontentloaded event
         (function fireDOMContentLoaded() {
@@ -1225,7 +1225,7 @@ if (global.opera) {
               console.warn('document.domcontentloaded event fired on check timeout');
             }
 
-            var loadTimeoutOverride = new Date().getTime() + 3000;
+            var loadTimeoutOverride = new Date().getTime() + 120000;
 
             // Synthesize and fire the window load event
             // after the domcontentloaded event has been
@@ -1273,7 +1273,7 @@ if (global.opera) {
       }, 0);
     }
 
-    var holdTimeoutOverride = new Date().getTime() + 3000;
+    var holdTimeoutOverride = new Date().getTime() + 240000;
 
     (function holdReady() {
 

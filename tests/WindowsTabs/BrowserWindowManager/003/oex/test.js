@@ -62,5 +62,7 @@ opera.isReady(function() {
               assert_unreached("Couldn't create new window")
           });
   }
-
+  
+  opera.extension.windows[0].focus();
+  win.focus();
 });
