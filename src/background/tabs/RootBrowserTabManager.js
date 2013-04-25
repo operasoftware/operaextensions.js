@@ -225,7 +225,7 @@ var RootBrowserTabManager = function() {
     // Resolve new tab, if it hasn't been resolved already
     newTab.resolve(true);
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }.bind(this));
 
@@ -306,7 +306,7 @@ var RootBrowserTabManager = function() {
       "prevPosition": oldTabPosition
     }));
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }.bind(this));
 
@@ -365,7 +365,7 @@ var RootBrowserTabManager = function() {
       
     }
     
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }.bind(this));
 
@@ -444,7 +444,7 @@ var RootBrowserTabManager = function() {
 
     }
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }
 
@@ -519,7 +519,7 @@ var RootBrowserTabManager = function() {
       detachedTab._oldIndex = detachedTab.position;
     }
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }
 
@@ -589,7 +589,7 @@ var RootBrowserTabManager = function() {
       }) );
     }
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }.bind(this));
 

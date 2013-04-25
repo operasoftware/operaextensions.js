@@ -156,7 +156,7 @@ var BrowserWindowManager = function() {
 
       }
 
-      Queue.dequeue();
+//      Queue.dequeue();
 
   }.bind(this));
 
@@ -200,7 +200,7 @@ var BrowserWindowManager = function() {
 
     }
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }.bind(this));
 
