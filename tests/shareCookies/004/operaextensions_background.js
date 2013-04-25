@@ -512,15 +512,28 @@ function OError(name, msg, code) {
 OError.prototype.__proto__ = Error.prototype;
 
 var OEvent = function(eventType, eventProperties) {
-
-  var evt = document.createEvent("Event");
+  
+  var evt = eventProperties || {};
+  
+  evt.type = eventType;
+        
+  if(!evt.target) evt.target = global;
+  if(!evt.currentTarget) evt.currentTarget = evt.target;
+  if(!evt.srcElement) evt.srcElement = evt.target;
+  
+  if(evt.bubbles !== true) evt.bubbles = false;
+  if(evt.cancelable !== true) evt.cancelable = false;
+  
+  if(!evt.timeStamp) evt.timeStamp = 0;
+  
+  /*var evt = document.createEvent("Event");
 
   evt.initEvent(eventType, true, true);
 
   // Add custom properties or override standard event properties
   for (var i in eventProperties) {
     evt[i] = eventProperties[i];
-  }
+  }*/
 
   return evt;
 
@@ -1231,7 +1244,7 @@ var BrowserWindowManager = function() {
 
       }
 
-      Queue.dequeue();
+//      Queue.dequeue();
 
   }.bind(this));
 
@@ -1275,7 +1288,7 @@ var BrowserWindowManager = function() {
 
     }
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }.bind(this));
 
@@ -2109,7 +2122,7 @@ BrowserTabManager.prototype.create = function( browserTabProperties, before ) {
       "prevPosition": 0
     }));
 
-  }, 0);
+  }, 50);
 
   return shadowBrowserTab;
 
@@ -2386,7 +2399,7 @@ var RootBrowserTabManager = function() {
     // Resolve new tab, if it hasn't been resolved already
     newTab.resolve(true);
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }.bind(this));
 
@@ -2467,7 +2480,7 @@ var RootBrowserTabManager = function() {
       "prevPosition": oldTabPosition
     }));
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }.bind(this));
 
@@ -2526,7 +2539,7 @@ var RootBrowserTabManager = function() {
       
     }
     
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }.bind(this));
 
@@ -2605,7 +2618,7 @@ var RootBrowserTabManager = function() {
 
     }
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }
 
@@ -2680,7 +2693,7 @@ var RootBrowserTabManager = function() {
       detachedTab._oldIndex = detachedTab.position;
     }
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }
 
@@ -2750,7 +2763,7 @@ var RootBrowserTabManager = function() {
       }) );
     }
 
-    Queue.dequeue();
+//    Queue.dequeue();
 
   }.bind(this));
 
