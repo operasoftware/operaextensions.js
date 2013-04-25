@@ -1,0 +1,88 @@
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+td,th {
+	border: 2px solid rgba(0, 0, 0, .3);
+	padding: 5px;
+}
+tr.focused td,li.active {
+	background: rgba(0, 255, 255, 0.25);
+	border: 2px solid rgba(0, 255, 255, .1);
+}
+#opera_view tr.focused td, #opera_view li.active {
+    background-color: rgba(255,0,0, 0.25);
+    border-color: rgba(255,0,0,0.1);
+}
+
+td.active {
+	
+}
+
+td {
+	
+}
+
+td.button {
+	border: none;
+}
+
+ul,li {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+li {
+	line-height: 25px;
+	height: 25px;
+	overflow: hidden;
+}
+
+li strong {
+	float: right;
+	display: block;
+	text-align: right;
+	width: 170px;
+}
+
+li span {
+	display: block;
+	max-width: 350px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+li input {
+	border-width: 0;
+	display: block;
+	height: 100%;
+	width: 80%;
+}
+
+.col {
+	display: block;
+	width: 40%;
+	float: left;
+	padding: 0;
+	margin: 0;
+	min-height: 10px;
+}
+#opera_view.col {
+	float: right;
+    width: 58%;
+}
+#opera_view:after {
+	content: ' ';
+	width: 100%;
+	display: block;
+	clear: both;
+	height: 1px;
+}
+
+pre {
+	height: 200px;
+	overflow-y: scroll;
+}

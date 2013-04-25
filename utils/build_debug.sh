@@ -19,6 +19,9 @@ cp ../build/operaextensions_popup.js ../examples/ToolbarButtons/oex_shim/operaex
 # WinTabs Test Extension
 cp ../build/operaextensions_background.js ../examples/WinTabs/operaextensions_background.js
 
+# WinTabsManager Test Extension
+cp ../build/operaextensions_background.js ../examples/WinTabsManager/shim/operaextensions_background.js
+
 # Messaging Test Extension
 cp ../build/operaextensions_background.js ../examples/Messaging/operaextensions_background.js
 cp ../build/operaextensions_injectedscript.js ../examples/Messaging/operaextensions_injectedscript.js
