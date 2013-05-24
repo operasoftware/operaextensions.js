@@ -2,7 +2,7 @@
     "name": "operaextensions.js",
     "description": "Opera Extension APIs for Chromium",
     "version": "1dev",
-    "homepage" : "https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim",
+    "homepage" : "https://github.com/operasoftware/operaextensions.js",
     "author": "Opera Software ASA",
 
     "devDependencies": {
@@ -12,10 +12,10 @@
 
     "repository" : {
         "type" : "git",
-         "url" : "ssh://git.oslo.osa/var/git/desktop/extensions/oex_shim.git"
+         "url" : "git@github.com:operasoftware/operaextensions.js.git"
     },
     "licenses": [{
         "type": "The MIT License",
-        "url": "https://cgit.oslo.osa/cgi-bin/cgit.cgi/desktop/extensions/oex_shim/tree/LICENSE"
+        "url": "https://github.com/operasoftware/operaextensions.js/blob/master/README.md"
     }]
 }
