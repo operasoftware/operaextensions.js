@@ -1,10 +1,10 @@
-# Opera Extensions JavaScript API Compatibility Layer (operaextensions.js)
+## Opera Extensions JavaScript API Compatibility Layer (operaextensions.js)
 
 This library provides a compatibility Layer containing the JavaScript Opera Extension APIs that have been provided in Opera <= version 12.
 
 **<font color="red">This library is intended for use in the [oex2nex convertor tool](https://github.com/operasoftware/oex2nex). If you want to convert an existing Opera oex extension into an Opera 15+ nex extension then you should download the [oex2nex convertor tool](https://github.com/operasoftware/oex2nex) directly rather than using this library standalone.</font>**
 
-## Supported Opera Extension APIs
+### Supported Opera Extension APIs
 
 This library adds support to Chromium for the following Opera oex extension APIs:
 
@@ -22,13 +22,13 @@ This library adds support to Chromium for the following Opera oex extension APIs
 
 \* minus support for [addEventListener](http://dev.opera.com/articles/view/extensions-api-opera-addEventListener) and [removeEventListener](http://dev.opera.com/articles/view/extensions-api-opera-removeEventListener) UserJS events.
 
-## Download this library
+### Download this library
 
 You can download a [ZIP](https://github.com/operasoftware/operaextensions.js/zipball/master) or [TAR.GZ](https://github.com/operasoftware/operaextensions.js/tarball/master) file containing all the operaextensions.js library code or you can clone this repo via Git as follows:
 
     git clone git://github.com/operasoftware/operaextensions.js.git
 
-## Building the libraries
+### Building the libraries
 
 Using utilities provided in this library we can build the compatibility library for the different contexts in which it can be used.
 
@@ -46,7 +46,7 @@ To build the library from source change directories to the folder in which you c
 
 (alternatively, we can replace 'build.sh' above with 'build.bat' if we are running on Windows).
 
-## The Opera Extension Compatibility Layer libraries
+### The Opera Extension Compatibility Layer libraries
 
 The following six final build files are provided in this repository:
 
@@ -57,13 +57,13 @@ The following six final build files are provided in this repository:
 * [`/build/operaextensions_injectedscript.min.js`](https://github.com/operasoftware/operaextensions.js/blob/master/build/operaextensions_injectedscript.min.js) - A minified version of `/build/operaextensions_injectedscript.js` for inclusion in your own converted extension.
 * [`/build/operaextensions_popup.min.js`](https://github.com/operasoftware/operaextensions.js/blob/master/build/operaextensions_popup.min.js) - A minified version of `/build/operaextensions_popup.js` for inclusion in your own converted extension.
 
-## Using the libraries in your own converted extension
+### Using the libraries in your own converted extension
 
 Each library available in the `/build` directory of this repository needs to be included in to your extension according to the guidelines provided below.
 
 **Note:** <font color="red">It is strongly advised that you use these library files via the [oex2nex convertor tool](https://github.com/operasoftware/oex2nex) only.</font> The oex2nex convertor tool will parse and modify your existing Opera oex JavaScript code to run correctly under this compatibility layer. The following instructions are intended for debugging purposes only and do not cover the JavaScript code anomalies you will find if you attempt to run this in an unconverted oex extension.
 
-#### Including the background process library in your converted extension
+##### Including the background process library in your converted extension
 
 1. Copy `/build/operaextensions_background.min.js` to your Opera oex extension's directory (to e.g. `/oex_shim/operaextensions_background.min.js`)
 2. Add a new &lt;script&gt; tag in your background HTML page as follows:
@@ -76,7 +76,7 @@ Each library available in the `/build` directory of this repository needs to be 
       // your old OEX extension code goes here
     });</pre>
 
-#### Including the popup process library in your converted extension
+##### Including the popup process library in your converted extension
 
 1. Copy `/build/operaextensions_popup.min.js` to your Opera oex extension's directory (to e.g. `/oex_shim/operaextensions_popup.min.js`)
 2. Add a new &lt;script&gt; tag in all your popup HTML pages (including your options.html page if available) as follows:
@@ -89,7 +89,7 @@ Each library available in the `/build` directory of this repository needs to be 
       // your old OEX extension code goes here
     });</pre>
 
-#### Including the injected script process library in your converted extension
+##### Including the injected script process library in your converted extension
 
 1. Copy `/build/operaextensions_injectedscript.min.js` to your Opera oex extension's directory (to e.g. `/oex_shim/operaextensions_injectedscript.min.js`)
 2. Add this path to the `content_scripts` directive inside your extension's `manifest.json` file as follows:
@@ -108,13 +108,13 @@ Each library available in the `/build` directory of this repository needs to be 
       // your old OEX extension code goes here
     });</pre>
 
-## Feedback
+### Feedback
 
 If you find any bugs or issues please report them on the [operaextensions.js Issue Tracker](https://github.com/operasoftware/operaextensions.js/issues).
 
 If you would like to contribute to this project please consider [forking this repo](https://github.com/operasoftware/operaextensions.js/fork) and then creating a new [Pull Request](https://github.com/operasoftware/operaextensions.js/pulls) back to the main code base.
 
-## License
+### License
 
 Copyright &copy; 2013 Opera Software ASA
 
