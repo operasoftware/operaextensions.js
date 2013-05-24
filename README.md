@@ -112,7 +112,7 @@ Each library available in the `/build` directory of this repository needs to be 
 
 If you find any bugs or issues please report them on the [operaextensions.js Issue Tracker](https://github.com/operasoftware/operaextensions.js/issues).
 
-If you would like to contribute to this project please consider [forking this repo](https://github.com/operasoftware/operaextensions.js/fork_select) and then creating a new [Pull Request](https://github.com/operasoftware/operaextensions.js/pulls) back to the main code base.
+If you would like to contribute to this project please consider [forking this repo](https://github.com/operasoftware/operaextensions.js/fork) and then creating a new [Pull Request](https://github.com/operasoftware/operaextensions.js/pulls) back to the main code base.
 
 ## License
 
