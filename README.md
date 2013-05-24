@@ -22,18 +22,33 @@ This library adds support to Chromium for the following Opera oex extension APIs
 
 \* minus support for [addEventListener](http://dev.opera.com/articles/view/extensions-api-opera-addEventListener) and [removeEventListener](http://dev.opera.com/articles/view/extensions-api-opera-removeEventListener) UserJS events.
 
+## Download this library
+
+You can download a [ZIP](https://github.com/operasoftware/operaextensions.js/zipball/master) or [TAR.GZ](https://github.com/operasoftware/operaextensions.js/tarball/master) file containing all the operaextensions.js library code or you can clone this repo via Git as follows:
+
+    git clone git://github.com/operasoftware/operaextensions.js.git
+
 ## Building the libraries
 
 Using tools provided in this library we can build the compatibility library for the different contexts in which it can be used.
 
-To build the library from source, execute the follow code:
+The latest builds are provided by default in the `/build` directory of this repository (see: [the Opera Extension Compatibility Libraries](#the-opera-extension-compatibility-layer-libraries) section below). If, however, you would like to build these files yourself then the following instructions are for you.
 
-    cd tools
+The build tools included in this library have the following dependencies that first need to be installed:
+
+* Python >= version 1.6
+* Java
+
+To build the library from source change directories to the folder in which you cloned this repository and execute the follow code:
+
+    cd ./tools
     ./build.sh
 
 (alternatively, we can replace 'build.sh' above with 'build.bat' if we are running on Windows).
 
-Once this process completes we will have built the following 6 JS files:
+## The Opera Extension Compatibility Layer libraries
+
+The following six final build files are provided in this repository:
 
 * [`/build/operaextensions_background.js`](https://github.com/operasoftware/operaextensions.js/blob/master/build/operaextensions_background.js) - The compatibility file required for code running in an [OEX background process](http://dev.opera.com/articles/view/whats-in-an-opera-extension/#bgprocess).
 * [`/build/operaextensions_injectedscript.js`](https://github.com/operasoftware/operaextensions.js/blob/master/build/operaextensions_injectedscript.js) - The compatibility file required for code running in an [OEX injected script process](http://dev.opera.com/articles/view/whats-in-an-opera-extension/#injected).
@@ -89,17 +104,17 @@ Each library available in the `/build` directory of this repository needs to be 
 
 3. Wrap all your existing Opera oex extension code in an `opera.isReady` function as follows:
 
-    opera.isReady(function() {
+    <pre>opera.isReady(function() {
       // your old OEX extension code goes here
-    });
+    });</pre>
 
-### Feedback
+## Feedback
 
 If you find any bugs or issues please report them on the [operaextensions.js Issue Tracker](https://github.com/operasoftware/operaextensions.js/issues).
 
 If you would like to contribute to this project please consider [forking this repo](https://github.com/operasoftware/operaextensions.js/fork_select) and then creating a new [Pull Request](https://github.com/operasoftware/operaextensions.js/pulls) back to the main code base.
 
-### License
+## License
 
 Copyright &copy; 2013 Opera Software ASA
 
