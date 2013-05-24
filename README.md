@@ -30,18 +30,18 @@ You can download a [ZIP](https://github.com/operasoftware/operaextensions.js/zip
 
 ## Building the libraries
 
-Using tools provided in this library we can build the compatibility library for the different contexts in which it can be used.
+Using utilities provided in this library we can build the compatibility library for the different contexts in which it can be used.
 
 The latest builds are provided by default in the `/build` directory of this repository (see: [the Opera Extension Compatibility Libraries](#the-opera-extension-compatibility-layer-libraries) section below). If, however, you would like to build these files yourself then the following instructions are for you.
 
-The build tools included in this library have the following dependencies that first need to be installed:
+The build utilities included in this library have the following dependencies that first need to be installed:
 
 * Python >= version 1.6
 * Java
 
 To build the library from source change directories to the folder in which you cloned this repository and execute the follow code:
 
-    cd ./tools
+    cd ./utils
     ./build.sh
 
 (alternatively, we can replace 'build.sh' above with 'build.bat' if we are running on Windows).
