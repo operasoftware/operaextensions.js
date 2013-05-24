@@ -1,9 +1,0 @@
-[submodule "docs/resources/compiler/jsdoc"]
-	path = docs/resources/compiler/jsdoc
-	url = git://github.com/jsdoc3/jsdoc.git
-[submodule "docs/resources/compiler/rhino"]
-	path = docs/resources/compiler/rhino
-	url = git://github.com/hegemonic/rhino.git
-[submodule "docs/resources/compiler/jsdoc-simple.wiki"]
-	path = docs/resources/compiler/jsdoc-simple.wiki
-	url = git://github.com/urso/jsdoc-simple.wiki.git
