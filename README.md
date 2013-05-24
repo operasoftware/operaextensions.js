@@ -2,7 +2,7 @@
 
 This library provides a compatibility Layer containing the JavaScript Opera Extension APIs that have been provided in Opera <= version 12.
 
-<font color="red">This library is intended for use in the [oex2nex convertor tool](https://github.com/operasoftware/oex2nex). If you want to convert an existing Opera oex extension into an Opera 15+ nex extension then you should download the [oex2nex convertor tool](https://github.com/operasoftware/oex2nex) directly rather than using this library standalone.</font>
+**<font color="red">This library is intended for use in the [oex2nex convertor tool](https://github.com/operasoftware/oex2nex). If you want to convert an existing Opera oex extension into an Opera 15+ nex extension then you should download the [oex2nex convertor tool](https://github.com/operasoftware/oex2nex) directly rather than using this library standalone.</font>**
 
 ## Supported Opera Extension APIs
 
@@ -61,7 +61,7 @@ The following six final build files are provided in this repository:
 
 Each library available in the `/build` directory of this repository needs to be included in to your extension according to the guidelines provided below.
 
-<strong>Note:</strong> <font color="red">It is strongly advised that you use these library files via the [oex2nex convertor tool](https://github.com/operasoftware/oex2nex) only.</font> The oex2nex convertor tool will parse and modify your existing Opera oex JavaScript code to run correctly under this compatibility layer. The following instructions are intended for debugging purposes only and do not cover the JavaScript code anomalies you will find if you attempt to run this in an unconverted oex extension.
+**Note:** <font color="red">It is strongly advised that you use these library files via the [oex2nex convertor tool](https://github.com/operasoftware/oex2nex) only.</font> The oex2nex convertor tool will parse and modify your existing Opera oex JavaScript code to run correctly under this compatibility layer. The following instructions are intended for debugging purposes only and do not cover the JavaScript code anomalies you will find if you attempt to run this in an unconverted oex extension.
 
 #### Including the background process library in your converted extension
 
