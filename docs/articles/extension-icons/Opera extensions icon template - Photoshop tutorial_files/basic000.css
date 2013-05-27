@@ -1,0 +1,69 @@
+body {
+    font-family: 'helvetica neue', 'helvetica-neue', helvetica, arial, sans-serif;
+    background: white;
+	margin: 2em 3em;
+}
+h3, h4 , h5{
+	line-height: 2em;
+	padding-top: 2em;
+}
+span {
+	font-style: italic;
+	margin-bottom: 3em;
+}
+ul li {list-style-type: disc !important;}
+.listimg {
+	display: block;
+	margin: 0 0 1.5em 1.5em;
+}
+.sidebar .standoutbox {
+    margin-bottom: 1.5em;
+}
+.standoutbox {
+    border: 1px solid #DDDDDD;
+}
+
+.language-selector {
+    display: block;
+    position: relative;
+    float: left;
+    padding: 0;
+}
+
+.language-selector button {
+    font-size: inherit;
+    line-height: 1em;
+    padding: .25em 1em;
+}
+
+.language-selector ul {
+    background: #fff;
+    border: 2px solid #999;
+    display: none;
+    padding: .5em;
+    position: absolute;
+    bottom: 2em;
+}
+
+.language-selector li, .language-selector li + li {
+    display: block;
+    border: 0;
+    padding: 0;
+    text-align: left;
+}
+
+.language-selector a {
+    display: block;
+    line-height: 1.75em;
+    padding: 0 .75em 0 .25em;
+    white-space: nowrap;
+    color: #000;
+}
+
+.language-selector a:hover {
+    background-color: #eee;
+}
+
+.language-selector button:focus + ul, .language-selector ul:hover {
+    display: block;
+}

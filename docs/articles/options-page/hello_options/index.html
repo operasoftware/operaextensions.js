@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>Hello World!</title>
+	<meta charset="UTF-8">
+	<script>
+		window.addEventListener( 'load', function(){
+			var theButton;
+			var ToolbarUIItemProperties = {
+					disabled: false,
+					title: 'Hello World',
+					icon: 'icons/icon-18.png',
+					popup: {
+						href: 'popup.html',
+						width: 200,
+						height: 50
+					}
+				}
+			theButton = opera.contexts.toolbar.createItem(ToolbarUIItemProperties);
+			opera.contexts.toolbar.addItem(theButton);
+		}, false );
+	</script>
+</head>
+<body>
+
+<p><a href="../../index.html">&laquo; Documentation Home</a></p>
+
+</body>
+</html>

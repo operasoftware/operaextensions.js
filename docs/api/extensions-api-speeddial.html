@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extensions API Documentation</title>
+  <link rel='stylesheet' href='../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../index.html">&laquo; Documentation Home</a></p>
+
+<h1>Speed Dial</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<dl class="apicontents">
+   <dt><a href="./extensions-api-speeddial-viewmodes.html"><code>viewmodes</code> attribute</a></dt>
+   <dd>Indicates whether the extension should be run in a minimized state.</dd>
+   
+   <dt><a href="./extensions-api-speeddial-feature.html"><code>feature</code> element</a></dt>
+   <dd>A feature request by the extension to have its content displayed in a Speed Dial cell.</dd>
+   
+   <dt><a href="./extensions-api-speeddial-param.html"><code>param</code> element</a></dt>
+   <dd>The <code>feature</code> element's parameter that specifies its URL.</dd>
+   
+   <dt><a href="./extensions-api-speeddial-title.html">opera.contexts.speeddial.title</a></dt>
+   <dd>Represents the human-readable title given to a Speed Dial cell.</dd>
+   
+   <dt><a href="./extensions-api-speeddial-url.html">opera.contexts.speeddial.url</a></dt>
+   <dd>Represents the target URL of the Speed Dial cell when clicked or otherwise activated.</dd>
+</dl>
+
+
+<h2>Overview</h2>
+
+<p>The Speed Dial page is the "start page" that is displayed every time you open a new tab in Opera.</p>
+
+<p>In order to have the content of an Opera extension be displayed in a Speed Dial cell, a developer declares in the configuration
+document (<code>config.xml</code>) of an extension what content they would like to have displayed. As shown in the example below, this is done by using a combination of a feature request, called <code>opera:speeddial</code>, and by declaring support for the <code>minimized</code> view mode. In addition, a valid URI must be specified in the <code>widget</code> element's <code>id</code> attribute. While this should be provided for all extensions, it is a requirement for Speed Dial extensions.</p>
+
+<p>For compatibility with Opera Link's synchronization of Speed Dial, and to not break the Speed Dial user experience, a developer
+is required to provide an URL as part of the Speed Dial feature request (via a <code>param</code> element, as shown).</p>
+
+<p>Valid Speed Dial extensions can use the <code>SpeedDialContext</code> API which is available as an <code>opera.contexts.speeddial</code>
+object in the background process (but not in other documents inside the extension). The <code>SpeedDialContext</code> API
+enables developers to read and change the title and URL of a Speed Dial cell. Developers should, however, make provisions in their scripts to make sure the extension still functions without the availability of the <code>SpeedDialExtensionContext</code> API by checking for the presence of the API and dealing with it if it's not available. An example of how to
+use the <code>SpeedDialContext</code> API is given below.</p>
+
+<h2>Example</h2>
+
+<p>Sample <code>config.xml</code> file for a Speed Dial extension.</p>
+
+<pre><code>
+&lt;!-- config.xml --&gt;
+&lt;widget
+    xmlns="http://www.w3.org/ns/widgets"
+    id="http://example.com/myextension"
+    defaultlocale="en"
+    viewmodes="minimized"&gt;
+
+  &lt;content src="weather.html"/&gt;
+
+  &lt;name short="Weather"&gt;
+    The Weather In Oslo
+  &lt;/name&gt;
+
+  &lt;description&gt;
+    Speed Dial extension showing the current weather in Oslo.
+  &lt;/description&gt;
+
+  &lt;feature name="opera:speeddial" required="false"&gt;
+  &lt;!-- Link to open when the Speed Dial is clicked --&gt;
+    &lt;param name="url" value="http://opera.com"/&gt;
+  &lt;/feature&gt;
+&lt;/widget&gt;</code></pre>
+
+<p>The background process JavaScript for the above sample extension, using the <code>SpeedDialContext</code> API.</p>
+
+<pre><code>//
+// The background process ('/background.js').
+//
+
+document.onload = function getWeather() {
+  var xhr = new XMLHttpRequest();
+  //... load weather info...
+}
+
+//Displays weather information in Speed Dial
+//and update UI Item
+function updateWeather(weatherInfo) {
+  if (opera.contexts.speeddial) {
+    var sd = opera.contexts.speeddial;
+    var location = weatherInfo.location;
+
+    // Change the Speed Dial's title
+    sd.title = location + " " + weatherInfo.forecast;
+
+    // Change the Speed Dial's URL
+    sd.url = "http://weather.com/" + location;
+  }
+}</code></pre>
+
+
+</body>
+</html>

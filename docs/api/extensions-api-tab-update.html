@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extensions API Documentation</title>
+  <link rel='stylesheet' href='../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../index.html">&laquo; Documentation Home</a></p>
+
+<h1>BrowserTab.update()</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<h2>Description:</h2>
+
+<p>The <code>update()</code> method provides a way to update the properties of a browser tab.</p>
+
+<h2>Parameters:</h2>
+
+<p>
+    <ul>
+        <li><code>properties</code>: The new properties to use for updating the tab.</li>
+    </ul>
+</p>
+
+<h2>Syntax:</h2>
+
+<p><code>void update (BrowserTabProperties properties)</code></p>
+
+<h2>Example:</h2>
+
+<p>The following example creates a button on the browser toolbar. When the button is clicked, the current tab is detected and is then locked (pinned).</p>
+
+<pre><code>//
+// The background process (e.g. index.html) 
+//
+
+// Specify the properties of the button before creating it.
+var UIItemProperties = {
+  disabled: false,
+  title: "Example extension",
+  icon: "images/icon_18.png",
+  onclick: function() {
+    // Detect the currently selected tab
+    var thisTab = opera.extension.tabs.getSelected();
+    
+    // Make the current tab locked (pinned)
+    thisTab.update({locked: true});
+  }
+};
+
+// Create the button and add it to the toolbar.
+var button = opera.contexts.toolbar.createItem( UIItemProperties );  
+opera.contexts.toolbar.addItem(button);</code></pre>
+
+
+</body>
+</html>

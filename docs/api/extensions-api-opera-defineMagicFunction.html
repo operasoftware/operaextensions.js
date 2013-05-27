@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extensions API Documentation</title>
+  <link rel='stylesheet' href='../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../index.html">&laquo; Documentation Home</a></p>
+
+<h1>opera.defineMagicFunction()</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<h2>Description:</h2>
+
+<p>This method can be used to override global functions defined by regular scripts in a page.</p>
+
+<h2>Parameters:</h2>
+
+<p>
+    <ul>
+        <li><code>name</code>: String giving the name of the function to be overridden.</li>
+        <li><code>implementation</code>: Function to be run in place of the function defined by the page. The function will be passed the following parameters.
+            <ul>
+                <li>A reference to the real function defined by the page.</li>
+                <li>The object that would have been referred to by the this keyword in the real function.</li>
+                <li>Any parameters that would have been passed to the real function (each is passed as a separate parameter to the magic function).</li>
+            </ul>
+        </li>
+    </ul>
+</p>
+
+<h2>Syntax:</h2>
+
+<p><code>void defineMagicFunction (&lt;DOMString&gt; name, &lt;Function&gt; implementation)</code></p>
+
+<h2>Example:</h2>
+
+<pre><code>window.opera.defineMagicFunction('getLayer', function (oRealFunc, oThis, oParam1, oParam2) {
+  return oParam1.getElementById(oParam2).style;
+});
+
+// This example overrides a function f. If the this object refers to the window object, it returns false.
+// Otherwise it just runs the real function instead:
+window.opera.defineMagicFunction('f', function (real, thisObject) {
+  if (thisObject == window) {
+    return false;
+  } else {
+    return real.apply(thisObject, Array.prototype.slice.call(arguments, 2));
+  }
+});</code></pre>
+
+
+
+
+</body>
+</html>

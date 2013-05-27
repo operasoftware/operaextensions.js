@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extensions API Documentation</title>
+  <link rel='stylesheet' href='../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../index.html">&laquo; Documentation Home</a></p>
+
+<h1>MenuItem.type</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<h2>Description:</h2>
+
+<p>The <code>type</code> attribute is used to define the type of a menu item. The list of valid <code>type</code> values includes <strong><code>entry</code></strong>, <strong><code>folder</code></strong> and <strong><code>line</code></strong>. This attribute defaults to a value of <code>entry</code>.</p>
+
+<h2>Syntax:</h2>
+
+<p><code>DOMString type</code></p>
+
+<h2>Example:</h2>
+
+<p>The following example creates an item with type <code>folder</code>in the context menu. This is not clickable &mdash; instead, sub-menu items will appear when hovered over or otherwise activated. These sub-menu items have the default type which is <code>entry</code>, and so they are clickable.</p>
+
+<pre><code>&lt;!-- 
+  The configuration file ('config.xml').
+--&gt;
+&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;widget xmlns="http://www.w3.org/ns/widgets"&gt;
+    ...
+    &lt;feature name="opera:contextmenus"/&gt;
+    ...
+&lt;/widget&gt;</code></pre>    
+
+<pre><code>//
+// The background process (e.g. index.html)
+//
+
+if (opera.contexts.menu) {
+  var menu = opera.contexts.menu;
+  
+  // Create menu item properties objects
+  var itemProps = {
+    title: 'Translate this page',
+    type: 'folder'
+  }
+  var itemPropsEnglish = {
+    title: 'English',
+    onclick: function(event) {
+      doTranslate(event.pageURL, 'English');
+    }
+  };
+  var itemPropsJapanese = {
+    title: 'Japanese',
+    onclick: function(event) {
+      doTranslate(event.pageURL, 'Japanese');
+    }
+  };
+
+  // Create menu items with the specified properties
+  var item = menu.createItem(itemProps);
+  var itemEnglish = menu.createItem(itemPropsEnglish);
+  var itemJapanese = menu.createItem(itemPropsJapanese);
+  
+  // Add the menu item to the context menu
+  menu.addItem(item);
+  // Add the sub-menu items to the main menu item
+  item.addItem(itemEnglish);
+  item.addItem(itemJapanese);
+}</code></pre>
+
+</body>
+</html>

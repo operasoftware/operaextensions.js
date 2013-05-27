@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extensions API Documentation</title>
+  <link rel='stylesheet' href='../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../index.html">&laquo; Documentation Home</a></p>
+
+<h1>URL filter</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<dl class="apicontents">
+   <dt><a href="./extensions-api-urlfilter-allow-add.html">opera.extension.urlfilter.allow.add()</a></dt>
+   <dd>Adds a rule to the virtual list of allowed URLs. <i>(Opera 12 Labs build only)</i></dd>
+   
+   <!--<dt><a href="./extensions-api-urlfilter-allow-remove.html">opera.extension.urlfilter.allow.remove()</a></dt>
+   <dd>Removes a rule from the virtual list of allowed URLs.</dd>-->
+   
+   <dt><a href="./extensions-api-urlfilter-block-add.html">opera.extension.urlfilter.block.add()</a></dt>
+   <dd>Adds a rule to the virtual list of blocked URLs.</dd>
+   
+   <dt><a href="./extensions-api-urlfilter-block-remove.html">opera.extension.urlfilter.block.remove()</a></dt>
+   <dd>Removes a rule from the virtual list of blocked URLs.</dd>
+   
+   <dt><a href="./extensions-api-ruleOptions-excludeDomains.html">RuleOptions.excludeDomains</a></dt>
+   <dd>Domains on which to not apply a filter rule. <i>(Opera 12 Labs build only)</i></dd>
+   
+   <dt><a href="./extensions-api-ruleOptions-includeDomains.html">RuleOptions.includeDomains</a></dt>
+   <dd>Domains on which to apply a filter rule. <i>(Opera 12 Labs build only)</i></dd>
+   
+   <dt><a href="./extensions-api-ruleOptions-resources.html">RuleOptions.resources</a></dt>
+   <dd>Resource types to apply a filter rule to. <i>(Opera 12 Labs build only)</i></dd>
+   
+   <dt><a href="./extensions-api-ruleOptions-thirdParty.html">RuleOptions.thirdParty</a></dt>
+   <dd>Specifies whether a filter rule should apply to third-party domains. <i>(Opera 12 Labs build only)</i></dd>
+   
+   <dt><a href="./extensions-api-urlfilter-syntax.html">URL Filter syntax</a></dt>
+   <dd>Special characters that can be used when filtering. <i>(Opera 12 Labs build only)</i></dd>
+</dl>
+
+
+<h2>Overview</h2>
+
+<p>The URL Filter API for Opera extensions defines a DOM interface that allows extensions to add temporary rules to Opera's native content blocker. Rules added through this API are associated with an extension and apply as long as the extension is enabled. Once an extension is disabled or the browser is shut down, the temporary rules are discarded.</p>
+
+<p>To enable the URL filter, the <code>opera:urlfilter</code> feature needs to be added as a <code>feature</code> element to the extension's <code>config.xml</code> file.</p>
+
+<p>An in-depth tutorial is available at Dev.Opera: <a href="./view/site-blocking-with-operas-url-filter-api/">Site blocking with Opera's URL Filter API</a></p>
+
+<p class="note">Note that when developing and testing, some pages and resources may be cached making it look as though blocking rules are not working. If this happens, try using Opera's "Delete private data" feature.</p>
+    
+<h2>Example</h2>
+
+<p>Block <code>example.com/images</code>, <code>example.com/css</code> and any subdirectories, whatever the protocol. Note that <code>www.example.com</code> and other sub-domains are not affected.</p>
+    
+<pre><code>&lt;!-- 
+  The configuration file ('config.xml').
+--&gt;
+&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;widget xmlns="http://www.w3.org/ns/widgets"&gt;
+    &lt;feature name="opera:urlfilter"/&gt;
+&lt;/widget&gt;</code></pre>    
+
+<pre><code>//
+// The background process (e.g. index.html)
+//
+
+// Check that the URL Filter API exists
+if (typeof opera.extension.urlfilter != 'undefined') {
+  // Create a list of rules to block
+  var rules = ['*://example.com/images/*', '*://example.com/css/*'];
+
+  // Assign the URLFilter object to a variable for efficiency
+  var filter = opera.extension.urlfilter;
+
+  // Loop through the array of rules and add each one to the "block" list
+  for (var i = 0, len = rules.length; i &lt; len; i++) {
+    filter.block.add(rules[i]);
+  }
+}</code></pre>
+
+
+</body>
+</html>

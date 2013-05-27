@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extensions API Documentation</title>
+  <link rel='stylesheet' href='../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../index.html">&laquo; Documentation Home</a></p>
+
+<h1>Messaging</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<dl class="apicontents">
+   <dt><a href="./extensions-api-messaging-bgProcess.html">opera.extension.bgProcess</a></dt>
+   <dd>A reference to the <code>window</code> object of the background process.</dd>
+   
+   <dt><a href="./extensions-api-messaging-onconnect.html">opera.extension.onconnect</a></dt>
+   <dd>An event listener invoked when an injected script, popup, or options environment is created that enables communication.</dd>
+   
+   <dt><a href="./extensions-api-messaging-ondisconnect.html">opera.extension.ondisconnect</a></dt>
+   <dd>An event listener invoked when an injected script, popup or options environment is destroyed and communication is disabled.</dd>
+   
+   <dt><a href="./extensions-api-messaging-onmessage.html">opera.extension.onmessage</a></dt>
+   <dd>An event listener invoked when a message is received from an injected script, popup or preference page.</dd>
+   
+   <dt><a href="./extensions-api-messaging-addEventListener.html">opera.extension.addEventListener()</a></dt>
+   <dd>A method for listening for events being dispatched.</dd>
+   
+   <dt><a href="./extensions-api-messaging-removeEventListener.html">opera.extension.removeEventListener()</a></dt>
+   <dd>A method that removes a listener from receiving an event.</dd>
+   
+   <dt><a href="./extensions-api-messaging-broadcastMessage.html">opera.extension.broadcastMessage()</a></dt>
+   <dd>A method used to broadcast data to all connected injected script and popup environments associated with the extension.</dd>
+</dl>
+
+<h2>Overview</h2>
+
+<p>Communicating between different parts of an extension is done by using either the background process or the messaging API.</p>
+
+<p>The background script and <a href="#none">injected scripts</a> are isolated from each other and must therefore use the messaging API to communicate. For more information read our article on <a href="./view/opera-extensions-messaging/">Opera extensions: messaging</a></p>
+
+<p>Other parts of an extension, e.g. <a href="#none">popup windows</a> and preference pages, can also access the background script by using the messaging API but it's much easier to use the <code>bgProcess</code> object&mdash;a common object that refers to the background script's <code>window</code> object.</p>
+
+<p>The background process, as the name suggests, is a process constantly running in the background for the lifetime of an extension. It is responsible for browser UI elements (for example the <a href="#none">toolbar button</a> and <a href="#none">popup windows</a>) and browser actions (opening and closing a tab, etc.).</p>
+
+<h2>Examples</h2>
+    
+<p>The two code snippets below send a message, in this case a URL, between an injected script and the background process</p>
+
+<pre><code>//
+// The injected script ('/includes/injectedScript.js')
+//
+
+window.addEventListener('DOMContentLoaded', function() {    	
+  // send message to background script telling it what URL we are visiting
+  opera.extension.postMessage(document.URL);
+}, false);</code></pre>
+
+<p>The injected script (above) sends its message using <code>opera.extension.postMessage(message)</code> which is received by the background process using the event handler <code>opera.extension.onmessage</code></p>
+    
+<pre><code>//
+// The background process ('/background.js'). 
+//
+
+// Listen for injected script messages (i.e. for image tags)
+opera.extension.onmessage = function(event) {
+  // got the URL from the injected script
+  url = event.data;	
+};</code></pre>
+	    
+
+
+</body>
+</html>

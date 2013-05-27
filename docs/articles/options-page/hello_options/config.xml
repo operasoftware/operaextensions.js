@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets">
+	<name>Hello Extensions with options page!</name>
+	<description>A simple hello world example, with options/preferences page added</description>
+	<author href="http://www.twitter.com/dstorey/" email="dstorey@opera.com">David Storey, Opera Software</author>
+	<icon src="icons/icon-64.png"/>
+</widget>

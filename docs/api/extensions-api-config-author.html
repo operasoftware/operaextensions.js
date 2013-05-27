@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extensions API Documentation</title>
+  <link rel='stylesheet' href='../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../index.html">&laquo; Documentation Home</a></p>
+
+<h1>author element</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<h2>Description</h2>
+
+<p>The <code>&lt;author&gt;</code> element is used to provide details regarding the author of the extension. The following attributes are associated with it.</p>
+
+<ul>
+    <li><code><a href="http://www.w3.org/TR/widgets/#the-href-attribute">href</a></code>: Specifies a website most relevant to the author</li>
+    <li><code><a href="http://www.w3.org/TR/widgets/#the-email-attribute">email</a></code>: Specifies an email address of the author</li>
+</ul>
+
+<h2>Example</h2>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;widget xmlns="http://www.w3.org/ns/widgets" id="http://example.com/myExtension" version="1.0"&gt;
+  ...
+  &lt;author href="http://example.com/erik" email="erik@example.com"&gt;
+    Erik the Viking
+  &lt;/author&gt;
+  ...
+&lt;/widget&gt;</code></pre>
+
+
+
+</body>
+</html>

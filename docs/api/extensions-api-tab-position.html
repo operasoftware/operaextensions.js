@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extensions API Documentation</title>
+  <link rel='stylesheet' href='../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../index.html">&laquo; Documentation Home</a></p>
+
+<h1>BrowserTab.position</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<h2>Description:</h2>
+
+<p>The readonly <code>position</code> attribute exposes the current tab position. On getting, the tab position is only returned if the browser tab is open, otherwise <code>NaN</code> is returned.</p>
+
+<h2>Syntax:</h2>
+
+<p><code>readonly unsigned long position</code></p>
+
+<h2>Example:</h2>
+
+<p>The following example creates a button on the browser toolbar. When the button is clicked, the position of the currently selected tab is displayed in the button's badge.</p>
+
+<pre><code>//
+// The background process (e.g. index.html)
+//
+
+// Specify the properties of the button before creating it.
+var UIItemProperties = {
+  disabled: false,
+  title: "Example extension",
+  icon: "images/icon_18.png",
+  badge: {
+    backgroundColor: '#cc0000',
+    color: '#ffffff'
+  }
+};
+
+// Create the button and add it to the toolbar.
+var button = opera.contexts.toolbar.createItem( UIItemProperties );  
+opera.contexts.toolbar.addItem(button);
+
+button.addEventListener('click', handleClick, false);
+
+function handleClick() {
+  // Get the currently selected tab
+  var thisTab = opera.extension.tabs.getSelected();
+  
+  // Display the tab's position in the button's badge
+  button.badge.textContent = thisTab.position;
+}</code></pre>
+
+
+</body>
+</html>

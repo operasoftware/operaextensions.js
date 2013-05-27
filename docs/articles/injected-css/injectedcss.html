@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Injecting CSS into a page</title>
+  <link rel='stylesheet' href='../../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../../index.html">&laquo; Documentation Home</a></p>
+
+<h1>Injecting CSS into a page</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<p>Opera Extensions allow a way for CSS to be injected into a page, overriding the author defined styles. Authors familiar to Opera may know about User.css files. Opera Extensions provide an convenient way to package and distribute these CSS files, and integrate them with more complex functionality. Common use cases for user.css files include fixing compatibility issues and fixing accessibility issues, such as bumping up the font size.</p>
+
+<h2>Creating a user.css file</h2>
+
+<p>An injected CSS file is just like a regular CSS file. It can contain any rules or properties and be saved under any name. One limitation of user.css is that the scripts apply globally to any web page. If this is not the desired result, you can supplement user.css with injected JavaScript (user.js). See the article <a href="">whatever article</a> for more information.</p>
+
+<p>We will create a simple example stylesheet, which adds the correct quote marks to the <code>q</code> element. The functionality does not suppose to be robust, but is just to showcase the functionality.</p>
+
+<p>Include the following CSS in a file called quotes.css:</p>
+
+<code><pre>
+:lang(en), :lang(zh), :lang(af), :lang(nl), :lang(ko), :lang(pt-BR), :lang(id), :lang(th) { quotes:""" """ "‘" "'"; }
+:lang(no) { quotes:"«" "»" '"' '"';}
+:lang(fr), :lang(el) { quotes: "«" "»" "«" "»";}
+:lang(de), :lang(cs), :lang(sk), :lang(sl) { quotes: "„" """ "‚" "‘";}
+:lang(sr) { quotes: "„" """ "'" "'";}
+:lang(es), :lang(pt), :lang(ca) { quotes: "«" "»" """ """;}
+:lang(ru), :lang(lv), :lang(be), :lang(uk) { quotes: "«" "»" "„" """;}
+:lang(jp), :lang(zh-TW) { quotes: "「" "」" "『" "』";}
+:lang(sq), :lang(lt) { quotes: "„" """ "‘" "'";}
+:lang(eu), :lang(fr-CH), :lang(de-FR), :lang(it-CH), :lang(tr) { quotes: "«" "»" "‹" "›";}
+:lang(hr) { quotes: "„" """ "‚" "'";}
+:lang(da) { quotes: "»" "«" "›" "‹";}
+:lang(fi), :lang(sv) { quotes:""" """ "'" "'";}
+:lang(hu) { quotes: "„" """ "»" "«";}
+:lang(pl), :lang(ro) { quotes: "„" """ "«" "»";}
+</pre></code>
+
+<h2>Directory structure</h2>
+
+<p>Injected style sheets and scripts are restricted to running from the <q>includes</q> directory. Create an includes directory in your base development directory and save the file in this location.</p>
+
+<p>The only other file you need is a config.xml file. Create your own as specified in the <a href="">Hello World</a> article. Name the extension <q>Real Quotes</q>.</p>
+
+<p>Even though the extension doesn't have any UI, an index.html is still needed (as required by the W3C Widgets Packaging specification).</p>
+
+<p>As with any kind of extension, it needs to be zipped up and renamed with an .oex extension. The extension will install as normal, but as these kind of extensions have no UI, you can only see they are running by accessing the Extensions Manager.</p>
+
+<h2>Testing the extension</h2>
+
+<p>Try downloading and installing the <a href="">Real Quotes</a> extension. I've created a simple test page with a number of <a href="http://people.opera.com/dstorey/quotes/quotes.html">quotes in different languages</a>. It is left as an exercise for the reader to make the extension more robust, with support for the correct quotes when foreign languages are contained in one document. Ideally the outer quotes should be in the base language of the document.</p>
+
+</body>
+</html>

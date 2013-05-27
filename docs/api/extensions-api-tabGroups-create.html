@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extensions API Documentation</title>
+  <link rel='stylesheet' href='../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../index.html">&laquo; Documentation Home</a></p>
+
+<h1>opera.extension.tabGroups.create()</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<h2>Description:</h2>
+
+<p>The <code>create()</code> method provides a way to create a new browser tab group, either globally or within the context window. When the <code>create()</code> method is invoked, the following happens:</p>
+
+<ol>
+    <li>If this is the global tab group manager, a tab group is created using tabs, properties and before as the arguments, if provided.</li>
+    <li>If this is a window tab group manager, a tab group is created within the context window using tabs, properties and before as the arguments, if provided.</li>
+</ol>
+
+<h2>Parameters:</h2>
+
+<p>
+    <ul>
+        <li><code>tabs</code>: The tabs to add to the new tab group.</li>
+        <li><code>properties</code>: The properties of the new tab group, such as whether it's collapsed.</li>
+        <li><code>before</code>: The tab or tab group that the new tab group should be inserted before, usually to the left.</li>
+    </ul>
+</p>
+
+<h2>Syntax:</h2>
+
+<p><code>BrowserTabGroup create (Array[] tabs, optional BrowserTabGroupProperties properties, optional BrowserTabGroup before)</code></p>
+<p><code>BrowserTabGroup create (Array[] tabs, optional BrowserTabGroupProperties properties, optional BrowserTab before)</code></p>
+
+<h2>Example:</h2>
+
+<p>The following example creates a button on the browser toolbar. When the button is clicked, a tab group is created containing two tabs with the specified URLs.</p>
+
+<pre><code>//
+// The background process (e.g. index.html) 
+//
+
+// Specify the properties of the button before creating it.
+var UIItemProperties = {
+  disabled: false,
+  title: "Example extension",
+  icon: "images/icon_18.png",
+  onclick: function() {
+    // Create two tabs with specified URLs
+    var tab1 = opera.extension.tabs.create({url: 'http://www.reddit.com/'});
+    var tab2 = opera.extension.tabs.create({url: 'http://www.digg.com/'});
+    
+    // Create a tab group containing the above two tabs
+    var tabGroup = opera.extension.tabGroups.create([tab1, tab2]);
+  }
+};
+
+// Create the button and add it to the toolbar.
+var button = opera.contexts.toolbar.createItem( UIItemProperties );  
+opera.contexts.toolbar.addItem(button);</code></pre>
+
+
+</body>
+</html>

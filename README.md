@@ -6,7 +6,7 @@ This library provides a compatibility Layer containing the JavaScript Opera Exte
 
 ### Supported Opera Extension APIs
 
-This library adds support to Chromium for the following Opera oex extension APIs:
+This library adds support to Chromium for the following Opera (.oex) Extension APIs:
 
 - [Widget object](http://dev.opera.com/articles/view/extensions-api-widget-object/)
 - [Windows and Tabs API](http://dev.opera.com/articles/view/extensions-api-windows-tabs)
@@ -21,6 +21,10 @@ This library adds support to Chromium for the following Opera oex extension APIs
 - [Speed Dial API](http://dev.opera.com/articles/view/extensions-api-speeddial)
 
 \* minus support for [addEventListener](http://dev.opera.com/articles/view/extensions-api-opera-addEventListener) and [removeEventListener](http://dev.opera.com/articles/view/extensions-api-opera-removeEventListener) UserJS events.
+
+##### Further API reference documentation
+
+The full Opera Extension (.oex) API Documentation is provided for reference in the `/build` directory of this repository.
 
 ### Download this library
 

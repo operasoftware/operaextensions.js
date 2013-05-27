@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extensions API Documentation</title>
+  <link rel='stylesheet' href='../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../index.html">&laquo; Documentation Home</a></p>
+
+<h1>MenuItem.disabled</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<h2>Description:</h2>
+
+<p>The <code>disabled</code> attribute represents whether a menu item is visible in a context menu. If the value is <code>false</code> (default), the menu item will be displayed and is clickable, whereas if the value is <code>true</code> the item will not be displayed in the context menu.</p>
+
+<h2>Syntax:</h2>
+
+<p><code>Boolean false</code></p>
+
+<h2>Example:</h2>
+
+<p>In the following example, a menu item is created for translating the web page into English. The menu item is disabled (not visible) if the user's browser language is not set to English.</p>
+
+<pre><code>&lt;!-- 
+  The configuration file ('config.xml').
+--&gt;
+&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;widget xmlns="http://www.w3.org/ns/widgets"&gt;
+    ...
+    &lt;feature name="opera:contextmenus"/&gt;
+    ...
+&lt;/widget&gt;</code></pre>    
+
+<pre><code>//
+// The background process (e.g. index.html)
+//
+
+if (opera.contexts.menu) {
+  var menu = opera.contexts.menu;
+  // Create a menu item properties object
+  var itemProps = {
+    title: 'Translate page into English',
+    onclick: function(event) {
+      doTranslate(event.pageURL);
+    }
+  }
+  
+  if (window.navigator.browserLanguage.indexOf('en') != 0) {
+    itemProps.disabled = true;
+  }
+
+  // Create a menu item with the specified properties
+  var item = menu.createItem(itemProps);
+  // Add the menu item to the context menu
+  menu.addItem(item);
+}</code></pre>
+
+</body>
+</html>

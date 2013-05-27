@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extensions API Documentation</title>
+  <link rel='stylesheet' href='../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../index.html">&laquo; Documentation Home</a></p>
+
+<h1>Windows &amp; Tabs</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+<h2 id="windows">Windows</h2>
+<dl class="apicontents">
+   <dt><a href="./extensions-api-windows-create.html">opera.extension.windows.create()</a></dt>
+   <dd>Creates a new browser window.</dd>
+   
+   <dt><a href="./extensions-api-windows-getAll.html">opera.extension.windows.getAll()</a></dt>
+   <dd>Obtains a group of windows (window collection).</dd>
+   
+   <dt><a href="./extensions-api-windows-getLastFocused.html">opera.extension.windows.getLastFocused()</a></dt>
+   <dd>Obtains the currently selected browser window, if any.</dd>
+   
+   <dt><a href="./extensions-api-window-insert.html">BrowserWindow.insert()</a></dt>
+   <dd>Inserts a tab or tab group into a browser window.</dd>
+   
+   <dt><a href="./extensions-api-window-close.html">BrowserWindow.close()</a></dt>
+   <dd>Closes a browser window.</dd>
+   
+   <dt><a href="./extensions-api-window-focus.html">BrowserWindow.focus()</a></dt>
+   <dd>Gives focus to a browser window.</dd>
+   
+   <dt><a href="./extensions-api-window-update.html">BrowserWindow.update()</a></dt>
+   <dd>Updates the properties of a browser window.</dd>
+   
+   <dt><a href="./extensions-api-window-id.html">BrowserWindow.id</a></dt>
+   <dd>A unique identifier for the browser window.</dd>
+   
+   <dt><a href="./extensions-api-window-closed.html">BrowserWindow.closed</a></dt>
+   <dd>Gets the closed state of the browser window.</dd>
+   
+   <dt><a href="./extensions-api-window-focused.html">BrowserWindow.focused</a></dt>
+   <dd>Gets and sets the focused state of the browser window.</dd>
+   
+   <dt><a href="./extensions-api-window-parent.html">BrowserWindow.parent</a></dt>
+   <dd>Gets the parent window, if any.</dd>
+   
+   <dt><a href="./extensions-api-window-private.html">BrowserWindow.private</a></dt>
+   <dd>Gets and sets the private state of the browser window.</dd>
+   
+   <dt><a href="./extensions-api-window-tabGroups.html">BrowserWindow.tabGroups</a></dt>
+   <dd>Gets a window tab group manager.</dd>
+   
+   <dt><a href="./extensions-api-window-tabs.html">BrowserWindow.tabs</a></dt>
+   <dd>Gets a window tab manager.</dd>
+   
+   <dt><a href="./extensions-api-window-height.html">BrowserWindow.height</a></dt>
+   <dd>Sets the height of a browser window.</dd>
+   
+   <dt><a href="./extensions-api-window-width.html">BrowserWindow.width</a></dt>
+   <dd>Sets the width of a browser window.</dd>
+   
+   <dt><a href="./extensions-api-window-top.html">BrowserWindow.top</a></dt>
+   <dd>Sets the top offset of a browser window.</dd>
+   
+   <dt><a href="./extensions-api-window-left.html">BrowserWindow.left</a></dt>
+   <dd>Sets the left offset of a browser window.</dd>
+</dl>
+    
+<h2 id="tabgroups">opera.extension.tabGroups</h2>
+<dl class="apicontents">
+   <dt><a href="./extensions-api-tabGroups-create.html">opera.extension.tabGroups.create()</a></dt>
+   <dd>Creates a new tab group.</dd>
+   
+   <dt><a href="./extensions-api-tabGroups-getAll.html">opera.extension.tabGroups.getAll()</a></dt>
+   <dd>Obtains a group of tab groups (tab group collection).</dd>
+   
+   <dt><a href="./extensions-api-tabGroup-close.html">BrowserTabGroup.close()</a></dt>
+   <dd>Closes a tab group.</dd>
+   
+   <dt><a href="./extensions-api-tabGroup-focus.html">BrowserTabGroup.focus()</a></dt>
+   <dd>Gives focus to a tab group.</dd>
+   
+   <dt><a href="./extensions-api-tabGroup-insert.html">BrowserTabGroup.insert()</a></dt>
+   <dd>Inserts a tab into a tab group.</dd>
+   
+   <dt><a href="./extensions-api-tabGroup-update.html">BrowserTabGroup.update()</a></dt>
+   <dd>Updates the properties of a tab group.</dd>
+   
+   <dt><a href="./extensions-api-tabGroup-id.html">BrowserTabGroup.id</a></dt>
+   <dd>Gets a unique identifier for a tab group.</dd>
+   
+   <dt><a href="./extensions-api-tabGroup-closed.html">BrowserTabGroup.closed</a></dt>
+   <dd>Gets the closed state of a tab group.</dd>
+   
+   <dt><a href="./extensions-api-tabGroup-collapsed.html">BrowserTabGroup.collapsed</a></dt>
+   <dd>Gets or sets the collapsed state of a tab group.</dd>
+   
+   <dt><a href="./extensions-api-tabGroup-browserWindow.html">BrowserTabGroup.browserWindow</a></dt>
+   <dd>Gets a tab group's context window.</dd>
+   
+   <dt><a href="./extensions-api-tabGroup-tabs.html">BrowserTabGroup.tabs</a></dt>
+   <dd>Gets all open tabs within a tab group.</dd>
+   
+   <dt><a href="./extensions-api-tabGroup-position.html">BrowserTabGroup.position</a></dt>
+   <dd>Gets the position of a tab group.</dd>
+</dl>
+    
+<h2 id="tabs">opera.extension.tabs</h2>
+<dl class="apicontents">
+   <dt><a href="./extensions-api-tabs-create.html">opera.extension.tabs.create()</a></dt>
+   <dd>Creates a new tab.</dd>
+   
+   <dt><a href="./extensions-api-tabs-getAll.html">opera.extension.tabs.getAll()</a></dt>
+   <dd>Obtains a group of tabs (tab collection).</dd>
+   
+   <dt>opera.extension.tabs.getFocused()</dt>
+   <dd>An alias for <a href="./extensions-api-tabs-getSelected.html">opera.extension.tabs.getSelected()</a></dd>
+   
+   <dt><a href="./extensions-api-tabs-getSelected.html">opera.extension.tabs.getSelected()</a></dt>
+   <dd>Obtains the currently selected tab, if any.</dd>
+   
+   <dt><a href="./extensions-api-tab-close.html">BrowserTab.close()</a></dt>
+   <dd>Closes a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-focus.html">BrowserTab.focus()</a></dt>
+   <dd>Gives focus to a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-update.html">BrowserTab.update()</a></dt>
+   <dd>Updates the properties of a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-id.html">BrowserTab.id</a></dt>
+   <dd>Gets a unique identifier for a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-closed.html">BrowserTab.closed</a></dt>
+   <dd>Gets the closed state of a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-locked.html">BrowserTab.locked</a></dt>
+   <dd>Gets and sets the locked state of a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-private.html">BrowserTab.private</a></dt>
+   <dd>Gets and sets the privacy mode of a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-selected.html">BrowserTab.selected</a></dt>
+   <dd>Gets the selected state of a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-readyState.html">BrowserTab.readyState</a></dt>
+   <dd>Gets the <a href="http://www.w3.org/TR/html5/dom.html#current-document-readiness">current document readiness</a> of a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-faviconUrl.html">BrowserTab.faviconUrl</a></dt>
+   <dd>Gets the URL of a tab's favicon.</dd>
+   
+   <dt><a href="./extensions-api-tab-title.html">BrowserTab.title</a></dt>
+   <dd>Gets the title of a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-url.html">BrowserTab.url</a></dt>
+   <dd>Gets and sets the url of a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-browserWindow.html">BrowserTab.browserWindow</a></dt>
+   <dd>Gets a tab's context window.</dd>
+   
+   <dt><a href="./extensions-api-tab-tabGroup.html">BrowserTab.tabGroup</a></dt>
+   <dd>Gets the tab group for a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-position.html">BrowserTab.position</a></dt>
+   <dd>Gets the position of a tab.</dd>
+   
+   <dt><a href="./extensions-api-tab-focused.html">BrowserTab.focused</a></dt>
+   <dd>Sets the focused state of a tab.</dd>
+</dl>
+
+
+<h2>Overview</h2>
+
+<p>A <b>browser window</b> is a graphical user-interface component that can contain zero or more browser tabs or browser tab groups. Each browser window has an associated tab collection and tab group collection. A browser window is the context window of each browser tab and browser tab group within its associated tab collection and tab group collection, respectively. A collection of browser windows is referred to as a window collection.</p>
+
+<p>A <b>browser tab group</b> is a graphical user-interface component contained within a browser window that can contain zero or more browser tabs. Each browser tab group has an associated tab collection and is associated with a context window. A browser tab group is the context tab group of each browser tab within its associated tab collection. A collection of browser tab groups is referred to as the tab group collection.</p>
+
+<p>A <b>browser tab</b> is a graphical user-interface component that represents a single page contained within a browser window. Each browser tab is associated with a browser window and might be associated with a browser tab group. A user can switch between browser tabs to access different pages. Selecting a browser tab brings that page into focus. A collection of browser tabs is referred to as the tab collection.</p>
+
+<h2>Example</h2>
+
+<p>The following example adds a button the browser toolbar. Clicking the button creates a tab group in a collapsed state containing two tabs. Each tab has a specified URL and one of them is a private tab.</p>
+    
+<pre><code>&lt;!-- 
+  The configuration file ('config.xml').
+--&gt;
+&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;widget xmlns="http://www.w3.org/ns/widgets" id="http://example.com/testextension" defaultlocale="en"&gt;
+&lt;name&gt;Windows &amp; Tabs test extension&lt;/name&gt;
+  &lt;description&gt;A test extension that opens a tab group containing two tabs.&lt;/description&gt;
+  &lt;icon src="images/icon_64.png"/&gt;
+  &lt;icon src="images/icon_18.png"/&gt;
+&lt;/widget&gt;</code></pre>    
+
+<pre><code>//
+// The background process (e.g. index.html)
+//
+
+// Specify the properties of the button before creating it.
+var UIItemProperties = {
+  disabled: false,
+  title: "Tab creation test",
+  icon: "images/icon_18.png",
+  onclick: function() {
+    // Create two tabs with specified URLs
+    var tab1 = opera.extension.tabs.create({url: 'http://dev.opera.com/'});
+    var tab2 = opera.extension.tabs.create({url: 'http://www.operamail.com/', private: true});
+    
+    // Create a tab group containing the above two tabs
+    var tabGroup = opera.extension.tabGroups.create([tab1, tab2], {collapsed: true});
+  }
+};
+
+// Create the button and add it to the toolbar.
+var button = opera.contexts.toolbar.createItem( UIItemProperties );    
+opera.contexts.toolbar.addItem(button);</code></pre>
+
+
+</body>
+</html>

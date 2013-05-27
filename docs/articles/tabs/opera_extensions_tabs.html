@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Opera Extension Tabs API Guide</title>
+  <link rel='stylesheet' href='../../resources/markdown8.css'/>
+</head>
+<body>
+
+<p><a href="../../index.html">&laquo; Documentation Home</a></p>
+
+  <h1>Opera Extension Tabs API Guide</h1>
+
+<p class="note">This documentation relates to Opera's now deprecated .oex Extension API framework for Opera versions &lt;= 12.15 and also provided by our <a href="http://github.com/operasoftware/oex2nex">OEX2NEX shim library</a>.<br/><br/>For the latest Opera Extensions API documentation for Opera versions &gt; 12.15 please consult <a href="http://dev.opera.com/addons/extensions/">the latest Opera Extensions API documentation online</a>.</p>
+
+  <h2>Introduction</h2>
+
+<p>Opera extensions are powerful: you can manipulate the Opera desktop browser's buttons, default CSS and many other features using web standards such as HTML, JavaScript and CSS. In this article we'll look at manipulating tabs.</p>
+
+<p>If you would like to know how to build an Opera extension from the ground up, the <a href="../saying-hello-world/extensions-hello-world-mh.html">Saying hello world to Opera extensions!</a> article is a good start.</p>
+</p>
+
+<p>Contents</p>
+
+<ul>
+  <li><a href="#create">Creating Tabs</a></li>
+  <li><a href="#create_url">Creating Tabs with URL</a></li>
+  <li><a href="#focus">Focusing Tabs</a></li>
+  <li><a href="#close">Closing Tabs</a></li>
+  <li><a href="#conclusion">What's next?</a></li>
+  <li><a href="#api">API</a></li>
+</ul>
+
+<h2 id="create">Creating Tabs</h2>
+
+<p>Let's start by looking at how to create a tab. First, we'll use the <code>addEventListener</code> method to listen to the state of the DOM/document loading. In the code snippet below, we use the event listener to listen to the document. Once the browser window finishes loading, we'll fire up the function.</p>
+
+<p>We are also checking to make sure the <code>opera.extension.tabs</code> object exists before we call this object's function to manipulate the tabs.</p>
+
+<pre><code>window.addEventListener( "load", function(){
+  if( opera.extension.tabs.create ) //check if function exists
+  {
+    opera.extension.tabs.create();  // create tabs
+  }
+  else {
+    //do nothing
+    }
+}, false);</code></pre>
+
+<h2 id="create_url">Creating Tabs with URL</h2>
+
+<p>The <code>opera.extension.tabs.create</code> method takes in an optional <code>TabProperties</code> object argument whereby <code>TabProperties</code> itself constitutes a windows-focused boolean value and/or a URL string. By providing the URL string, we are able to create a tab that opens and then has <a href="http://www.opera.com">www.opera.com</a> loaded into it.</p>
+
+<pre><code>window.addEventListener( "load", function(){
+  if( opera.extension.tabs.create )
+  {
+   opera.extension.tabs.create({url:"http://www.opera.com/"});
+  } else {
+    //do nothing
+  }
+}, false);</code></pre>
+
+<h2 id="focus">Focusing Tabs</h2>
+
+<p>Using the same idea of using an event listener and checking if the <code> opera.extension.tabs</code> object exists, we can go on to manipulate tabs in different ways. First of all, let's look at how to create a tab with a focused URL:</p>
+
+<pre><code>opera.extension.tabs.create({focused:true})</code></pre>
+
+<p>Next, we'll create a focused tab with a prefilled URL:</p>
+
+<pre><code>opera.extension.tabs.create({url:"http://www.opera.com/",focused:true})</code></pre>
+
+<h2 id="close">Closing Tabs</h2>
+
+<p>It's equally simple to close tabs. Let's try something: we'll create a tab and then close it after one second. </p>
+
+<pre><code>window.addEventListener( "load", function(){
+  if( opera.extension.tabs )
+  {
+    var tab = opera.extension.tabs.create({url:"http://www.opera.com/",focused:true});
+    window.setTimeout( function(){
+      opera.extension.tabs.close( tab );
+    }, 1000);
+  } else {
+  // Couldn't find an opera.extension.tabs object, to fetch and then update the tab
+  }
+}, false);</code></pre>
+
+<h2 id="conclusion">What's next?</h2>
+
+<p>So there you have it - a few ways to create, manipulate and close tabs. You can refer to a complete <a href="../../api/extensions-api-windows-tabs.html#tabs">reference of the <code>tabs</code> object and its methods</a>. Next you might consider <a href="../../articles/windows/opera_extensions_windows.html">playing with the <code>Windows</code> object in an Opera extension</a>.</p>
+
+<h2 id="api">API reference</h2>
+
+<ul>
+  <li>
+    <code>object <a href="../../api/extensions-api-windows-tabs.html#tabs">opera.extension.tabs</a></code>
+  </li>
+</ul>
+
+</body>
+</html>

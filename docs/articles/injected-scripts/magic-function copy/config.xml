@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets">
+    <name>Magic function demo</name>
+    <description>An extension demonstrating the usage of opera.defineMagicFunction()</description>
+    <author href="http://dev.opera.com/">dev.opera.com</author>
+    <icon src="emblem-generic.png"/> <!-- Credit: http://openiconlibrary.sourceforge.net/gallery2/?./Icons/emblems/emblem-generic.png -->
+</widget>
