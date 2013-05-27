@@ -3,6 +3,8 @@
 <head>
   <title>Hands-on tutorial: building an Opera extension</title>
   <link rel='stylesheet' href='../../resources/markdown8.css'/>
+  <meta charset='utf-8'>
+  <meta charset='utf-8'>
 </head>
 <body>
 
@@ -48,7 +50,7 @@
 
 <h3 id="config">Super simple config.xml</h3>
 
-<p>Step one, we need a <var>config.xml</var> file containing things like the name, description and author of the extension. This uses   the <a href="http://www.w3.org/TR/widgets/#example-configuration-document">configuration file for W3C widgets</a>. Think of it as a passport–without this, you ain't goin' nowhere:</p>
+<p>Step one, we need a <var>config.xml</var> file containing things like the name, description and author of the extension. This uses   the <a href="http://www.w3.org/TR/widgets/#example-configuration-document">configuration file for W3C widgets</a>. Think of it as a passport&#x2014;without this, you ain't goin' nowhere:</p>
 
 <div class="comment">config.xml</div>
 <pre><code>
@@ -130,7 +132,7 @@ function addToggle(block_content, block_toggle) {
 }
 </code></pre>
 
-<p class="note">It's worth mentioning that we have two arguments – a block's content element and toggle element–but in our example these are not essential. This is because the <var>addToggle</var> function is enclosed in a higher-level, anonymous function that executes when the page loads, however using arguments makes the function more portable for use in other projects.</p>
+<p class="note">It's worth mentioning that we have two arguments &#x2014; a block's content element and toggle element&#x2014;but in our example these are not essential. This is because the <var>addToggle</var> function is enclosed in a higher-level, anonymous function that executes when the page loads, however using arguments makes the function more portable for use in other projects.</p>
 
 <p>As you can see, we set the <var>display</var> value with a nifty one line <var>if</var> statement. We could equally have used the following code which does the same thing but is more lengthy:</p>
 

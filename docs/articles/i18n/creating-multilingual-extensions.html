@@ -3,6 +3,8 @@
 <head>
   <title>Creating multilingual extensions</title>
   <link rel='stylesheet' href='../../resources/markdown8.css'/>
+  <meta charset='utf-8'>
+  <meta charset='utf-8'>
 </head>
 <body>
 
@@ -49,7 +51,7 @@
 
 <p>Authors who want to provide their extensions in different languages don&#39;t have to create separately packaged versions of their <code>.oex</code> file. Opera&#39;s extensions use the same packaging and configuration as <a href="http://www.w3.org/TR/widgets/">W3C Widgets</a>, which includes built-in mechanisms for providing multilingual resources, all wrapped up in a single self-contained archive.</p>
 
-<p class="note">Make sure you grab all the <a href="multilingual-extensions.zip">source files for this article</a>, wrapped up for your convenience in a single zip archive. It contains the packaged <code>.oex</code> extensions - as well as separate folders with all the uncompressed files – to make it easy to follow the recommended <a href="../../articles/developer-workflow/developer-workflow.html">Opera extensions developer workflow</a> and take advantage of our <em>Developer Mode</em>.</p>
+<p class="note">Make sure you grab all the <a href="multilingual-extensions.zip">source files for this article</a>, wrapped up for your convenience in a single zip archive. It contains the packaged <code>.oex</code> extensions - as well as separate folders with all the uncompressed files &#x2014; to make it easy to follow the recommended <a href="../../articles/developer-workflow/developer-workflow.html">Opera extensions developer workflow</a> and take advantage of our <em>Developer Mode</em>.</p>
 
 <p class="note">Although this article deals specifically with Opera extensions, the general concepts and techniques outlined here will also apply to the localisation of traditional W3C Widgets.</p>
 
@@ -57,7 +59,7 @@
 
 <p>By default, the version of Opera that you installed will be set to match the locale of your operating system. In order to test that our localised extension works correctly, we&#39;ll need to explicitly switch Opera to different locales.</p>
 
-<p>In Windows and Linux, this is achieved by going to <em>Menu &gt; Settings &gt; Preferences...</em> and changing the <em>Language</em> option in the <em>General</em> tab. If you installed the international version of Opera, this will – for the most common languages – also change the language of the browser&#39;s user interface itself (including menus, dialog boxes, etc). For non-international versions, it will inform you that you don&#39;t have the appropriate language file available, but it will still send that language preference to websites to serve you content in that language if available, and it will switch the language on multilingual extensions.</p>
+<p>In Windows and Linux, this is achieved by going to <em>Menu &gt; Settings &gt; Preferences...</em> and changing the <em>Language</em> option in the <em>General</em> tab. If you installed the international version of Opera, this will &#x2014; for the most common languages &#x2014; also change the language of the browser&#39;s user interface itself (including menus, dialog boxes, etc). For non-international versions, it will inform you that you don&#39;t have the appropriate language file available, but it will still send that language preference to websites to serve you content in that language if available, and it will switch the language on multilingual extensions.</p>
 
 <p class="note">After changing Opera&#39;s locale, even if the user interface language changes immediately you will need to close and reopen the browser for the change to affect extensions.</p>
 
@@ -109,7 +111,7 @@
             email=&quot;patrickl@opera.com&quot;&gt;Patrick H. Lauke&lt;/author&gt;
 &lt;/widget&gt;</code></pre>
 
-<p>In its current state, this extension is unlocalised – there are no provisions for different languages, and no information has been given in the configuration file as to what the current language being used is. So, from this simple starting point, let&#39;s get cracking and turn this into a localised, multilingual extension.</p>
+<p>In its current state, this extension is unlocalised &#x2014; there are no provisions for different languages, and no information has been given in the configuration file as to what the current language being used is. So, from this simple starting point, let&#39;s get cracking and turn this into a localised, multilingual extension.</p>
 
 <h2 id="techniques">Localisation techniques</h2>
 
@@ -415,7 +417,7 @@
 </div>
 
 <div class="note">
-<p>If you&#39;re getting strange results after changing the <em>Language</em> settings a few times, check the list of fallback locales and make sure the order of those locales is still correct – see the <em>Preferred languages for webpages</em> dialog on Windows/Linux, or the <em>Languages &amp; Text</em> preference in OS X.</p>
+<p>If you&#39;re getting strange results after changing the <em>Language</em> settings a few times, check the list of fallback locales and make sure the order of those locales is still correct &#x2014; see the <em>Preferred languages for webpages</em> dialog on Windows/Linux, or the <em>Languages &amp; Text</em> preference in OS X.</p>
 <p>In the example shown in Figure 6, our <em>Language</em> is set to French, but the browser is showing the localised icon of the Japanese version. Looking at the <em>Preferred languages...</em> list (after an extensive round of testing different locales), we see that the fallback stack now contains <code>fr</code>, <code>ja</code>, <code>ru</code>, <code>it</code>, <code>en-gb</code>, <code>en</code>. When looking for the icon, the browser will first try to locate it in <code>/locales/fr/images/icon.png</code>, and after that it will loop through the remaining languages in the stack <strong>before</strong> resorting to the default. As the next language in our stack <strong>does</strong> have an icon at <code>/locales/ja/images/icon.png</code>, it&#39;s the Japanese icon that is displayed.</p>
 <p>Very few users are likely to have this sort of overloaded fallback list of languages, but if you&#39;re testing your extensions, you can quickly end up in these strange situations &#x2014; at which point I&#39;d recommend simply deleting (on Windows/Linux) or unchecking (using the <em>Edit List...</em> option in OS X) the majority of those fallbacks to more closely match what &quot;real&quot; users are likely to have.</p>
 </div>
