@@ -29,13 +29,8 @@
     // { 'target': opera.extension, 'methodName': 'message', 'args': event }
   ];
   
-  // Pick the right base URL for new tab generation based on the current user agent
-  var newTab_BaseURL;
-  if(/OPR/.test(navigator.userAgent)) {
-    newTab_BaseURL = "opera://startpage";
-  } else {
-    newTab_BaseURL = "chrome://newtab";
-  }
+  // Pick the right base URL for new tab generation
+  var newTab_BaseURL = 'data:text/html,<!--tab_%s-->';
 
   function addDelayedEvent(target, methodName, args) {
     if(isReady) {
@@ -1380,7 +1375,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
             // Implicitly add the first BrowserTab to the new window
             createProperties.tabId = existingBrowserTab.properties.id;
 
-            shadowBrowserWindow.rewriteUrl = newTab_BaseURL + "/#" + existingBrowserTab.properties.id;
+            shadowBrowserWindow.rewriteUrl = newTab_BaseURL.replace('%s', existingBrowserTab.properties.id);
 
           } else {
 
@@ -1414,7 +1409,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           // set BrowserWindow object's rewriteUrl to first tab's opera id
           if( index == 0 ) {
 
-            createProperties.url = shadowBrowserWindow.rewriteUrl = newTab_BaseURL + "/#" + newBrowserTab._operaId;
+            createProperties.url = shadowBrowserWindow.rewriteUrl = newTab_BaseURL.replace('%s', newBrowserTab._operaId);
 
           } else {
 
@@ -1440,7 +1435,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
     OEX.tabs.addTab( defaultBrowserTab );
 
     // set rewriteUrl to windowId
-    shadowBrowserWindow.rewriteUrl = newTab_BaseURL + "/#" + shadowBrowserWindow._operaId;
+    shadowBrowserWindow.rewriteUrl = newTab_BaseURL.replace('%s', shadowBrowserWindow._operaId);
 
     createProperties.url = shadowBrowserWindow.rewriteUrl;
 
@@ -1515,7 +1510,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
 
             var tabCreateProps = {
               'windowId': shadowBrowserWindow.properties.id,
-              'url': newBrowserTab.properties.url || newTab_BaseURL + "/",
+              'url': newBrowserTab.properties.url || 'about:blank',
               'active': newBrowserTab.properties.active,
               'pinned': newBrowserTab.properties.pinned,
               'index': newBrowserTab.properties.index
@@ -2541,7 +2536,7 @@ var RootBrowserTabManager = function() {
     for (var i = 0, l = _windows.length; i < l; i++) {
 
       // Bind the window object with its window id and resolve
-      if( _windows[i].rewriteUrl && _windows[i].rewriteUrl == newTab_BaseURL + "/#" + tabId ) {
+      if( _windows[i].rewriteUrl && _windows[i].rewriteUrl == newTab_BaseURL.replace('%s', tabId) ) {
         _windows[i].properties.id = moveInfo.windowId;
         _windows[i].resolve(true);
         // Also resolve window object's root tab manager
@@ -2836,7 +2831,7 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
   } else if(windowParent && windowParent.tabs) {
     tabIndex = windowParent.tabs.length;
   }
-
+  
   this.properties = {
     'id': undefined, // not settable on create
     'closed': false, // not settable on create
@@ -2851,20 +2846,20 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
     // faviconUrl:
     'favIconUrl': '', // not settable on create
     'title': '', // not settable on create
-    'url': browserTabProperties.url ? (browserTabProperties.url + "") : newTab_BaseURL + "/",
+    'url': browserTabProperties.url ? (browserTabProperties.url + "") : 'about:blank',
     // position:
     'index': tabIndex
     // 'browserWindow' not part of settable properties
     // 'tabGroup' not part of settable properties
   }
-
+  
   // Create a unique browserTab id
   this._operaId = Math.floor(Math.random() * 1e16);
 
   // Pass the identity of this tab through the Chromium Tabs API via the URL field
   if(!bypassRewriteUrl) {
     this.rewriteUrl = this.properties.url;
-    this.properties.url = newTab_BaseURL + "/#" + this._operaId;
+    this.properties.url = newTab_BaseURL.replace('%s', this._operaId)
   }
 
   // Set tab focused if active
