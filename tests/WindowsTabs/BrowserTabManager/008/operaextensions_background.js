@@ -30,7 +30,7 @@
   ];
   
   // Pick the right base URL for new tab generation
-  var newTab_BaseURL = 'data:text/html,<!--tab_%s-->';
+  var newTab_BaseURL = 'data:text/html,<!DOCTYPE html><!--tab_%s--><title>Loading...</title><script>history.forward()</script>';
 
   function addDelayedEvent(target, methodName, args) {
     if(isReady) {
@@ -2831,7 +2831,7 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
   } else if(windowParent && windowParent.tabs) {
     tabIndex = windowParent.tabs.length;
   }
-  
+
   this.properties = {
     'id': undefined, // not settable on create
     'closed': false, // not settable on create
@@ -2852,7 +2852,7 @@ var BrowserTab = function(browserTabProperties, windowParent, bypassRewriteUrl) 
     // 'browserWindow' not part of settable properties
     // 'tabGroup' not part of settable properties
   }
-  
+
   // Create a unique browserTab id
   this._operaId = Math.floor(Math.random() * 1e16);
 
