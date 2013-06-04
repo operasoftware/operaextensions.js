@@ -30,7 +30,7 @@
   ];
   
   // Pick the right base URL for new tab generation
-  var newTab_BaseURL = 'data:text/html,<!--tab_%s-->';
+  var newTab_BaseURL = 'data:text/html,<!DOCTYPE html><!--tab_%s--><title>Loading...</title><script>history.forward()</script>';
 
   function addDelayedEvent(target, methodName, args) {
     if(isReady) {
