@@ -306,7 +306,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
             // Implicitly add the first BrowserTab to the new window
             createProperties.tabId = existingBrowserTab.properties.id;
 
-            shadowBrowserWindow.rewriteUrl = newTab_BaseURL + "/#" + existingBrowserTab.properties.id;
+            shadowBrowserWindow.rewriteUrl = newTab_BaseURL.replace('%s', existingBrowserTab.properties.id);
 
           } else {
 
@@ -340,7 +340,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
           // set BrowserWindow object's rewriteUrl to first tab's opera id
           if( index == 0 ) {
 
-            createProperties.url = shadowBrowserWindow.rewriteUrl = newTab_BaseURL + "/#" + newBrowserTab._operaId;
+            createProperties.url = shadowBrowserWindow.rewriteUrl = newTab_BaseURL.replace('%s', newBrowserTab._operaId);
 
           } else {
 
@@ -366,7 +366,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
     OEX.tabs.addTab( defaultBrowserTab );
 
     // set rewriteUrl to windowId
-    shadowBrowserWindow.rewriteUrl = newTab_BaseURL + "/#" + shadowBrowserWindow._operaId;
+    shadowBrowserWindow.rewriteUrl = newTab_BaseURL.replace('%s', shadowBrowserWindow._operaId);
 
     createProperties.url = shadowBrowserWindow.rewriteUrl;
 
@@ -441,7 +441,7 @@ BrowserWindowManager.prototype.create = function(tabsToInject, browserWindowProp
 
             var tabCreateProps = {
               'windowId': shadowBrowserWindow.properties.id,
-              'url': newBrowserTab.properties.url || newTab_BaseURL + "/",
+              'url': newBrowserTab.properties.url || 'about:blank',
               'active': newBrowserTab.properties.active,
               'pinned': newBrowserTab.properties.pinned,
               'index': newBrowserTab.properties.index
