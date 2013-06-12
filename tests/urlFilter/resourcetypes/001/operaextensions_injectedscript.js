@@ -51,13 +51,6 @@ var deferredComponentsLoadStatus = {
   // ...etc
 };
 
-// Events to delay until window 'load' event has been
-// fired by opera.isReady() below
-var delayedExecuteEvents = [
-  // Example:
-  // { 'target': opera.extension, 'eventName': 'message', 'eventObj': event }
-];
-
 /**
  * rsvp.js
  *
@@ -699,9 +692,16 @@ var OWidgetObjProxy = function() {
   // added with preference.blah or preferences['blah']
   // (instead of the catachable .setItem) and push these
   // preferences to the background script
-  global.addEventListener('beforeunload', function() {
-    // TODO implement widget.preferences page unload behavior
-  }, false);
+  /*global.addEventListener('beforeunload', function() {
+    var dumpPrefs = {};
+    for(var key in this._preferences) {
+      dumpPrefs[ key ] = this._preferences[ key ];
+    }
+    OEX.postMessage({
+      "action": "___O_widgetPreferences_updateAll",
+      "data": dumpPrefs
+    });
+  }, false);*/
 
 };
 
@@ -855,54 +855,86 @@ var MenuEvent = (function(){
 })();
 
 MenuEvent.prototype = Object.create( Event.prototype );
-var MenuEventTarget = function(){
-	var that = this;
-	var target = {};
+var MenuEventTarget = function() {
+    var that = this;
+    var target = {};
 
-	EventTarget.mixin( target );
+    EventTarget.mixin(target);
 
-	var onclick = null;
+    var onclick = null;
 
-	Object.defineProperty(this,'onclick',{enumerable: true,  configurable: false,  get: function(){
-				return onclick;
-			},
-			set: function(value){
-				if(onclick!=null)this.removeEventListener('click',onclick,false);
+    Object.defineProperty(this, 'onclick', {
+      enumerable: true,
+      configurable: false,
+      get: function() {
+        return onclick;
+      },
+      set: function(value) {
+        if (onclick != null) this.removeEventListener('click', onclick, false);
 
-				onclick = value;
+        onclick = value;
 
-				if(onclick!=null && onclick instanceof Function)this.addEventListener('click',onclick,false);
-				else onclick = null;
-			}
-	});
+        if (onclick != null && onclick instanceof Function) this.addEventListener('click', onclick, false);
+        else onclick = null;
+      }
+    });
 
-	Object.defineProperty(this,'dispatchEvent',{enumerable: false,  configurable: false, writable: false, value: function(event){
-		var currentTarget = this;
-		var stoppedImmediatePropagation = false;
-		Object.defineProperty(event,'currentTarget',{enumerable: true,  configurable: false,  get: function(){return currentTarget;}, set: function(value){}});
-		Object.defineProperty(event,'stopImmediatePropagation',{enumerable: true,  configurable: false, writable: false, value: function(){ stoppedImmediatePropagation = true;}});
+    Object.defineProperty(this, 'dispatchEvent', {
+      enumerable: false,
+      configurable: false,
+      writable: false,
+      value: function(event) {
+        var currentTarget = this;
+        var stoppedImmediatePropagation = false;
+        Object.defineProperty(event, 'currentTarget', {
+          enumerable: true,
+          configurable: false,
+          get: function() {
+            return currentTarget;
+          },
+          set: function(value) {}
+        });
+        Object.defineProperty(event, 'stopImmediatePropagation', {
+          enumerable: true,
+          configurable: false,
+          writable: false,
+          value: function() {
+            stoppedImmediatePropagation = true;
+          }
+        });
 
-		var allCallbacks = callbacksFor(target),
-		callbacks = allCallbacks[event.type], callbackTuple, callback, binding;
+        var allCallbacks = callbacksFor(target),
+            callbacks = allCallbacks[event.type],
+            callbackTuple, callback, binding;
 
 
-		if (callbacks)for (var i=0, l=callbacks.length; i<l; i++) {
-			callbackTuple = callbacks[i];
-			callback = callbackTuple[0];
-			binding = callbackTuple[1];
-			if(!stoppedImmediatePropagation)callback.call(binding, event);
-		};
+        if (callbacks) for (var i = 0, l = callbacks.length; i < l; i++) {
+          callbackTuple = callbacks[i];
+          callback = callbackTuple[0];
+          binding = callbackTuple[1];
+          if (!stoppedImmediatePropagation) callback.call(binding, event);
+        };
 
-	}});
-	Object.defineProperty(this,'addEventListener',{enumerable: true,  configurable: false, writable: false, value: function(eventName, callback, useCapture) {
-		target.on(eventName, callback,this); // no useCapture
-	}});
-	Object.defineProperty(this,'removeEventListener',{enumerable: true,  configurable: false, writable: false, value: function(eventName, callback, useCapture) {
-		target.off(eventName, callback,this); // no useCapture
-	}});
+      }
+    });
+    Object.defineProperty(this, 'addEventListener', {
+      enumerable: true,
+      configurable: false,
+      writable: false,
+      value: function(eventName, callback, useCapture) {
+        target.on(eventName, callback, this); // no useCapture
+      }
+    });
+    Object.defineProperty(this, 'removeEventListener', {
+      enumerable: true,
+      configurable: false,
+      writable: false,
+      value: function(eventName, callback, useCapture) {
+        target.off(eventName, callback, this); // no useCapture
+      }
+    });
 
-};
-
+    };
 var MenuItemProxy = function(id) {
 
   MenuEventTarget.call( this );
