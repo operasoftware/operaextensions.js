@@ -114,7 +114,7 @@ opera.isReady(function() {
 
   //console.log(typeof widget.preferences.getItem( "blahblah" ));
 
-  if( widget.preferences.getItem( "testObj3" ) === undefined) {
+  if( widget.preferences.getItem( "testObj3" ) === null) {
     console.log("PASS: testObj3 removed correctly");
   } else {
     console.error("FAIL: testObj3 not removed correctly");
@@ -131,7 +131,7 @@ opera.isReady(function() {
   /*
   widget.preferences.clear();
 
-  if( widget.preferences.getItem( "testObj1" ) === undefined && widget.preferences.getItem( "testObj10" ) === undefined ) {
+  if( widget.preferences.getItem( "testObj1" ) === null && widget.preferences.getItem( "testObj10" ) === null ) {
     console.log("PASS: All objects removed correctly");
   } else {
     console.error("FAIL: All objects not removed correctly");

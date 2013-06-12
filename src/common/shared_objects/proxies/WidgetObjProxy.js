@@ -78,9 +78,16 @@ var OWidgetObjProxy = function() {
   // added with preference.blah or preferences['blah']
   // (instead of the catachable .setItem) and push these
   // preferences to the background script
-  global.addEventListener('beforeunload', function() {
-    // TODO implement widget.preferences page unload behavior
-  }, false);
+  /*global.addEventListener('beforeunload', function() {
+    var dumpPrefs = {};
+    for(var key in this._preferences) {
+      dumpPrefs[ key ] = this._preferences[ key ];
+    }
+    OEX.postMessage({
+      "action": "___O_widgetPreferences_updateAll",
+      "data": dumpPrefs
+    });
+  }, false);*/
 
 };
 
