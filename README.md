@@ -24,7 +24,7 @@ This library adds support to Chromium for the following Opera (.oex) Extension A
 
 ##### Further API reference documentation
 
-The full Opera Extension (.oex) API Documentation is provided for reference in the `/build` directory of this repository.
+The full Opera Extension (.oex) API Documentation is provided for reference in the `/docs` directory of this repository.
 
 ### Download this library
 
