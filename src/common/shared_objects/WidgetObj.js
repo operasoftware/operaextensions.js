@@ -4,15 +4,9 @@ var OWidgetObj = function() {
   OEventTarget.call(this);
 
   this.properties = manifest || chrome.app.getDetails();
-  
-  // Set WIDGET_API_LOADED feature to LOADED
-  deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
 
   // LocalStorage shim
   this._preferences = new OStorage();
-
-  // Set WIDGET_PREFERENCES_LOADED feature to LOADED
-  deferredComponentsLoadStatus['WIDGET_PREFERENCES_LOADED'] = true;
 
   // Setup widget object proxy listener
   // for injected scripts and popups to connect to
@@ -60,6 +54,14 @@ var OWidgetObj = function() {
 
         this._preferences.clear( true );
 
+        break;
+        
+      case '___O_widgetPreferences_updateAll':
+      
+        for(var prefKey in msg.data.data) {
+          this._preferences.setItem( prefKey, msg.data.data[ prefKey ], false );
+        }
+      
         break;
 
       default:

@@ -47,8 +47,6 @@
 // Used to trigger opera.isReady() functions
 var deferredComponentsLoadStatus = {
   'WINTABS_LOADED': false,
-  'WIDGET_API_LOADED': false,
-  'WIDGET_PREFERENCES_LOADED': false,
   'SPEEDDIAL_LOADED': false
   // ...etc
 };
@@ -961,15 +959,9 @@ var OWidgetObj = function() {
   OEventTarget.call(this);
 
   this.properties = manifest || chrome.app.getDetails();
-  
-  // Set WIDGET_API_LOADED feature to LOADED
-  deferredComponentsLoadStatus['WIDGET_API_LOADED'] = true;
 
   // LocalStorage shim
   this._preferences = new OStorage();
-
-  // Set WIDGET_PREFERENCES_LOADED feature to LOADED
-  deferredComponentsLoadStatus['WIDGET_PREFERENCES_LOADED'] = true;
 
   // Setup widget object proxy listener
   // for injected scripts and popups to connect to
@@ -1017,6 +1009,14 @@ var OWidgetObj = function() {
 
         this._preferences.clear( true );
 
+        break;
+        
+      case '___O_widgetPreferences_updateAll':
+      
+        for(var prefKey in msg.data.data) {
+          this._preferences.setItem( prefKey, msg.data.data[ prefKey ], false );
+        }
+      
         break;
 
       default:
@@ -3717,437 +3717,544 @@ if(manifest && manifest.browser_action !== undefined && manifest.browser_action 
   OEC.toolbar = OEC.toolbar || new ToolbarContext();
 
 }
-var MenuEvent = function(type,args,target){
+var MenuEvent = function(type, args, target) {
+  
   var event;
 
-	if(type=='click'){
+  if (type == 'click') {
 
-		var tab = null;
-		var tabs = OEX.tabs.getAll();
-		for(var i=0;i<tabs.length;i++){
-			if(tabs[i].properties.id==args.tab.id&&tabs[i].browserWindow.properties.id==args.tab.windowId)tab = tabs[i];
-		};
+    var tab = null;
+    var tabs = OEX.tabs.getAll();
+    for (var i = 0; i < tabs.length; i++) {
+      if (tabs[i].properties.id == args.tab.id && 
+            tabs[i].browserWindow.properties.id == args.tab.windowId) tab = tabs[i];
+    };
 
-		event = OEvent(type,{
-			documentURL: args.info.pageUrl,
-			pageURL: args.info.pageUrl,
-			isEditable: args.info.editable,
-			linkURL: args.info.linkUrl || null,
-			mediaType: args.info.mediaType || null,
-			selectionText: args.info.selectionText || null,
-			source: tab,//tab.port should be implemented
-			srcURL: args.info.srcUrl || null
-		});
-	} else event = OEvent(type,args);
-
-
-	Object.defineProperty(event,'target',{enumerable: true,  configurable: false,  get: function(){return target || null;}, set: function(value){}});
-
-	return event;
-
-};
-
-MenuEvent.prototype = Object.create( Event.prototype );
-
-var MenuEventTarget = function(){
-	var that = this;
-	var target = {};
-
-	EventTarget.mixin( target );
-
-	var onclick = null;
-
-	Object.defineProperty(this,'onclick',{enumerable: true,  configurable: false,  get: function(){
-				return onclick;
-			},
-			set: function(value){
-				if(onclick!=null)this.removeEventListener('click',onclick,false);
-
-				onclick = value;
-
-				if(onclick!=null && onclick instanceof Function)this.addEventListener('click',onclick,false);
-				else onclick = null;
-			}
-	});
-
-	Object.defineProperty(this,'dispatchEvent',{enumerable: false,  configurable: false, writable: false, value: function(event){
-		var currentTarget = this;
-		var stoppedImmediatePropagation = false;
-		Object.defineProperty(event,'currentTarget',{enumerable: true,  configurable: false,  get: function(){return currentTarget;}, set: function(value){}});
-		Object.defineProperty(event,'stopImmediatePropagation',{enumerable: true,  configurable: false, writable: false, value: function(){ stoppedImmediatePropagation = true;}});
-
-		var allCallbacks = callbacksFor(target),
-		callbacks = allCallbacks[event.type], callbackTuple, callback, binding;
+    event = OEvent(type, {
+      documentURL: args.info.pageUrl,
+      pageURL: args.info.pageUrl,
+      isEditable: args.info.editable,
+      linkURL: args.info.linkUrl || null,
+      mediaType: args.info.mediaType || null,
+      selectionText: args.info.selectionText || null,
+      source: tab,
+      //tab.port should be implemented
+      srcURL: args.info.srcUrl || null
+    });
+  } else event = OEvent(type, args);
 
 
-		if (callbacks)for (var i=0, l=callbacks.length; i<l; i++) {
-			callbackTuple = callbacks[i];
-			callback = callbackTuple[0];
-			binding = callbackTuple[1];
-			if(!stoppedImmediatePropagation)callback.call(binding, event);
-		};
+  Object.defineProperty(event, 'target', {
+    enumerable: true,
+    get: function() {
+      return target || null;
+    },
+    set: function(value) {}
+  });
 
-	}});
-	Object.defineProperty(this,'addEventListener',{enumerable: true,  configurable: false, writable: false, value: function(eventName, callback, useCapture) {
-		target.on(eventName, callback,this); // no useCapture
-	}});
-	Object.defineProperty(this,'removeEventListener',{enumerable: true,  configurable: false, writable: false, value: function(eventName, callback, useCapture) {
-		target.off(eventName, callback,this); // no useCapture
-	}});
+  return event;
 
 };
 
+MenuEvent.prototype = Object.create(Event.prototype);
+var MenuEventTarget = function() {
+    var that = this;
+    var target = {};
+
+    EventTarget.mixin(target);
+
+    var onclick = null;
+
+    Object.defineProperty(this, 'onclick', {
+      enumerable: true,
+      configurable: false,
+      get: function() {
+        return onclick;
+      },
+      set: function(value) {
+        if (onclick != null) this.removeEventListener('click', onclick, false);
+
+        onclick = value;
+
+        if (onclick != null && onclick instanceof Function) this.addEventListener('click', onclick, false);
+        else onclick = null;
+      }
+    });
+
+    Object.defineProperty(this, 'dispatchEvent', {
+      enumerable: false,
+      configurable: false,
+      writable: false,
+      value: function(event) {
+        var currentTarget = this;
+        var stoppedImmediatePropagation = false;
+        Object.defineProperty(event, 'currentTarget', {
+          enumerable: true,
+          configurable: false,
+          get: function() {
+            return currentTarget;
+          },
+          set: function(value) {}
+        });
+        Object.defineProperty(event, 'stopImmediatePropagation', {
+          enumerable: true,
+          configurable: false,
+          writable: false,
+          value: function() {
+            stoppedImmediatePropagation = true;
+          }
+        });
+
+        var allCallbacks = callbacksFor(target),
+            callbacks = allCallbacks[event.type],
+            callbackTuple, callback, binding;
+
+
+        if (callbacks) for (var i = 0, l = callbacks.length; i < l; i++) {
+          callbackTuple = callbacks[i];
+          callback = callbackTuple[0];
+          binding = callbackTuple[1];
+          if (!stoppedImmediatePropagation) callback.call(binding, event);
+        };
+
+      }
+    });
+    Object.defineProperty(this, 'addEventListener', {
+      enumerable: true,
+      configurable: false,
+      writable: false,
+      value: function(eventName, callback, useCapture) {
+        target.on(eventName, callback, this); // no useCapture
+      }
+    });
+    Object.defineProperty(this, 'removeEventListener', {
+      enumerable: true,
+      configurable: false,
+      writable: false,
+      value: function(eventName, callback, useCapture) {
+        target.off(eventName, callback, this); // no useCapture
+      }
+    });
+
+    };
 var OMenuContext = function(internal) {
-  if(internal !== Opera){//only internal creations
-    throw new OError(
-      "NotSupportedError",
-      "NOT_SUPPORTED_ERR",
-      DOMException.NOT_SUPPORTED_ERR
-    );
+
+  if (internal !== Opera) { //only internal creations
+    throw new OError("NotSupportedError", "NOT_SUPPORTED_ERR", DOMException.NOT_SUPPORTED_ERR);
     return;
   };
 
-  MenuEventTarget.call( this );
+  MenuEventTarget.call(this);
 
   var length = 0;
 
-	Object.defineProperty(this,'length',{enumerable: true,  configurable: false,  get: function(){ return length;	}, set: function(value){ }	});
+  Object.defineProperty(this, 'length', {
+    enumerable: true,
+    get: function() {
+      return length;
+    },
+    set: function(value) {}
+  });
 
-	function toUint32(value){
+  function toUint32(value) {
     value = Number(value);
     value = value < 0 ? Math.ceil(value) : Math.floor(value);
 
-    return value - Math.floor(value/Math.pow(2, 32))*Math.pow(2, 32);
+    return value - Math.floor(value / Math.pow(2, 32)) * Math.pow(2, 32);
   };
 
 
-	Object.defineProperty(this,'addItem',{enumerable: true,  configurable: false, writable: false, value: function(menuItem,before){
+  Object.defineProperty(this, 'addItem', {
+    enumerable: true,
+    value: function(menuItem, before) {
+
+      //too many items
+      if (this instanceof MenuContext && this.length > 0) {
+        throw new OError("NotSupportedError", "NOT_SUPPORTED_ERR", DOMException.NOT_SUPPORTED_ERR);
+        return;
+      };
+
+      //no item to add
+      if (!menuItem || !(menuItem instanceof MenuItem)) {
+        throw new OError("TypeMismatchError", "TYPE_MISMATCH_ERR", DOMException.TYPE_MISMATCH_ERR);
+        return;
+      }
+
+      //adding only for folders
+      if (this instanceof MenuItem && this.type != 'folder') {
+        throw new OError("TypeMismatchError", "TYPE_MISMATCH_ERR", DOMException.TYPE_MISMATCH_ERR);
+        return;
+      };
+
+      if (Array.prototype.indexOf.apply(this, [menuItem]) != -1) return; //already exist
+      //same parent check
+      if (before === undefined || this instanceof MenuContext) before = this.length;
+      else if (before instanceof MenuItem) {
+        var index = Array.prototype.indexOf.apply(this, [before]);
+        if (before.parent != this || index == -1) {
+          throw new OError("HierarchyRequestError", "HIERARCHY_REQUEST_ERR", DOMException.HIERARCHY_REQUEST_ERR);
+          return;
+
+        } else before = index;
+
+      } else if (before === null) before = this.length;
+      else before = toUint32(before);
+
+      if (isNaN(before)) before = 0;
+
+      //loop check
+      var parent = this;
+      var noLoop = false;
+      while (!noLoop) {
+        if (parent instanceof MenuContext || parent == null) noLoop = true;
+        else if (parent === menuItem) {
+          throw new OError("HierarchyRequestError", "HIERARCHY_REQUEST_ERR", DOMException.HIERARCHY_REQUEST_ERR);
+          return;
+        } else parent = parent.parent;
+
+      };
 
 
-		//too many items
-    if(this instanceof MenuContext && this.length>0){
-      throw new OError(
-        "NotSupportedError",
-        "NOT_SUPPORTED_ERR",
-        DOMException.NOT_SUPPORTED_ERR
-      );
-      return;
-    };
+      Array.prototype.splice.apply(this, [before, 0, menuItem]);
 
-    //no item to add
-    if( !menuItem || !(menuItem instanceof MenuItem) ) {
-      throw new OError(
-        "TypeMismatchError",
-        "TYPE_MISMATCH_ERR",
-        DOMException.TYPE_MISMATCH_ERR
-      );
-      return;
+      length = length + 1;
+
+      if (this instanceof MenuContext) menuItem.dispatchEvent(new MenuEvent('change', {
+        properties: {
+          parent: this
+        }
+      }, menuItem));
+      else this.dispatchEvent(new MenuEvent('change', {
+        properties: {
+          parent: this
+        }
+      }, menuItem));
+
     }
+  });
 
-    //adding only for folders
-    if(this instanceof MenuItem && this.type!='folder'){
-			throw new OError(
-        "TypeMismatchError",
-        "TYPE_MISMATCH_ERR",
-        DOMException.TYPE_MISMATCH_ERR
-      );
-      return;
-    };
-
-    if(Array.prototype.indexOf.apply(this,[menuItem])!=-1)return;//already exist
-
-    //same parent check
-    if(before===undefined || this instanceof MenuContext)before = this.length;
-    else if(before instanceof MenuItem){
-      var index = Array.prototype.indexOf.apply(this,[before]);
-      if(before.parent != this || index == -1){
-        throw new OError(
-          "HierarchyRequestError",
-          "HIERARCHY_REQUEST_ERR",
-          DOMException.HIERARCHY_REQUEST_ERR
-        );
+  Object.defineProperty(this, 'removeItem', {
+    enumerable: true,
+    value: function(index) {
+      if (index === undefined) {
+        throw new OError("TypeMismatchError", "TYPE_MISMATCH_ERR", DOMException.TYPE_MISMATCH_ERR);
         return;
+      };
 
-      } else before = index;
+      if (index < 0 || index >= length || this[index] == undefined) return;
 
-    } else if(before === null)before = this.length;
-    else before = toUint32(before);
+      this[index].dispatchEvent(new MenuEvent('change', {
+        properties: {
+          parent: null
+        }
+      }, this[index]));
 
-    if(isNaN(before))before = 0;
+      Array.prototype.splice.apply(this, [index, 1]);
 
-    //loop check
-    var parent = this;
-    var noLoop = false;
-    while(!noLoop){
-      if(parent instanceof MenuContext || parent == null)noLoop = true;
-      else if(parent === menuItem){
-        throw new OError(
-          "HierarchyRequestError",
-          "HIERARCHY_REQUEST_ERR",
-          DOMException.HIERARCHY_REQUEST_ERR
-        );
-        return;
-      } else parent = parent.parent;
+      length = length - 1;
 
-    };
+    }
+  });
 
-
-    Array.prototype.splice.apply(this,[before,0,menuItem]);
-
-		length = length + 1;
-
-    if(this instanceof MenuContext)menuItem.dispatchEvent( new MenuEvent('change', {properties : {parent: this} },menuItem));
-		else this.dispatchEvent( new MenuEvent('change', {properties : {parent: this} }, menuItem));
-
-	}});
-
-	Object.defineProperty(this,'removeItem',{enumerable: true,  configurable: false, writable: false, value: function(index){
-		if(index===undefined) {
-			throw new OError(
-				"TypeMismatchError",
-				"TYPE_MISMATCH_ERR",
-				DOMException.TYPE_MISMATCH_ERR
-			);
-			return;
-		};
-
-		if(index<0 || index >= length || this[ index ] == undefined)return;
-
-		this[ index ].dispatchEvent( new MenuEvent('change', {properties : {parent: null} },this[ index ]));
-
-		Array.prototype.splice.apply(this,[index,1]);
-
-		length = length - 1;
-
-	}});
-
-	Object.defineProperty(this,'item',{enumerable: true,  configurable: false, writable: false, value: function(index){
-		return this[index] || null;
-	}});
+  Object.defineProperty(this, 'item', {
+    enumerable: true,
+    value: function(index) {
+      return this[index] || null;
+    }
+  });
 
 };
 
-OMenuContext.prototype = Object.create( MenuEventTarget.prototype);
+OMenuContext.prototype = Object.create(MenuEventTarget.prototype);
+var MenuItemProperties = function(obj, initial) {
+  var lock = false;
+  var menuItemId = null;
+  var properties = {
+    id: "",
+    type: "entry",
+    contexts: ["page"],
+    disabled: false,
+    title: "",
+    icon: "",
+    documentURLPatterns: null,
+    targetURLPatterns: null,
+    parent: null
+  };
+  var allowedContexts = ["all", "page", "frame", "selection", "link", "editable", "image", "video", "audio"];
+  var changed = function() {
+      if (!lock) obj.dispatchEvent(new MenuEvent('change', {}, obj));
+      }
 
-var MenuItemProperties = function(obj,initial){
-	var lock = false;
-	var menuItemId = null;
-	var properties = {
-		id: "",
-		type: "entry",
-		contexts: ["page"],
-		disabled: false,
-		title: "",
-		icon: "",
-		documentURLPatterns: null,
-		targetURLPatterns: null,
-		parent: null
-	};
-	var allowedContexts = ["all", "page", "frame", "selection", "link", "editable", "image", "video", "audio"];
-	var changed = function(){
-		if(!lock)obj.dispatchEvent(new MenuEvent('change',{},obj));
-	}
-	var update = function(props){
-		if(lock)return;
+  var update = function(props) {
 
-		lock = true;
+    if (lock) return;
 
-		if(props!=undefined)for(var name in props)if(properties[name]!==undefined){
-			if(name === "type"){
+    lock = true;
 
-				if(["entry", "folder", "line"].indexOf(String(props.type).toLowerCase())!=-1)properties.type = String(props.type);
+    if (props != undefined) for (var name in props) if (properties[name] !== undefined) {
+      if (name === "type") {
 
-			} else if(name === "parent"){
-				if(props.parent === null || props.parent instanceof OMenuContext)properties.parent = props.parent;
-				else throw new TypeError();
+        if (["entry", "folder", "line"].indexOf(String(props.type).toLowerCase()) != -1) properties.type = String(props.type);
 
-			} else if(name === "id")properties.id = String(props.id);
-			else obj[name] = props[name];
-		};
+      } else if (name === "parent") {
+        if (props.parent === null || props.parent instanceof OMenuContext) properties.parent = props.parent;
+        else throw new TypeError();
 
-		lock = false;
-		//update
+      } else if (name === "id") properties.id = String(props.id);
+      else obj[name] = props[name];
+    };
 
-		if(properties.parent==null || (properties.parent instanceof MenuItem && properties.parent.menuItemId==null) ){
+    lock = false;
+    //update
+    if (properties.parent == null || (properties.parent instanceof MenuItem && properties.parent.menuItemId == null)) {
 
-			if(menuItemId!=null){
-				chrome.contextMenus.remove(menuItemId);
-				menuItemId = null;
-			};
-			
-		} else if(properties.disabled==true){
-			
-			if(menuItemId!=null){
-				chrome.contextMenus.remove(menuItemId);
-				menuItemId = null;
-			};
-			
-		} else {
+      if (menuItemId != null) {
+        chrome.contextMenus.remove(menuItemId);
+        menuItemId = null;
+      };
 
-			var updateProperties = {
-				title: properties.title.length==0?chrome.app.getDetails().name:properties.title,
-				type: properties.type.toLowerCase()=="line"?"separator":"normal" //"normal", "checkbox", "radio", "separator"
-			};
+    } else if (properties.disabled == true) {
 
-			var contexts = properties.contexts.join(',').toLowerCase().split(',').filter(function(element){
-				return allowedContexts.indexOf(element.toLowerCase())!=-1;
-			});
+      if (menuItemId != null) {
+        chrome.contextMenus.remove(menuItemId);
+        menuItemId = null;
+      };
 
-			if(contexts.length==0)updateProperties.contexts = ["page"];
-			else updateProperties.contexts = contexts;
+    } else {
 
-			if(properties.parent instanceof MenuItem && properties.parent.menuItemId!=null){
-				updateProperties.parentId = properties.parent.menuItemId;
-			};
+      var updateProperties = {
+        title: properties.title.length == 0 ? chrome.app.getDetails().name : properties.title,
+        type: properties.type.toLowerCase() == "line" ? "separator" : "normal" //"normal", "checkbox", "radio", "separator"
+      };
 
+      var contexts = properties.contexts.join(',').toLowerCase().split(',').filter(function(element) {
+        return allowedContexts.indexOf(element.toLowerCase()) != -1;
+      });
 
+      if (contexts.length == 0) updateProperties.contexts = ["page"];
+      else updateProperties.contexts = contexts;
 
-			if(menuItemId==null){
-				if(properties.id != "")updateProperties.id = properties.id;//set id
-				menuItemId = chrome.contextMenus.create(updateProperties);
-			} else chrome.contextMenus.update(menuItemId,updateProperties);
-
-			/* unsafe code
-			if(
-				this.properties.parent instanceof MenuContext && this.properties.icon.length>0 //has icon
-				&& !(chrome.app.getDetails().icons && chrome.app.getDetails().icons[16]) // no global 16x16 icon
-			){//set custom root icon
-				chrome.browserAction.setIcon({path: this.properties.icon });
-			};
-			*/
-
-		};
-
-	};
-
-	var nosetter = function(value){};
-
-	Object.defineProperty(obj,'id',{enumerable: true,  configurable: false,  get: function(){return properties.id;}, set: nosetter});
-	Object.defineProperty(obj,'type',{enumerable: true,  configurable: false,  get: function(){return properties.type;}, set: nosetter});
-
-	Object.defineProperty(obj,'contexts',{enumerable: true,  configurable: false,  get: function(){return properties.contexts;}, set: function(value){
-		if(!Array.isArray(value)){
-			throw new TypeError();
-			return;
-		};
-
-		properties.contexts = value.length==0?value:value.join(',').split(',');
-		changed();
-
-	}});
-
-	Object.defineProperty(obj,'disabled',{enumerable: true,  configurable: false,  get: function(){return properties.disabled;}, set: function(value){
-		properties.disabled = Boolean(value);
-		changed();
-	}});
-
-	Object.defineProperty(obj,'title',{enumerable: true,  configurable: false,  get: function(){return properties.title;}, set: function(value){
-		properties.title = String(value);
-		changed();
-	}});
-
-	Object.defineProperty(obj,'icon',{enumerable: true,  configurable: false,  get: function(){return properties.icon;}, set: function(value){
-		if(typeof value === "string"){
-			properties.icon = value;
-
-			if(properties.icon.indexOf(':')==-1&&properties.icon.indexOf('/')==-1&&properties.icon.length>0)properties.icon = '/'+properties.icon;
-		};
-
-		changed();
-	}});
-
-	Object.defineProperty(obj,'documentURLPatterns',{enumerable: true,  configurable: false,  get: function(){return properties.documentURLPatterns;}, set: function(value){
-
-		if(Array.isArray(value)){
-			properties.documentURLPatterns = [];
-			for(var i=0;i<value.length;i++)properties.documentURLPatterns.push(String(value[i]).toLowerCase());
-		};
-
-		changed();
-	}});
-
-	Object.defineProperty(obj,'targetURLPatterns',{enumerable: true,  configurable: false,  get: function(){return properties.targetURLPatterns;}, set: function(value){
-
-		if(Array.isArray(value)){
-			properties.targetURLPatterns = [];
-			for(var i=0;i<value.length;i++)properties.targetURLPatterns.push(String(value[i]).toLowerCase());
-		};
-
-		changed();
-	}});
-
-	Object.defineProperty(obj,'menuItemId',{enumerable: false,  configurable: false,  get: function(){return menuItemId;},set: nosetter});
-
-	Object.defineProperty(obj,'parent',{enumerable: true,  configurable: false,  get: function(){
-			return properties.parent;
-	}, set: nosetter	});
-
-	if(initial!=undefined)update(initial);
-
-	return update;
-};
+      if (properties.parent instanceof MenuItem && properties.parent.menuItemId != null) {
+        updateProperties.parentId = properties.parent.menuItemId;
+      };
 
 
 
-var MenuItem = function(internal,properties ) {
-	OMenuContext.apply( this, [internal] );
+      if (menuItemId == null) {
+        if (properties.id != "") updateProperties.id = properties.id; //set id
+        menuItemId = chrome.contextMenus.create(updateProperties);
+      } else chrome.contextMenus.update(menuItemId, updateProperties);
 
-	var _apply = MenuItemProperties(this,properties);
+/* unsafe code
+  if(
+    this.properties.parent instanceof MenuContext && this.properties.icon.length>0 //has icon
+    && !(chrome.app.getDetails().icons && chrome.app.getDetails().icons[16]) // no global 16x16 icon
+  ){//set custom root icon
+    chrome.browserAction.setIcon({path: this.properties.icon });
+  };
+  */
 
-	//click event
-	if(properties.onclick!=undefined)this.onclick = properties.onclick;//set initial click handler
+    };
 
-	if(this.type.toLowerCase() === 'entry')chrome.contextMenus.onClicked.addListener(function(_info,_tab) {
-    if(this.menuItemId == null || !(this.menuItemId === _info.menuItemId || this.id === _info.menuItemId))return;
+  };
 
-    this.dispatchEvent( new MenuEvent('click', {info: _info, tab: _tab},this) );
+  var nosetter = function(value) {};
 
-		var event = new MenuEvent('click', {info: _info, tab: _tab},this);
+  Object.defineProperty(obj, 'id', {
+    enumerable: true,
+    get: function() {
+      return properties.id;
+    },
+    set: nosetter
+  });
+
+  Object.defineProperty(obj, 'type', {
+    enumerable: true,
+    get: function() {
+      return properties.type;
+    },
+    set: nosetter
+  });
+
+  Object.defineProperty(obj, 'contexts', {
+    enumerable: true,
+    get: function() {
+      return properties.contexts;
+    },
+    set: function(value) {
+      if (!Array.isArray(value)) {
+        throw new TypeError();
+        return;
+      };
+
+      properties.contexts = value.length == 0 ? value : value.join(',').split(',');
+      changed();
+
+    }
+  });
+
+  Object.defineProperty(obj, 'disabled', {
+    enumerable: true,
+    get: function() {
+      return properties.disabled;
+    },
+    set: function(value) {
+      properties.disabled = Boolean(value);
+      changed();
+    }
+  });
+
+  Object.defineProperty(obj, 'title', {
+    enumerable: true,
+    get: function() {
+      return properties.title;
+    },
+    set: function(value) {
+      properties.title = String(value);
+      changed();
+    }
+  });
+
+  Object.defineProperty(obj, 'icon', {
+    enumerable: true,
+    get: function() {
+      return properties.icon;
+    },
+    set: function(value) {
+      if (typeof value === "string") {
+        properties.icon = value;
+
+        if (properties.icon.indexOf(':') == -1 && properties.icon.indexOf('/') == -1 && properties.icon.length > 0) properties.icon = '/' + properties.icon;
+      };
+
+      changed();
+    }
+  });
+
+  Object.defineProperty(obj, 'documentURLPatterns', {
+    enumerable: true,
+    get: function() {
+      return properties.documentURLPatterns;
+    },
+    set: function(value) {
+
+      if (Array.isArray(value)) {
+        properties.documentURLPatterns = [];
+        for (var i = 0; i < value.length; i++) properties.documentURLPatterns.push(String(value[i]).toLowerCase());
+      };
+
+      changed();
+    }
+  });
+
+  Object.defineProperty(obj, 'targetURLPatterns', {
+    enumerable: true,
+    get: function() {
+      return properties.targetURLPatterns;
+    },
+    set: function(value) {
+
+      if (Array.isArray(value)) {
+        properties.targetURLPatterns = [];
+        for (var i = 0; i < value.length; i++) properties.targetURLPatterns.push(String(value[i]).toLowerCase());
+      };
+
+      changed();
+    }
+  });
+
+  Object.defineProperty(obj, 'menuItemId', {
+    enumerable: false,
+    get: function() {
+      return menuItemId;
+    },
+    set: nosetter
+  });
+
+  Object.defineProperty(obj, 'parent', {
+    enumerable: true,
+    get: function() {
+      return properties.parent;
+    },
+    set: nosetter
+  });
+
+  if (initial != undefined) update(initial);
+
+  return update;
+  };
+
+
+var MenuItem = function(internal, properties) {
+  OMenuContext.apply(this, [internal]);
+
+  var _apply = MenuItemProperties(this, properties);
+
+  //click event
+  if (properties.onclick != undefined) this.onclick = properties.onclick; //set initial click handler
+  if (this.type.toLowerCase() === 'entry') chrome.contextMenus.onClicked.addListener(function(_info, _tab) {
+    if (this.menuItemId == null || !(this.menuItemId === _info.menuItemId || this.id === _info.menuItemId)) return;
+
+    this.dispatchEvent(new MenuEvent('click', {
+      info: _info,
+      tab: _tab
+    }, this));
+
+    var event = new MenuEvent('click', {
+      info: _info,
+      tab: _tab
+    }, this);
 
     OEC.menu.dispatchEvent(event);
 
-		event.source.postMessage({
-			"action": "___O_MenuItem_Click",
-			"info": _info,
-			"menuItemId": this.id
-		});
+    event.source.postMessage({
+      "action": "___O_MenuItem_Click",
+      "info": _info,
+      "menuItemId": this.id
+    });
 
   }.bind(this));
 
-	this.addEventListener('change',function(e){
-		if(e.target === this)_apply(e.properties);
-		else _apply();
+  this.addEventListener('change', function(e) {
+    if (e.target === this) _apply(e.properties);
+    else _apply();
 
-		for(var i=0;i<this.length;i++)this[i].dispatchEvent(new MenuEvent('change',{properties: e.properties},e.target));
+    for (var i = 0; i < this.length; i++) this[i].dispatchEvent(new MenuEvent('change', {
+      properties: e.properties
+    }, e.target));
 
-	},false);
+  }, false);
 
-	Object.defineProperty(this,'toString',{enumerable: false,  configurable: false, writable: false, value: function(event){
-		return "[object MenuItem]";
-	}});
+  Object.defineProperty(this, 'toString', {
+    value: function(event) {
+      return "[object MenuItem]";
+    }
+  });
 
 };
 
-MenuItem.prototype = Object.create( OMenuContext.prototype );
-
-
+MenuItem.prototype = Object.create(OMenuContext.prototype);
 var MenuContext = function(internal) {
-  chrome.contextMenus.removeAll();//clear all items
 
-	OMenuContext.apply(this,[internal]);
+  chrome.contextMenus.removeAll(); //clear all items
 
-  Object.defineProperty(this,'toString',{enumerable: false,  configurable: false, writable: false, value: function(event){
-		return "[object MenuContext]";
-	}});
+  OMenuContext.apply(this, [internal]);
+
+  Object.defineProperty(this, 'toString', {
+    value: function(event) {
+      return "[object MenuContext]";
+    }
+  });
 
 };
 
-MenuContext.prototype = Object.create( OMenuContext.prototype );
+MenuContext.prototype = Object.create(OMenuContext.prototype);
 
-MenuContext.prototype.createItem = function( menuItemProperties ) {
-  return new MenuItem(Opera, menuItemProperties );
+MenuContext.prototype.createItem = function(menuItemProperties) {
+
+  return new MenuItem(Opera, menuItemProperties);
+
 };
-
 if(manifest && manifest.permissions && manifest.permissions.indexOf('contextMenus')!=-1){
 
   global.MenuItem = MenuItem;
@@ -4198,7 +4305,7 @@ SpeeddialContext.prototype.__defineSetter__('title', function(val) {
 
 }); // write
 
-if(global.opr && global.opr.speeddial && manifest && manifest.speeddial){
+if(manifest && manifest.speeddial && global.opr && global.opr.speeddial){
 
   OEC.speeddial = OEC.speeddial || new SpeeddialContext();
 
