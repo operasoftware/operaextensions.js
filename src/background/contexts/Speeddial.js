@@ -1,5 +1,5 @@
 
-if(global.opr && global.opr.speeddial && manifest && manifest.speeddial){
+if(manifest && manifest.speeddial && global.opr && global.opr.speeddial){
 
   OEC.speeddial = OEC.speeddial || new SpeeddialContext();
 
