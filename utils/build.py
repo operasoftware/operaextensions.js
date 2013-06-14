@@ -61,7 +61,7 @@ def main(argv=None):
 
     externs = ' --externs '.join(args.externs)
     # TODO: reapply warning level VERBOSE for better JSHint
-    os.system('java -jar compiler/compiler.jar --warning_level=QUIET --jscomp_off=globalThis --externs %s --jscomp_off=checkTypes --language_in=ECMASCRIPT5_STRICT --js %s --js_output_file %s' % (externs, path, output))
+    os.system('java -jar compiler/compiler.jar --warning_level=QUIET --jscomp_off=globalThis --externs %s --jscomp_off=checkTypes --language_in=ECMASCRIPT5 --js %s --js_output_file %s' % (externs, path, output))
 
     # header
 
