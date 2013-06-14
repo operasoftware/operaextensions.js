@@ -1,21 +1,19 @@
 {
     "name": "operaextensions.js",
-    "description": "Opera Extension APIs for Chromium",
-    "version": "1dev",
+    "description": "Opera (.oex) Extensions Compatibility Layer",
+    "version": "0.9",
     "homepage" : "https://github.com/operasoftware/operaextensions.js",
     "author": "Opera Software ASA",
-
     "devDependencies": {
       "uglify-js": "*",
       "argparse" : "*"
     },
-
     "repository" : {
         "type" : "git",
          "url" : "git@github.com:operasoftware/operaextensions.js.git"
     },
     "licenses": [{
         "type": "The MIT License",
-        "url": "https://github.com/operasoftware/operaextensions.js/blob/master/README.md"
+        "url": "https://github.com/operasoftware/operaextensions.js/blob/master/LICENSE"
     }]
 }

@@ -20,12 +20,28 @@ def main(argv=None):
 
   output = args.output
 
-  # merge
+  # setup banner
+
+  configFile = open('package.json')
+
+  config = json.load(configFile)
+  banner = "/*\n\
+ * " + config["description"] + " - " + os.path.basename(output) + "\n\
+ * " + config["homepage"] + " (ver: " + config["version"] + ")\n\
+ * Copyright (c) 2013 " + config["author"] +" \n\
+ * License: " + config["licenses"][0]["type"] + " (" + config["licenses"][0]["url"] + ")\n\
+ */\n"
+
+  configFile.close()
+
+  # merge build files
 
   print(' * Building ' + output)
 
   fd, path = tempfile.mkstemp()
   tmp = open(path, 'w')
+
+  tmp.write(banner)
 
   for include in args.include:
     with open('includes/' + include + '.json','r') as f: files = json.load(f)
@@ -50,7 +66,7 @@ def main(argv=None):
     # header
 
     with open(output,'r') as f: text = f.read()
-    with open(output,'w') as f: f.write(("// %s - http://github.com/operasoftware/operaextensions.js\n" % os.path.basename(output)) + text)
+    with open(output,'w') as f: f.write(banner + text)
 
   os.close(fd)
   os.remove(path)
