@@ -59,7 +59,7 @@ if (global.opera) {
     }, true);
     
     // Take over handling of document.readyState via our own load bootstrap code below
-    var _readyState = (hasFired_DOMContentLoaded || hasFired_Load) ? global.document.readyState : "uninitialized";
+    var _readyState = (hasFired_DOMContentLoaded || hasFired_Load) ? global.document.readyState : "loading";
     global.document.__defineSetter__('readyState', function(val) { _readyState = val; });
     global.document.__defineGetter__('readyState', function() { return _readyState; });
 
@@ -77,10 +77,12 @@ if (global.opera) {
             return;
           }
 
-          if (isReady) {
-            fn.call(global);
-          } else {
+          if ((name.toLowerCase() === 'domcontentloaded' && !hasFired_DOMContentLoaded) || 
+                (name.toLowerCase() === 'load' && !hasFired_Load) || 
+                    !isReady) {
             fns[_name.toLowerCase()].push(fn);
+          } else {
+            fn.call(global);
           }
         } else {
           // call standard addEventListener method on target
@@ -104,7 +106,7 @@ if (global.opera) {
     function fireEvent(name, target, props) {
       var evtName = name.toLowerCase();
       
-      // Role a standard object as the Event since we really need
+      // Roll a standard object as the Event since we really need
       // to set the target + other unsettable properties on the 
       // isReady events
       
@@ -112,7 +114,7 @@ if (global.opera) {
 
       evt.type = name;
 
-      if(!evt.target) evt.target = global;
+      if(!evt.target) evt.target = target || global;
       if(!evt.currentTarget) evt.currentTarget = evt.target;
       if(!evt.srcElement) evt.srcElement = evt.target;
 
