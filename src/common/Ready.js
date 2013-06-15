@@ -1,10 +1,10 @@
 
-if (global.opera) {
+if (isOEX) {
   isReady = true;
 
   // Make scripts also work in Opera <= version 12
   opera.isReady = function(fn) {
-    fn.call(opera);
+    fn.call(global);
 
     // Run delayed events (if any)
     for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
@@ -16,7 +16,7 @@ if (global.opera) {
 
 } else {
 
-  opera.isReady = (function() {
+  opr.isReady = (function() {
 
     var fns = {
           "isready": [],

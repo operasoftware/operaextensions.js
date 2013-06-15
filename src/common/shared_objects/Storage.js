@@ -102,4 +102,4 @@ var OStorage = function () {
 };
 
 // Inherit the standard Storage prototype
-OStorage.prototype = Object.create( Storage.prototype );
+OStorage.prototype = Object.create( global.Storage.prototype );

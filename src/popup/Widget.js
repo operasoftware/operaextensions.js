@@ -1,3 +1,7 @@
 
 // Add Widget API via the bgProcess
-global.widget = global.widget || OEX.bgProcess.widget;
+try {
+  global.widget = widget || OEX.bgProcess.widget;
+} catch(e) {
+  global.widget = OEX.bgProcess.widget;
+}

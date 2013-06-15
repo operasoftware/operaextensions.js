@@ -132,13 +132,16 @@ require.scopes.io =
       file = file.replace(/^.*[\/\\]/, "");
 
       // We request a gigabyte of space, just in case
-      (window.requestFileSystem || window.webkitRequestFileSystem)(window.PERSISTENT, 1024*1024*1024, function(fs)
-      {
-        fs.root.getFile(file, {create: create}, function(fileEntry)
+      rFS = window.requestFileSystem || window.webkitRequestFileSystem;
+      if(rFS) {
+        rFS(window.PERSISTENT, 1024*1024*1024, function(fs)
         {
-          successCallback(fs, fileEntry);
+          fs.root.getFile(file, {create: create}, function(fileEntry)
+          {
+            successCallback(fs, fileEntry);
+          }, errorCallback);
         }, errorCallback);
-      }, errorCallback);
+      }
     },
 
     lineBreak: "\n",

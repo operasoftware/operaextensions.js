@@ -3,7 +3,7 @@ var OWidgetObj = function() {
 
   OEventTarget.call(this);
 
-  this.properties = manifest || chrome.app.getDetails();
+  this.properties = manifest;
 
   // LocalStorage shim
   this._preferences = new OStorage();

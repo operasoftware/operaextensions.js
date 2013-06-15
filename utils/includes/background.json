@@ -59,6 +59,9 @@
   "../src/background/UrlFilter.js",
 
   "../src/common/Ready.js",
+  
+  "../src/DOMBind.js",
+  
   "../src/common/InlineEventHandlerRewrite.js",
 
   "../src/Footer.js"
