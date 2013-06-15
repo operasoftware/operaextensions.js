@@ -30,6 +30,8 @@
   "../src/injectedscript/UrlFilter.js",
 
   "../src/common/Ready.js",
+  
+  "../src/DOMBind.js",
 
   "../src/Footer.js"
 ]

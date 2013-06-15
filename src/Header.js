@@ -16,11 +16,27 @@
     console.log( str );
   };
 
-  var opera = global.opera || new Opera();
+  var opr, isOEX = false;
   
-  var manifest = chrome.app.getDetails(); // null in injected scripts / popups
+  try {
+    if(opera) {
+      opr = opera;
+      isOEX = true;
+    } else {
+      opr = new Opera();
+    }
+  } catch(e) {
+    opr = new Opera();
+  }
   
-  navigator.browserLanguage=navigator.language; //Opera defines both, some extensions use the former
+  var manifest = null;
+  
+  try {
+    manifest = chrome.app.getDetails(); // null in injected scripts / popups.
+  } catch(e) {}                         // Throws in Opera 12.15.
+  
+  
+  global.navigator.browserLanguage = global.navigator.language; //Opera defines both, some extensions use the former
 
   var isReady = false;
 

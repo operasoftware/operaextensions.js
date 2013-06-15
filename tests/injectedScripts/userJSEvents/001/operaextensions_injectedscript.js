@@ -1,6 +1,6 @@
 /*
  * Opera (.oex) Extensions Compatibility Layer - operaextensions_injectedscript.js
- * https://github.com/operasoftware/operaextensions.js (ver: 0.9)
+ * https://github.com/operasoftware/operaextensions.js (ver: 0.91)
  * Copyright (c) 2013 Opera Software ASA 
  * License: The MIT License (https://github.com/operasoftware/operaextensions.js/blob/master/LICENSE)
  */
@@ -22,11 +22,27 @@
     console.log( str );
   };
 
-  var opera = global.opera || new Opera();
+  var opr, isOEX = false;
   
-  var manifest = chrome.app.getDetails(); // null in injected scripts / popups
+  try {
+    if(opera) {
+      opr = opera;
+      isOEX = true;
+    } else {
+      opr = new Opera();
+    }
+  } catch(e) {
+    opr = new Opera();
+  }
   
-  navigator.browserLanguage=navigator.language; //Opera defines both, some extensions use the former
+  var manifest = null;
+  
+  try {
+    manifest = chrome.app.getDetails(); // null in injected scripts / popups.
+  } catch(e) {}                         // Throws in Opera 12.15.
+  
+  
+  global.navigator.browserLanguage = global.navigator.language; //Opera defines both, some extensions use the former
 
   var isReady = false;
 
@@ -485,9 +501,9 @@ OperaExtension.prototype.getScreenshot = function( callback ) {
 
 // Generate API stubs
 
-var OEX = opera.extension = opera.extension || new OperaExtension();
+var OEX = opr.extension = opr.extension || new OperaExtension();
 
-var OEC = opera.contexts = opera.contexts || {};
+var OEC = opr.contexts = opr.contexts || {};
 
 OperaExtension.prototype.getFile = function(path) {
   var response = null;
@@ -617,7 +633,7 @@ var OStorageProxy = function () {
 };
 
 // Inherit the standard Storage prototype
-OStorageProxy.prototype = Object.create( Storage.prototype );
+OStorageProxy.prototype = Object.create( global.Storage.prototype );
 
 var OWidgetObjProxy = function() {
 
@@ -750,7 +766,11 @@ OWidgetObjProxy.prototype.__defineGetter__('preferences', function() {
 });
 
 // Add Widget API directly to global window
-global.widget = global.widget || new OWidgetObjProxy();
+try {
+  global.widget = widget || new OWidgetObjProxy();
+} catch(e) {
+  global.widget = new OWidgetObjProxy();
+}
 
 /**
  * UserJS shim
@@ -1111,12 +1131,12 @@ UrlFilterEventListener.prototype.addEventListener = function(eventName, callback
 
 OEX.urlfilter = OEX.urlfilter || new UrlFilterEventListener();
 
-if (global.opera) {
+if (isOEX) {
   isReady = true;
 
   // Make scripts also work in Opera <= version 12
   opera.isReady = function(fn) {
-    fn.call(opera);
+    fn.call(global);
 
     // Run delayed events (if any)
     for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
@@ -1128,7 +1148,7 @@ if (global.opera) {
 
 } else {
 
-  opera.isReady = (function() {
+  opr.isReady = (function() {
 
     var fns = {
           "isready": [],
@@ -1367,7 +1387,9 @@ if (global.opera) {
 
 }
 
-  // Make API available on the window DOM object
-  global.opera = opera;
+// Make API available on the window DOM object
+if(!isOEX) {
+  global.opera = opr;
+}
 
 })( window );

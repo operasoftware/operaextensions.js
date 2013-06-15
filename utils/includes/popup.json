@@ -30,6 +30,9 @@
   "../src/popup/contexts/Speeddial.js",
 
   "../src/common/Ready.js",
+  
+  "../src/DOMBind.js",
+  
   "../src/popup/Dimensions.js",
   "../src/common/InlineEventHandlerRewrite.js",
 
