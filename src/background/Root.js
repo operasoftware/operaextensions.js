@@ -9,6 +9,6 @@ OperaExtension.prototype = Object.create( OBackgroundMessagePort.prototype );
 
 // Generate API stubs
 
-var OEX = opera.extension = opera.extension || new OperaExtension();
+var OEX = opr.extension = opr.extension || new OperaExtension();
 
-var OEC = opera.contexts = opera.contexts || {};
+var OEC = opr.contexts = opr.contexts || {};

@@ -1,3 +1,7 @@
 
 // Add Widget API directly to global window
-global.widget = global.widget || new OWidgetObj();
+try {
+  global.widget = widget || new OWidgetObj();
+} catch(e) {
+  global.widget = new OWidgetObj();
+}
