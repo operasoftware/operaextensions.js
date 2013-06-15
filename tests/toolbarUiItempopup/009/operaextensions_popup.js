@@ -22,11 +22,27 @@
     console.log( str );
   };
 
-  var opera = global.opera || new Opera();
+  var opr, isOEX = false;
   
-  var manifest = chrome.app.getDetails(); // null in injected scripts / popups
+  try {
+    if(opera) {
+      opr = opera;
+      isOEX = true;
+    } else {
+      opr = new Opera();
+    }
+  } catch(e) {
+    opr = new Opera();
+  }
   
-  navigator.browserLanguage=navigator.language; //Opera defines both, some extensions use the former
+  var manifest = null;
+  
+  try {
+    manifest = chrome.app.getDetails(); // null in injected scripts / popups.
+  } catch(e) {}                         // Throws in Opera 12.15.
+  
+  
+  global.navigator.browserLanguage = global.navigator.language; //Opera defines both, some extensions use the former
 
   var isReady = false;
 
@@ -735,9 +751,9 @@ OperaExtension.prototype.__defineGetter__('bgProcess', function() {
 
 // Generate API stubs
 
-var OEX = opera.extension = opera.extension || new OperaExtension();
+var OEX = opr.extension = opr.extension || new OperaExtension();
 
-var OEC = opera.contexts = opera.contexts || {};
+var OEC = opr.contexts = opr.contexts || {};
 
 OperaExtension.prototype.getFile = function(path) {
   var response = null;
@@ -781,7 +797,11 @@ OperaExtension.prototype.getFile = function(path) {
 };
 
 // Add Widget API via the bgProcess
-global.widget = global.widget || OEX.bgProcess.widget;
+try {
+  global.widget = widget || OEX.bgProcess.widget;
+} catch(e) {
+  global.widget = OEX.bgProcess.widget;
+}
 
 if(manifest && manifest.permissions && manifest.permissions.indexOf('tabs') != -1) {
 
@@ -822,12 +842,12 @@ if(manifest && manifest.speeddial && global.opr && global.opr.speeddial){
 
 }
 
-if (global.opera) {
+if (isOEX) {
   isReady = true;
 
   // Make scripts also work in Opera <= version 12
   opera.isReady = function(fn) {
-    fn.call(opera);
+    fn.call(global);
 
     // Run delayed events (if any)
     for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
@@ -839,7 +859,7 @@ if (global.opera) {
 
 } else {
 
-  opera.isReady = (function() {
+  opr.isReady = (function() {
 
     var fns = {
           "isready": [],
@@ -1078,6 +1098,11 @@ if (global.opera) {
 
 }
 
+// Make API available on the window DOM object
+if(!isOEX) {
+  global.opera = opr;
+}
+
 // Set the width and height of the popup window to values provided in the URL query string
 opera.isReady(function() {
 
@@ -1131,8 +1156,5 @@ opera.isReady(function() {
   }, false);
 
 });
-
-  // Make API available on the window DOM object
-  global.opera = opera;
 
 })( window );

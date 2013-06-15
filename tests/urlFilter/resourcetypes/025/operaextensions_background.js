@@ -22,11 +22,27 @@
     console.log( str );
   };
 
-  var opera = global.opera || new Opera();
+  var opr, isOEX = false;
   
-  var manifest = chrome.app.getDetails(); // null in injected scripts / popups
+  try {
+    if(opera) {
+      opr = opera;
+      isOEX = true;
+    } else {
+      opr = new Opera();
+    }
+  } catch(e) {
+    opr = new Opera();
+  }
   
-  navigator.browserLanguage=navigator.language; //Opera defines both, some extensions use the former
+  var manifest = null;
+  
+  try {
+    manifest = chrome.app.getDetails(); // null in injected scripts / popups.
+  } catch(e) {}                         // Throws in Opera 12.15.
+  
+  
+  global.navigator.browserLanguage = global.navigator.language; //Opera defines both, some extensions use the former
 
   var isReady = false;
 
@@ -810,9 +826,9 @@ OperaExtension.prototype = Object.create( OBackgroundMessagePort.prototype );
 
 // Generate API stubs
 
-var OEX = opera.extension = opera.extension || new OperaExtension();
+var OEX = opr.extension = opr.extension || new OperaExtension();
 
-var OEC = opera.contexts = opera.contexts || {};
+var OEC = opr.contexts = opr.contexts || {};
 
 OperaExtension.prototype.getFile = function(path) {
   var response = null;
@@ -958,13 +974,13 @@ var OStorage = function () {
 };
 
 // Inherit the standard Storage prototype
-OStorage.prototype = Object.create( Storage.prototype );
+OStorage.prototype = Object.create( global.Storage.prototype );
 
 var OWidgetObj = function() {
 
   OEventTarget.call(this);
 
-  this.properties = manifest || chrome.app.getDetails();
+  this.properties = manifest;
 
   // LocalStorage shim
   this._preferences = new OStorage();
@@ -1072,7 +1088,11 @@ OWidgetObj.prototype.__defineGetter__('preferences', function() {
 });
 
 // Add Widget API directly to global window
-global.widget = global.widget || new OWidgetObj();
+try {
+  global.widget = widget || new OWidgetObj();
+} catch(e) {
+  global.widget = new OWidgetObj();
+}
 
 var BrowserWindowManager = function() {
 
@@ -4456,13 +4476,16 @@ require.scopes.io =
       file = file.replace(/^.*[\/\\]/, "");
 
       // We request a gigabyte of space, just in case
-      (window.requestFileSystem || window.webkitRequestFileSystem)(window.PERSISTENT, 1024*1024*1024, function(fs)
-      {
-        fs.root.getFile(file, {create: create}, function(fileEntry)
+      rFS = window.requestFileSystem || window.webkitRequestFileSystem;
+      if(rFS) {
+        rFS(window.PERSISTENT, 1024*1024*1024, function(fs)
         {
-          successCallback(fs, fileEntry);
+          fs.root.getFile(file, {create: create}, function(fileEntry)
+          {
+            successCallback(fs, fileEntry);
+          }, errorCallback);
         }, errorCallback);
-      }, errorCallback);
+      }
     },
 
     lineBreak: "\n",
@@ -14921,12 +14944,12 @@ if(manifest && manifest.permissions && manifest.permissions.indexOf('webRequest'
 
 }
 
-if (global.opera) {
+if (isOEX) {
   isReady = true;
 
   // Make scripts also work in Opera <= version 12
   opera.isReady = function(fn) {
-    fn.call(opera);
+    fn.call(global);
 
     // Run delayed events (if any)
     for(var i = 0, l = _delayedExecuteEvents.length; i < l; i++) {
@@ -14938,7 +14961,7 @@ if (global.opera) {
 
 } else {
 
-  opera.isReady = (function() {
+  opr.isReady = (function() {
 
     var fns = {
           "isready": [],
@@ -15177,6 +15200,11 @@ if (global.opera) {
 
 }
 
+// Make API available on the window DOM object
+if(!isOEX) {
+  global.opera = opr;
+}
+
 opera.isReady(function() {
 
   // Rewrite in-line event handlers (eg. <input ... onclick=""> for a sub-set of common standard events)
@@ -15203,8 +15231,5 @@ opera.isReady(function() {
   }, false);
 
 });
-
-  // Make API available on the window DOM object
-  global.opera = opera;
 
 })( window );
