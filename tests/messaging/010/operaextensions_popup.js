@@ -1,6 +1,6 @@
 /*
  * Opera (.oex) Extensions Compatibility Layer - operaextensions_popup.js
- * https://github.com/operasoftware/operaextensions.js (ver: 0.9)
+ * https://github.com/operasoftware/operaextensions.js (ver: 0.91)
  * Copyright (c) 2013 Opera Software ASA 
  * License: The MIT License (https://github.com/operasoftware/operaextensions.js/blob/master/LICENSE)
  */
